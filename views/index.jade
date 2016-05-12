@@ -1,0 +1,28 @@
+extends layout
+
+block css
+  link(rel='stylesheet', href='css/bootstrap.css')
+  link(rel='stylesheet', href='css/core.css')
+  link(rel='stylesheet', href='css/icons.css')
+  link(rel='stylesheet', href='css/components.css')
+  link(rel='stylesheet', href='css/pages.css')
+  link(rel='stylesheet', href='js/bootstrap-table/bootstrap-table.min.css')
+  link(rel='stylesheet', href='js/datatables/datatables.css')
+
+block ie
+  //if lt IE 9
+    script(src='js/html5shiv.min.js')
+    script(src='js/respond.min.js')
+
+block content
+  #app_container
+
+block js
+  script(src='js/app/entry.js')
+  script(src='js/jquery.min.js')
+  script(src='js/bootstrap.min.js')
+  script(src='js/datatables/jquery.dataTables.js')
+  script(src='js/dataTables.bootstrap.js')
+  script(src='js/datatables.editable.init.js')
+  script(src='js/bootstrap-table/bootstrap-table.min.js')
+  script(src='js/jquery.bs-table.js')
