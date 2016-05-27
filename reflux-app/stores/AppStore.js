@@ -2,10 +2,11 @@ import Reflux from 'reflux'
 import AppActions from '../actions/AppActions'
 import constants from '../const'
 import $ from 'jquery'
+import sha256 from 'crypto-js/sha256'
 
 let state = {
   // Collector
-  location: 'History',
+  location: 'Login',
   collectorType: 'Active',
 
   // History
@@ -18,7 +19,13 @@ let state = {
   // Active Collector
   activeCollectorUpdated: false,
   activeCollector: {},
-  activeCollectorList: []
+  activeCollectorList: [],
+  activeCollectorChecklist: [],
+
+  // Login
+  loginUser: '',
+  loginPass: '',
+  loginTries: 0
 }
 
 let AppStore = Reflux.createStore({
@@ -26,7 +33,7 @@ let AppStore = Reflux.createStore({
 
   onNav: async function(location) {
     state.location = location
-    console.log(state)
+    // console.log(state)
     this.trigger(state)
   },
 
@@ -108,7 +115,8 @@ let AppStore = Reflux.createStore({
 
   onGetActiveCollectorList: async function() {
     // refresh collector list
-    $.get(constants.CONALOG_URL + '/collector/active/list', (data) => {
+    $.get(constants.CONALOG_URL + '/collector/list/active', (data) => {
+      console.log(data)
       state.activeCollectorList = data.activeCollectorList
       this.trigger(state)
     })
@@ -119,33 +127,20 @@ let AppStore = Reflux.createStore({
 
   onSaveActiveCollector: async function(activeCollector) {
     console.log(activeCollector)
-    // TO DO : save collector
+    // save collector
     $.post(constants.CONALOG_URL + '/collector/active',
       activeCollector,
       (data) => {
-        AppActions.getActiveCollectorList()
+        // do nothing
       },
       'json'
     )
     .fail((err) => {
       console.log('onSaveActiveCollector error:', err)
     })
-  },
-
-  onRemoveActiveCollector: async function(activeCollectorId) {
-    // TO DO : remove collector
-    $.delete(constants.CONALOG_URL + '/collector/active' + activeCollectorId,
-      (data) => {
-        AppActions.getActiveCollectorList()
-      }
-    )
-    .fail((err) => {
-      console.log('onSaveActiveCollector error:', err)
+    .always(() => {
+      AppActions.getActiveCollectorList()
     })
-    this.trigger(state)
-
-    // refresh collector list
-    AppActions.getActiveCollectorList()
   },
 
   onCloneActiveCollector: async function(activeCollectorId) {
@@ -166,6 +161,142 @@ let AppStore = Reflux.createStore({
   onSetActiveCollectorFlag: async function(flag) {
     state.activeCollectorFlag = flag
     this.trigger(state)
+  },
+
+  onSetActiveCollectorChecklist: async function(checklist) {
+    state.activeCollectorChecklist = checklist
+    this.trigger(state)
+  },
+
+  onDeleteActiveCollector: async function() {
+    // ajax delete
+    $.ajax(constants.CONALOG_URL + '/collector/active', {
+      method: 'DELETE',
+      data: { list: state.activeCollectorChecklist }
+    })
+    .fail(err => {
+      console.log('onDeleteActiveCollector error:', err)
+    })
+    .always(() => {
+      // refresh collector list
+      state.activeCollectorChecklist = []
+      AppActions.getActiveCollectorList()
+    })
+  },
+
+  // passive collector
+  onGetPassiveCollectorList: async function() {
+    // refresh collector list
+    $.get(constants.CONALOG_URL + '/collector/list/passive', (data) => {
+      console.log(data)
+      state.passiveCollectorList = data.passiveCollectorList
+      this.trigger(state)
+    })
+    .fail(err => {
+      console.log('onGetPassiveCollectorList error:', err)
+    })
+  },
+
+  onSavePassiveCollector: async function(passiveCollector) {
+    console.log(passiveCollector)
+    // save collector
+    $.post(constants.CONALOG_URL + '/collector/passive',
+      passiveCollector,
+      (data) => {
+        // do nothing
+      },
+      'json'
+    )
+    .fail((err) => {
+      console.log('onSavePassiveCollector error:', err)
+    })
+    .always(() => {
+      AppActions.getPassiveCollectorList()
+    })
+  },
+
+  onClonePassiveCollector: async function(passiveCollectorId) {
+    // TO DO : clone collector
+
+    this.trigger(state)
+
+    // refresh collector list
+    AppActions.getPassiveCollectorList()
+  },
+
+  onSetPassiveCollector: async function(passiveCollector) {
+    console.log(passiveCollector)
+    state.passiveCollector = passiveCollector
+    this.trigger(state)
+  },
+
+  onSetPassiveCollectorFlag: async function(flag) {
+    state.passiveCollectorFlag = flag
+    this.trigger(state)
+  },
+
+  onSetPassiveCollectorChecklist: async function(checklist) {
+    state.passiveCollectorChecklist = checklist
+    this.trigger(state)
+  },
+
+  onDeletePassiveCollector: async function() {
+    // ajax delete
+    $.ajax(constants.CONALOG_URL + '/collector/passive', {
+      method: 'DELETE',
+      data: { list: state.passiveCollectorChecklist }
+    })
+    .fail(err => {
+      console.log('onDeletePassiveCollector error:', err)
+    })
+    .always(() => {
+      // refresh collector list
+      state.passiveCollectorChecklist = []
+      AppActions.getPassiveCollectorList()
+    })
+  },
+
+  onUpdateLoginUser: async function(user) {
+    state.loginUser = user
+    this.trigger(state)
+  },
+
+  onUpdateLoginPass: async function(pass) {
+    state.loginPass = pass
+    this.trigger(state)
+  },
+
+  onLogin: async function() {
+    // digest
+    let now = new Date()
+    let salt = now.getTime().toString()
+    let saltedPass = sha256(state.loginPass + salt).toString()
+
+    let json = {
+      user: state.loginUser,
+      pass: saltedPass,
+      salt: salt
+    }
+
+    // ajax get
+    $.get(constants.CONALOG_URL + '/users/login',
+      json, data => {
+
+      }, 'json')
+    .fail(err => {
+      console.log('onLogin Error', err)
+      if (err.status == 200) {
+        // success actually...
+        // redirect to main page
+        // console.log('onLogin', data)
+        state.location = 'Home'
+      }
+      else {
+        state.loginTries++
+      }
+
+      this.trigger(state)
+    })
   }
 
 }) // AppStore

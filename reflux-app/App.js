@@ -22,7 +22,7 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      location: 'History',
+      location: 'Login',
       collectorType: 'Active'
     }
   }
@@ -40,6 +40,7 @@ class App extends React.Component {
 
   render() {
     let page
+    console.log(this.state.location)
     switch (this.state.location)
     {
       case 'Login':

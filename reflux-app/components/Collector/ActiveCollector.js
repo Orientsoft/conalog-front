@@ -9,7 +9,8 @@ class ActiveCollector extends React.Component {
     this.state = {
       activeCollectorFlag: false,
       activeCollector: {},
-      activeCollectorList: []
+      activeCollectorList: [],
+      activeCollectorChecklist: []
     }
   }
 
@@ -18,7 +19,8 @@ class ActiveCollector extends React.Component {
       this.setState(state)
     }.bind(this))
 
-    // TO DO : get active collector list
+    // get active collector list
+    AppActions.getActiveCollectorList()
   }
 
   componentWillUnmount() {
@@ -41,12 +43,38 @@ class ActiveCollector extends React.Component {
     e.preventDefault()
   }
 
+  updateActiveCollectorChecklist(e) {
+    let id = e.target.dataset.id
+    let idx = _.indexOf(this.state.activeCollectorChecklist, id)
+    let checklist = this.state.activeCollectorChecklist
+    if (idx == -1)
+      checklist.push(id)
+    else
+      _.remove(checklist, (value, checklistIndex) => {
+        if (idx == checklistIndex)
+          return true
+      })
+    console.log('updateActiveCollectorChecklist', checklist)
+    AppActions.setActiveCollectorChecklist(checklist)
+  }
+
+  deleteActiveCollector(e) {
+    AppActions.deleteActiveCollector()
+    e.preventDefault()
+  }
+
+  cloneActiveCollector() {
+    AppActions.cloneActiveCollector()
+    e.preventDefault()
+  }
+
   render() {
-    let nameInput;
-    let typeInput;
-    let triggerInput;
-    let cmdInput;
-    let paramInput;
+    let nameInput
+    let typeInput
+    let triggerInput
+    let cmdInput
+    let paramInput
+    let hostInput
 
     if (this.state.activeCollectorFlag) {
       // name
@@ -106,7 +134,7 @@ class ActiveCollector extends React.Component {
         triggerInput = <div className="col-md-2">
           <div className="form-group has-error">
             <label>Trigger</label>
-            <input type="time" placeholder="Trigger" className="form-control"
+            <input type="input" placeholder="Trigger" className="form-control"
               data-field="trigger"
               onChange={this.updateActiveCollector.bind(this)} />
           </div>
@@ -115,7 +143,7 @@ class ActiveCollector extends React.Component {
         triggerInput = <div className="col-md-2">
           <div className="form-group">
             <label>Trigger</label>
-            <input type="time" placeholder="Trigger" className="form-control"
+            <input type="input" placeholder="Trigger" className="form-control"
               data-field="trigger"
               onChange={this.updateActiveCollector.bind(this)} />
           </div>
@@ -147,7 +175,7 @@ class ActiveCollector extends React.Component {
         if (this.state.activeCollector.param === undefined ||
           this.state.activeCollector.param == null ||
           this.state.activeCollector.param == '')
-          paramInput = <div className="col-md-3">
+          paramInput = <div className="col-md-2">
             <div className="form-group">
               <label>Parameter</label>
               <input type="text" placeholder="Parameter" className="form-control"
@@ -156,11 +184,33 @@ class ActiveCollector extends React.Component {
             </div>
           </div>
         else
-          paramInput = <div className="col-md-3">
+          paramInput = <div className="col-md-2">
             <div className="form-group">
               <label>Parameter</label>
               <input type="text" placeholder="Parameter" className="form-control"
                 data-field="param"
+                onChange={this.updateActiveCollector.bind(this)} />
+            </div>
+          </div>
+
+        // host
+        if (this.state.activeCollector.host === undefined ||
+          this.state.activeCollector.host == null ||
+          this.state.activeCollector.host == '')
+          hostInput = <div className="col-md-2">
+            <div className="form-group">
+              <label>Host</label>
+              <input type="text" placeholder="Host" className="form-control"
+                data-field="host"
+                onChange={this.updateActiveCollector.bind(this)} />
+            </div>
+          </div>
+        else
+          hostInput = <div className="col-md-2">
+            <div className="form-group">
+              <label>Host</label>
+              <input type="text" placeholder="Host" className="form-control"
+                data-field="host"
                 onChange={this.updateActiveCollector.bind(this)} />
             </div>
           </div>
@@ -193,7 +243,7 @@ class ActiveCollector extends React.Component {
       triggerInput = <div className="col-md-2">
         <div className="form-group">
           <label>Trigger</label>
-          <input type="time" placeholder="Trigger" className="form-control"
+          <input type="input" placeholder="Trigger" className="form-control"
             data-field="trigger"
             onChange={this.updateActiveCollector.bind(this)} />
         </div>
@@ -210,7 +260,7 @@ class ActiveCollector extends React.Component {
       </div>
 
       // param
-      paramInput = <div className="col-md-3">
+      paramInput = <div className="col-md-2">
         <div className="form-group">
           <label>Parameter</label>
           <input type="text" placeholder="Parameter" className="form-control"
@@ -218,7 +268,62 @@ class ActiveCollector extends React.Component {
             onChange={this.updateActiveCollector.bind(this)} />
         </div>
       </div>
+
+      // host
+      hostInput = <div className="col-md-2">
+        <div className="form-group">
+          <label>Host</label>
+          <input type="text" placeholder="Host" className="form-control"
+            data-field="host"
+            onChange={this.updateActiveCollector.bind(this)} />
+        </div>
+      </div>
     }
+
+    let createActiveCollector = (line, index) => {
+      let date = new Date(line.ts)
+      date = date.toLocaleString()
+      let idx = _.indexOf(this.state.activeCollectorChecklist, line._id)
+      console.log('createActiveCollector', this.state.activeCollectorChecklist, line._id, idx)
+      let activeCollector
+
+      if (idx == -1)
+        activeCollector = <tr key={ index }>
+          <td><input type="checkbox"
+            data-id={ line._id }
+            onClick={ this.updateActiveCollectorChecklist.bind(this) }
+            />
+          </td>
+          <td>{ line._id }</td>
+          <td>{ line.name }</td>
+          <td>{ date }</td>
+          <td>{ line.type }</td>
+          <td>{ line.trigger }</td>
+          <td>{ line.cmd }</td>
+          <td>{ line.param }</td>
+          <td>{ line.host }</td>
+        </tr>
+      else
+        activeCollector = <tr key={ index }>
+          <td><input type="checkbox"
+            data-id={ line._id }
+            onClick={ this.updateActiveCollectorChecklist.bind(this) }
+            defaultChecked="true" />
+          </td>
+          <td>{ line._id }</td>
+          <td>{ line.name }</td>
+          <td>{ date }</td>
+          <td>{ line.type }</td>
+          <td>{ line.trigger }</td>
+          <td>{ line.cmd }</td>
+          <td>{ line.param }</td>
+          <td>{ line.host }</td>
+        </tr>
+
+      return activeCollector
+    }
+
+    let activeCollectorTable = this.state.activeCollectorList.map(createActiveCollector.bind(this))
 
     return (
       <div>
@@ -226,8 +331,9 @@ class ActiveCollector extends React.Component {
           { nameInput }
           { typeInput }
           { triggerInput }
-          { cmdInput}
+          { cmdInput }
           { paramInput }
+          { hostInput }
           <div className="col-md-12">
             <div className="form-group text-right m-b-0">
               <button className="btn btn-primary waves-effect waves-light" type="submit"
@@ -238,7 +344,12 @@ class ActiveCollector extends React.Component {
           </div>
         </div>
         <div className=" p-b-10 p-t-60">
-          <button id="deleteToTable-1" className="btn btn-danger waves-effect waves-light pull-left m-t-10 m-r-10" disabled><i className="fa fa-plus m-r-5"></i>Delete</button>
+          <button id="deleteToTable-1"
+            onClick={this.deleteActiveCollector.bind(this)}
+            className="btn btn-danger waves-effect waves-light pull-left m-t-10 m-r-10" >
+            <i className="fa fa-minus m-r-5"></i>
+            Delete
+          </button>
           <button id="addToTable" className="btn btn-default waves-effect waves-light pull-left m-t-10 m-r-10" ><i className="fa fa-plus m-r-5"></i>Clone</button>
           <table id="demo-custom-toolbar"  data-toggle="table"
                      data-toolbar="#demo-delete-row"
@@ -258,21 +369,13 @@ class ActiveCollector extends React.Component {
                 <th data-field="date" data-sortable="true" data-formatter="dateFormatter">Date</th>
                 <th data-field="amount" data-align="center" data-sortable="true" data-sorter="">Type</th>
                 <th data-field="status" data-align="center" data-sortable="true" data-formatter="">Trigger</th>
-                <th data-field="Command" data-align="center" data-sortable="true" data-sorter="">Command</th>
-                <th data-field="Parameter" data-align="center" data-sortable="true" data-sorter="">Parameter</th>
+                <th data-field="command" data-align="center" data-sortable="true" data-sorter="">Command</th>
+                <th data-field="parameter" data-align="center" data-sortable="true" data-sorter="">Parameter</th>
+                <th data-field="host" data-align="center" data-sortable="true" data-sorter="">Host</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td></td>
-                <td>609</td>
-                <td>Oracle</td>
-                <td>2016-03-16 15:23:43 </td>
-                <td>Int.</td>
-                <td>00:04:00.</td>
-                <td>sh/libs/getoracle.sh</td>
-                <td >aabc</td>
-              </tr>
+              { activeCollectorTable }
             </tbody>
           </table>
         </div>
