@@ -31,7 +31,8 @@ let AppActions = Reflux.createActions({
   // Login
   'updateLoginUser': {asyncResult: true},
   'updateLoginPass': {asyncResult: true},
-  'login': {asyncResult: true}
+  'login': {asyncResult: true},
+  'logout': {asyncResult: true}
 })
 
 export default AppActions

@@ -17,7 +17,7 @@ class FlowTask extends Flow {
   }
 
   work() {
-    // ajax post
+    // TO DO : ajax post  - start flow
   }
 
   rest() {

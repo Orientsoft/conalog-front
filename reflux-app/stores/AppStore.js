@@ -45,11 +45,18 @@ let AppStore = Reflux.createStore({
   // History
   onGetHistoryPage: async function() {
     // Ajax - GET /history/page/[pageNo]
-    $.getJSON(constants.CONALOG_URL + '/history/page/' + state.historyPageNo, (data) => {
-      // { pageContent: [] }
-      // console.log('onGetHistoryPage: ', data)
-      state.historyPageContent = data.pageContent
-    })
+    $.ajax(constants.CONALOG_URL + '/history/page/' + state.historyPageNo,
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        success: (data) => {
+          // { pageContent: [] }
+          // console.log('onGetHistoryPage: ', data)
+          state.historyPageContent = data.pageContent
+        },
+        dataType: 'json'
+      }
+    )
     .fail((err) => {
       console.log('onGetHistoryPage error:', err)
     })
@@ -60,11 +67,19 @@ let AppStore = Reflux.createStore({
 
   onGetHistoryPageCount: async function() {
     // Ajax - GET /history/pagecount
-    $.getJSON(constants.CONALOG_URL + '/history/pagecount', (data) => {
-      // success - { pageCount: 10 }
-      // console.log('onGetHistoryPageCount: ', data.pageCount)
-      state.historyPageCount = data.pageCount
-    })
+    $.ajax(constants.CONALOG_URL + '/history/pagecount',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        method: 'GET',
+        success: (data) => {
+          // success - { pageCount: 10 }
+          // console.log('onGetHistoryPageCount: ', data.pageCount)
+          state.historyPageCount = data.pageCount
+        },
+        dataType: 'json'
+      }
+    )
     .fail((err) => {
       console.log('onGetHistoryPageCount error:', err)
     })
@@ -79,12 +94,17 @@ let AppStore = Reflux.createStore({
   },
 
   onSetHistoryPageSize: async function(pageSize) {
-    $.post(constants.CONALOG_URL + '/history/pageinfo',
-      { pageSize: pageSize },
-      (data) => {
-        state.historyPageSize = pageSize
-      },
-      'json'
+    $.ajax(constants.CONALOG_URL + '/history/pageinfo',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        method: 'POST',
+        data: { pageSize: pageSize },
+        dataType: 'json',
+        success: (data) => {
+          state.historyPageSize = pageSize
+        }
+      }
     )
     .fail((err) => {
       console.log('onSetHistoryPageSize error:', err)
@@ -95,15 +115,20 @@ let AppStore = Reflux.createStore({
   },
 
   onSetHistorySort: async function(field, dir) {
-    $.post(constants.CONALOG_URL + '/history/pageinfo',
-      {sortField: field, sortDir: dir},
-      (data) => {
-        state.historySortField = field
-        state.historySortDir = dir
-        state.historyPageContent = data.pageContent
-        console.log(data.pageContent)
-      },
-      'json'
+    $.ajax(constants.CONALOG_URL + '/history/pageinfo',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        method: 'POST',
+        data: {sortField: field, sortDir: dir},
+        success: (data) => {
+          state.historySortField = field
+          state.historySortDir = dir
+          state.historyPageContent = data.pageContent
+          console.log(data.pageContent)
+        },
+        dataType: 'json'
+      }
     )
     .fail((err) => {
       console.log('onSetHistorySort error:', err)
@@ -115,11 +140,17 @@ let AppStore = Reflux.createStore({
 
   onGetActiveCollectorList: async function() {
     // refresh collector list
-    $.get(constants.CONALOG_URL + '/collector/list/active', (data) => {
-      console.log(data)
-      state.activeCollectorList = data.activeCollectorList
-      this.trigger(state)
-    })
+    $.ajax(constants.CONALOG_URL + '/collector/list/active',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        success: (data) => {
+          console.log(data)
+          state.activeCollectorList = data.activeCollectorList
+          this.trigger(state)
+        }
+      },
+    ) // $.ajax
     .fail(err => {
       console.log('onGetActiveCollectorList error:', err)
     })
@@ -127,15 +158,20 @@ let AppStore = Reflux.createStore({
 
   onSaveActiveCollector: async function(activeCollector) {
     console.log(activeCollector)
-    // save collector
-    $.post(constants.CONALOG_URL + '/collector/active',
-      activeCollector,
-      (data) => {
-        // do nothing
+    // save activeCollector
+    $.ajax(constants.CONALOG_URL + '/collector/active',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        success: (data) => {
+          // do nothing
+        },
+        method: 'POST',
+        data: activeCollector,
+        dataType: 'json'
       },
-      'json'
-    )
-    .fail((err) => {
+    ) // $.ajax
+    .fail(err => {
       console.log('onSaveActiveCollector error:', err)
     })
     .always(() => {
@@ -172,7 +208,10 @@ let AppStore = Reflux.createStore({
     // ajax delete
     $.ajax(constants.CONALOG_URL + '/collector/active', {
       method: 'DELETE',
+      crossDomain: true,
+      xhrFields: { withCredentials: true },
       data: { list: state.activeCollectorChecklist }
+      dataType: 'json'
     })
     .fail(err => {
       console.log('onDeleteActiveCollector error:', err)
@@ -187,11 +226,17 @@ let AppStore = Reflux.createStore({
   // passive collector
   onGetPassiveCollectorList: async function() {
     // refresh collector list
-    $.get(constants.CONALOG_URL + '/collector/list/passive', (data) => {
-      console.log(data)
-      state.passiveCollectorList = data.passiveCollectorList
-      this.trigger(state)
-    })
+    $.ajax(constants.CONALOG_URL + '/collector/list/passive',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        success: (data) => {
+          console.log(data)
+          state.passiveCollectorList = data.passiveCollectorList
+          this.trigger(state)
+        }
+      },
+    ) // $.ajax
     .fail(err => {
       console.log('onGetPassiveCollectorList error:', err)
     })
@@ -199,15 +244,20 @@ let AppStore = Reflux.createStore({
 
   onSavePassiveCollector: async function(passiveCollector) {
     console.log(passiveCollector)
-    // save collector
-    $.post(constants.CONALOG_URL + '/collector/passive',
-      passiveCollector,
-      (data) => {
-        // do nothing
+    // save activeCollector
+    $.ajax(constants.CONALOG_URL + '/collector/passive',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        success: (data) => {
+          // do nothing
+        },
+        method: 'POST',
+        data: passiveCollector,
+        dataType: 'json'
       },
-      'json'
-    )
-    .fail((err) => {
+    ) // $.ajax
+    .fail(err => {
       console.log('onSavePassiveCollector error:', err)
     })
     .always(() => {
@@ -244,7 +294,10 @@ let AppStore = Reflux.createStore({
     // ajax delete
     $.ajax(constants.CONALOG_URL + '/collector/passive', {
       method: 'DELETE',
-      data: { list: state.passiveCollectorChecklist }
+      crossDomain: true,
+      xhrFields: { withCredentials: true },
+      data: { list: state.passiveCollectorChecklist },
+      dataType: 'json'
     })
     .fail(err => {
       console.log('onDeletePassiveCollector error:', err)
@@ -279,10 +332,17 @@ let AppStore = Reflux.createStore({
     }
 
     // ajax get
-    $.get(constants.CONALOG_URL + '/users/login',
-      json, data => {
-
-      }, 'json')
+    $.ajax(constants.CONALOG_URL + '/users/login',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        data: json,
+        success: data => {
+          console.log('onLogin', data)
+        },
+        dataType: 'json'
+      }
+    ) // $.ajax
     .fail(err => {
       console.log('onLogin Error', err)
       if (err.status == 200) {
@@ -297,6 +357,31 @@ let AppStore = Reflux.createStore({
 
       this.trigger(state)
     })
+  },
+
+  onLogout: async function() {
+    console.log('AppStore::onLogout')
+    $.ajax(constants.CONALOG_URL + '/users/logout',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        success: data => {
+          // do nothing
+        }
+      }
+    )
+    .fail(err => {
+      // go to login
+      state.location = 'Login'
+      this.trigger(state)
+    })
+    .always(() => {
+      state.location = 'Login'
+      this.trigger(state)
+    })
+
+    state.location = 'Login'
+    this.trigger(state)
   }
 
 }) // AppStore
