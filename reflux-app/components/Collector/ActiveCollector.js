@@ -1,4 +1,5 @@
 import React from 'react'
+import { TimePicker } from 'antd'
 import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
 import _ from 'lodash'
@@ -10,7 +11,8 @@ class ActiveCollector extends React.Component {
       activeCollectorFlag: false,
       activeCollector: {},
       activeCollectorList: [],
-      activeCollectorChecklist: []
+      activeCollectorChecklist: [],
+      activeCollectorDeleteModal: false
     }
   }
 
@@ -28,8 +30,19 @@ class ActiveCollector extends React.Component {
       this.unsubscribe();
   }
 
-  saveActiveCollector() {
+  saveActiveCollector(e) {
+    e.preventDefault()
     AppActions.setActiveCollectorFlag(true)
+    // there might be some fields not set during update
+    // we'd better read parameters from refs now
+    this.state.activeCollector = {
+      name: this.refs.nameInput.getDOMNode().value.trim(),
+      type: this.refs.typeInput.getDOMNode().value.trim(),
+      trigger: this.refs.triggerInput.getDOMNode().value.trim(),
+      cmd: this.refs.cmdInput.getDOMNode().value.trim(),
+      param: this.refs.paramInput.getDOMNode().value.trim(),
+      host: this.refs.hostInput.getDOMNode().value.trim()
+    }
     AppActions.saveActiveCollector(this.state.activeCollector)
   }
 
@@ -38,7 +51,7 @@ class ActiveCollector extends React.Component {
   }
 
   updateActiveCollector(e) {
-    console.log(e.target.dataset.field, e.target.type, e.target.value)
+    // console.log(e.target.dataset.field, e.target.type, e.target.value)
     AppActions.setActiveCollector(_.set(this.state.activeCollector, e.target.dataset.field, e.target.value))
     e.preventDefault()
   }
@@ -54,21 +67,33 @@ class ActiveCollector extends React.Component {
         if (idx == checklistIndex)
           return true
       })
-    console.log('updateActiveCollectorChecklist', checklist)
+    // console.log('updateActiveCollectorChecklist', checklist)
     AppActions.setActiveCollectorChecklist(checklist)
   }
 
   deleteActiveCollector(e) {
     AppActions.deleteActiveCollector()
+    AppActions.setActiveCollectorDeleteModal(false)
     e.preventDefault()
   }
 
-  cloneActiveCollector() {
-    AppActions.cloneActiveCollector()
+  openActiveCollectorDeleteModal(e) {
+    AppActions.setActiveCollectorDeleteModal(true)
     e.preventDefault()
+  }
+
+  closeActiveCollectorDeleteModal(e) {
+    AppActions.setActiveCollectorDeleteModal(false)
+    e.preventDefault()
+  }
+
+  editActiveCollector(e) {
+    e.preventDefault()
+    AppActions.editActiveCollector()
   }
 
   render() {
+    console.log('ActiveCollector::activeCollector', this.state.activeCollector)
     let nameInput
     let typeInput
     let triggerInput
@@ -76,209 +101,88 @@ class ActiveCollector extends React.Component {
     let paramInput
     let hostInput
 
-    if (this.state.activeCollectorFlag) {
-      // name
-      if (this.state.activeCollector.name === undefined ||
-        this.state.activeCollector.name == null ||
-        this.state.activeCollector.name == '')
-        nameInput = <div className="col-md-2">
-          <div className="form-group has-error">
-            <label>Name</label>
-            <input type="text" placeholder="Name" className="form-control"
-              data-field="name"
-              onChange={this.updateActiveCollector.bind(this)} />
-          </div>
-        </div>
-      else
-        nameInput = <div className="col-md-2">
-          <div className="form-group">
-            <label>Name</label>
-            <input type="text" placeholder="Name" className="form-control"
-              data-field="name"
-              onChange={this.updateActiveCollector.bind(this)} />
-          </div>
-        </div>
-
-      // type
-      if (this.state.activeCollector.type === undefined ||
-        this.state.activeCollector.type == null ||
-        this.state.activeCollector.type == '')
-        typeInput = <div className="col-md-2">
-          <div className="form-group has-error">
-            <label>Type</label>
-            <select className="form-control"
-              data-field="type"
-              onChange={this.updateActiveCollector.bind(this)}>
-              <option>Interval</option>
-              <option>Time</option>
-            </select>
-          </div>
-        </div>
-      else
-        typeInput = <div className="col-md-2">
-          <div className="form-group">
-            <label>Type</label>
-            <select className="form-control"
-              data-field="type"
-              onChange={this.updateActiveCollector.bind(this)}>
-              <option>Interval</option>
-              <option>Time</option>
-            </select>
-          </div>
-        </div>
-
-      // trigger
-      if (this.state.activeCollector.trigger === undefined ||
-        this.state.activeCollector.trigger == null ||
-        this.state.activeCollector.trigger == '')
-        triggerInput = <div className="col-md-2">
-          <div className="form-group has-error">
-            <label>Trigger</label>
-            <input type="input" placeholder="Trigger" className="form-control"
-              data-field="trigger"
-              onChange={this.updateActiveCollector.bind(this)} />
-          </div>
-        </div>
-      else
-        triggerInput = <div className="col-md-2">
-          <div className="form-group">
-            <label>Trigger</label>
-            <input type="input" placeholder="Trigger" className="form-control"
-              data-field="trigger"
-              onChange={this.updateActiveCollector.bind(this)} />
-          </div>
-        </div>
-
-        // cmd
-        if (this.state.activeCollector.cmd === undefined ||
-          this.state.activeCollector.cmd == null ||
-          this.state.activeCollector.cmd == '')
-          cmdInput = <div className="col-md-2">
-            <div className="form-group has-error">
-              <label>Command</label>
-              <input type="text" placeholder="Command" className="form-control"
-                data-field="cmd"
-                onChange={this.updateActiveCollector.bind(this)} />
-            </div>
-          </div>
-        else
-          cmdInput = <div className="col-md-2">
-            <div className="form-group">
-              <label>Command</label>
-              <input type="text" placeholder="Command" className="form-control"
-                data-field="cmd"
-                onChange={this.updateActiveCollector.bind(this)} />
-            </div>
-          </div>
-
-        // param
-        if (this.state.activeCollector.param === undefined ||
-          this.state.activeCollector.param == null ||
-          this.state.activeCollector.param == '')
-          paramInput = <div className="col-md-2">
-            <div className="form-group">
-              <label>Parameter</label>
-              <input type="text" placeholder="Parameter" className="form-control"
-                data-field="param"
-                onChange={this.updateActiveCollector.bind(this)} />
-            </div>
-          </div>
-        else
-          paramInput = <div className="col-md-2">
-            <div className="form-group">
-              <label>Parameter</label>
-              <input type="text" placeholder="Parameter" className="form-control"
-                data-field="param"
-                onChange={this.updateActiveCollector.bind(this)} />
-            </div>
-          </div>
-
-        // host
-        if (this.state.activeCollector.host === undefined ||
-          this.state.activeCollector.host == null ||
-          this.state.activeCollector.host == '')
-          hostInput = <div className="col-md-2">
-            <div className="form-group">
-              <label>Host</label>
-              <input type="text" placeholder="Host" className="form-control"
-                data-field="host"
-                onChange={this.updateActiveCollector.bind(this)} />
-            </div>
-          </div>
-        else
-          hostInput = <div className="col-md-2">
-            <div className="form-group">
-              <label>Host</label>
-              <input type="text" placeholder="Host" className="form-control"
-                data-field="host"
-                onChange={this.updateActiveCollector.bind(this)} />
-            </div>
-          </div>
-    }
-    else {
-      // name
-      nameInput = <div className="col-md-2">
-        <div className="form-group">
-          <label>Name</label>
-          <input type="text" placeholder="Name" className="form-control"
-            data-field="name"
-            onChange={this.updateActiveCollector.bind(this)} />
-        </div>
+    // name
+    nameInput = <div className="col-md-2">
+      <div className="form-group">
+        <label>Name</label>
+        <input type="text" placeholder="Name" className="form-control"
+          data-field="name"
+          ref="nameInput"
+          value={this.state.activeCollector.name}
+          onChange={this.updateActiveCollector.bind(this)} />
       </div>
+    </div>
 
-      // type
-      typeInput = <div className="col-md-2">
-        <div className="form-group">
-          <label>Type</label>
-          <select className="form-control"
-            data-field="type"
-            onChange={this.updateActiveCollector.bind(this)}>
-            <option>Interval</option>
-            <option>Time</option>
-          </select>
-        </div>
+    // type
+    typeInput = <div className="col-md-2">
+      <div className="form-group">
+        <label>Type</label>
+        <select className="form-control"
+          data-field="type"
+          ref="typeInput"
+          value={this.state.activeCollector.type}
+          onChange={this.updateActiveCollector.bind(this)}>
+          <option>Interval</option>
+          <option>Time</option>
+        </select>
       </div>
+    </div>
 
-      // trigger
-      triggerInput = <div className="col-md-2">
-        <div className="form-group">
-          <label>Trigger</label>
-          <input type="input" placeholder="Trigger" className="form-control"
-            data-field="trigger"
-            onChange={this.updateActiveCollector.bind(this)} />
-        </div>
+    // trigger
+    triggerInput = <div className="col-md-2">
+      <div className="form-group">
+        <label>Trigger</label>
+        <input type="input" placeholder="Trigger" className="form-control"
+          data-field="trigger"
+          ref="triggerInput"
+          value={this.state.activeCollector.trigger}
+          onChange={this.updateActiveCollector.bind(this)} />
       </div>
+    </div>
+    /*
+    triggerInput = <div className="col-md-2">
+      <div className="form-group">
+        <label>Trigger</label>
+        <TimePicker />
+      </div>
+    </div>
+    */
 
-      // cmd
-      cmdInput = <div className="col-md-2">
-        <div className="form-group">
-          <label>Command</label>
-          <input type="text" placeholder="Command" className="form-control"
-            data-field="cmd"
-            onChange={this.updateActiveCollector.bind(this)} />
-        </div>
+    // cmd
+    cmdInput = <div className="col-md-2">
+      <div className="form-group">
+        <label>Command</label>
+        <input type="text" placeholder="Command" className="form-control"
+          data-field="cmd"
+          ref="cmdInput"
+          value={this.state.activeCollector.cmd}
+          onChange={this.updateActiveCollector.bind(this)} />
       </div>
+    </div>
 
-      // param
-      paramInput = <div className="col-md-2">
-        <div className="form-group">
-          <label>Parameter</label>
-          <input type="text" placeholder="Parameter" className="form-control"
-            data-field="param"
-            onChange={this.updateActiveCollector.bind(this)} />
-        </div>
+    // param
+    paramInput = <div className="col-md-2">
+      <div className="form-group">
+        <label>Parameter</label>
+        <input type="text" placeholder="Parameter" className="form-control"
+          data-field="param"
+          ref="paramInput"
+          value={this.state.activeCollector.param}
+          onChange={this.updateActiveCollector.bind(this)} />
       </div>
+    </div>
 
-      // host
-      hostInput = <div className="col-md-2">
-        <div className="form-group">
-          <label>Host</label>
-          <input type="text" placeholder="Host" className="form-control"
-            data-field="host"
-            onChange={this.updateActiveCollector.bind(this)} />
-        </div>
+    // host
+    hostInput = <div className="col-md-2">
+      <div className="form-group">
+        <label>Host</label>
+        <input type="text" placeholder="Host" className="form-control"
+          data-field="host"
+          ref="hostInput"
+          value={this.state.activeCollector.host}
+          onChange={this.updateActiveCollector.bind(this)} />
       </div>
-    }
+    </div>
 
     let createActiveCollector = (line, index) => {
       let date = new Date(line.ts)
@@ -334,23 +238,20 @@ class ActiveCollector extends React.Component {
           { cmdInput }
           { paramInput }
           { hostInput }
-          <div className="col-md-12">
-            <div className="form-group text-right m-b-0">
-              <button className="btn btn-primary waves-effect waves-light" type="submit"
-                onClick={this.saveActiveCollector.bind(this)}> Save </button>
-              <button type="reset" className="btn btn-default waves-effect waves-light m-l-5"
-                onClick={this.clearActiveCollector.bind(this)}> clear </button>
-            </div>
-          </div>
         </div>
         <div className=" p-b-10 p-t-60">
-          <button id="deleteToTable-1"
-            onClick={this.deleteActiveCollector.bind(this)}
+        <button id="deleteToTable-1"
+          onClick={this.editActiveCollector.bind(this)}
+          className="btn btn-danger waves-effect waves-light pull-left m-t-10 m-r-10" >
+          <i className="fa fa-cogs m-r-5"></i>
+          Edit
+        </button>
+          <button id="deleteToTable-2"
+            onClick={this.openActiveCollectorDeleteModal.bind(this)}
             className="btn btn-danger waves-effect waves-light pull-left m-t-10 m-r-10" >
             <i className="fa fa-minus m-r-5"></i>
             Delete
           </button>
-          <button id="addToTable" className="btn btn-default waves-effect waves-light pull-left m-t-10 m-r-10" ><i className="fa fa-plus m-r-5"></i>Clone</button>
           <table id="demo-custom-toolbar"  data-toggle="table"
                      data-toolbar="#demo-delete-row"
                      data-search="true"

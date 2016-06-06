@@ -21,11 +21,18 @@ let state = {
   activeCollector: {},
   activeCollectorList: [],
   activeCollectorChecklist: [],
+  activeCollectorDeleteModal: false,
+
+  // TO DO : Passvice Collector
+  passiveCollectorDeleteModal: false,
 
   // Login
   loginUser: '',
   loginPass: '',
-  loginTries: 0
+  loginTries: 0,
+  loginOldPass: '',
+  loginNewPass: '',
+  loginNewPassRepeat: ''
 }
 
 let AppStore = Reflux.createStore({
@@ -144,11 +151,13 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        method: 'GET',
         success: (data) => {
           console.log(data)
           state.activeCollectorList = data.activeCollectorList
           this.trigger(state)
-        }
+        },
+        dataType: 'json'
       },
     ) // $.ajax
     .fail(err => {
@@ -179,13 +188,29 @@ let AppStore = Reflux.createStore({
     })
   },
 
-  onCloneActiveCollector: async function(activeCollectorId) {
-    // TO DO : clone collector
-
-    this.trigger(state)
-
-    // refresh collector list
-    AppActions.getActiveCollectorList()
+  onEditActiveCollector: async function() {
+    console.log(state.activeCollectorChecklist)
+    let that = this
+    // load the first one in checklist to table
+    let id = state.activeCollectorChecklist[0]
+    // remove _id from activeCollector
+    $.ajax(constants.CONALOG_URL + '/collector/' + id,
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        success: (data) => {
+          console.log(data)
+          state.activeCollector = data
+          state.activeCollector._id = undefined
+          this.trigger(state)
+        },
+        method: 'GET',
+        dataType: 'json'
+      }
+    )
+    .fail(err => {
+      console.log('onEditActiveCollector error:', err)
+    })
   },
 
   onSetActiveCollector: async function(activeCollector) {
@@ -210,7 +235,7 @@ let AppStore = Reflux.createStore({
       method: 'DELETE',
       crossDomain: true,
       xhrFields: { withCredentials: true },
-      data: { list: state.activeCollectorChecklist }
+      data: { list: state.activeCollectorChecklist },
       dataType: 'json'
     })
     .fail(err => {
@@ -223,6 +248,11 @@ let AppStore = Reflux.createStore({
     })
   },
 
+  onSetActiveCollectorDeleteModal: async function(flag) {
+    state.activeCollectorDeleteModal = flag
+    this.trigger(state)
+  },
+
   // passive collector
   onGetPassiveCollectorList: async function() {
     // refresh collector list
@@ -230,6 +260,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        method: 'GET',
         success: (data) => {
           console.log(data)
           state.passiveCollectorList = data.passiveCollectorList
@@ -265,7 +296,7 @@ let AppStore = Reflux.createStore({
     })
   },
 
-  onClonePassiveCollector: async function(passiveCollectorId) {
+  onEditPassiveCollector: async function() {
     // TO DO : clone collector
 
     this.trigger(state)
@@ -309,6 +340,11 @@ let AppStore = Reflux.createStore({
     })
   },
 
+  onSetPassiveCollectorDeleteModal: async function(flag) {
+    state.passiveCollectorDeleteModal = flag
+    this.trigger(state)
+  },
+
   onUpdateLoginUser: async function(user) {
     state.loginUser = user
     this.trigger(state)
@@ -336,6 +372,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        method: 'GET',
         data: json,
         success: data => {
           console.log('onLogin', data)
@@ -365,6 +402,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        method: 'GET',
         success: data => {
           // do nothing
         }
@@ -382,6 +420,53 @@ let AppStore = Reflux.createStore({
 
     state.location = 'Login'
     this.trigger(state)
+  },
+
+  onChangeManagementPassword: async function(info) {
+    console.log('AppStore::onChangeManagementPassword')
+
+    state.loginNewPass = info.newPass;
+    state.loginNewPassRepeat = info.repeatedNewPass;
+
+    if (info.newPass != info.repeatedNewPass) {
+      // directly go back
+      state.managementErr = {msg: 'Error: The passwords that you entered are not identical to each other'}
+      this.trigger(state)
+    }
+
+    let hash = Crypto.createHash('sha256')
+
+    let now = new Date();
+    let salt = now.getTime();
+    hash.update(info.oldPass + salt.toString())
+    let saltedPass = hash.digest('hex')
+
+    $.ajax(constants.CONALOG_URL + '/users/update',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        method: 'POST',
+        success: data => {
+          // do nothing
+        },
+        data: {
+          oldPass: saltedPass,
+          newPass: info.newPass,
+          salt: salt.toString()
+        }
+      }
+    )
+    .fail(err => {
+      // go to login
+      console.log(err)
+      state.location = 'Login'
+      this.trigger(state)
+    })
+    .always(() => {
+      // go back to login
+      state.location = 'Login'
+      this.trigger(state)
+    })
   }
 
 }) // AppStore

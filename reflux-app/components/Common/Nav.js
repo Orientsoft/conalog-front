@@ -71,7 +71,7 @@ class Nav extends React.Component {
               <ul className="nav navbar-nav navbar-right hidden-sm">
                 <li><a className="dropdown-toggle profile" data-toggle="dropdown" href="/about/" >Admin</a>
                   <ul className="dropdown-menu">
-                    <li><a href="#" onClick={ this.onNavClick } data-location='Admin'><i className="fa fa-user m-r-5"></i> Password</a></li>
+                    <li><a href="#" onClick={ this.onNavClick } data-location='Management'><i className="fa fa-user m-r-5"></i> Password</a></li>
                     <li><a href="#" onClick={ this.onLogoutClick } data-location='Logout'><i className="fa fa-power-off m-r-5"></i> Logout</a></li>
                   </ul>
                 </li>
