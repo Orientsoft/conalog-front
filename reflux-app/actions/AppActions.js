@@ -7,6 +7,7 @@ let AppActions = Reflux.createActions({
   // History
   'getHistoryPage': {asyncResult: true},
   'getHistoryPageCount': {asyncResult: true},
+  'getHistory': {asyncResult: true},
   'setHistoryPageNo': {asyncResult: true},
   'setHistoryPageSize': {asyncResult: true},
   'setHistorySort': {asyncResult: true},
@@ -20,6 +21,8 @@ let AppActions = Reflux.createActions({
   'setActiveCollectorChecklist': {asyncResult: true},
   'deleteActiveCollector': {asyncResult: true},
   'setActiveCollectorDeleteModal': {asyncResult: true},
+  'setActiveCollectorTime': {asyncResult: true},
+  'updateActiveCollector': {asyncResult: true},
 
   'getPassiveCollectorList': {asyncResult: true},
   'savePassiveCollector': {asyncResult: true},
@@ -29,6 +32,7 @@ let AppActions = Reflux.createActions({
   'setPassiveCollectorChecklist': {asyncResult: true},
   'deletePassiveCollector': {asyncResult: true},
   'setPassiveCollectorDeleteModal': {asyncResult: true},
+  'updatePassiveCollector': {asyncResult: true},
 
   // Login
   'updateLoginUser': {asyncResult: true},
@@ -37,7 +41,13 @@ let AppActions = Reflux.createActions({
   'logout': {asyncResult: true},
 
   // Management
-  'changeManagementPassword': {asyncResult: true}
+  'changeManagementPassword': {asyncResult: true},
+
+  // status
+  'changeStatusType': {asyncResult: true},
+  'setCollectorSwitch': {asyncResult: true},
+  'getActiveStatusList': {asyncResult: true},
+  'getPassiveStatusList': {asyncResult: true}
 })
 
 export default AppActions

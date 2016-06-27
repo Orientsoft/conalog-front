@@ -1,3 +1,4 @@
+import 'source-map-support/register'
 import React from 'react'
 import ReactDom from 'react-dom'
 

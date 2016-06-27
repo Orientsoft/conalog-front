@@ -1,5 +1,5 @@
 const constants = {
-  CONALOG_URL: 'http://192.168.0.230:19527'
+  STATUS_REFRESH_INTERVAL: 5000
 }
 
 export default constants

@@ -1,6 +1,6 @@
 var config = {
   logLevel: 'debug',
-  conalogHost: '127.0.0.1',
+  conalogHost: '192.168.0.230',
   conalogPort: 19527,
   mongoUrl: 'mongodb://localhost:27017/conalog',
   redisUrl: 'redis://localhost:6379',

@@ -1,8 +1,11 @@
 import React from 'react'
 import ReactDom from 'react-dom'
-import Modal from 'react-modal'
+// import Modal from 'react-modal'
 import _ from 'lodash'
 // import 'antd/dist/antd.css'
+import { message, Modal } from 'antd'
+const confirm = Modal.confirm
+
 import AppActions from './actions/AppActions'
 import AppStore from './stores/AppStore'
 
@@ -27,7 +30,8 @@ class App extends React.Component {
       location: 'Login',
       collectorType: 'Active',
       activeCollectorChecklist: [],
-      activeCollectorDeleteModal: false
+      activeCollectorDeleteModal: false,
+      statusType: 'Active'
     }
   }
 
@@ -40,17 +44,6 @@ class App extends React.Component {
   componentWillUnmount() {
     if (_.isFunction(this.unsubscribe))
       this.unsubscribe()
-  }
-
-  deleteActiveCollector(e) {
-    AppActions.deleteActiveCollector()
-    AppActions.setActiveCollectorDeleteModal(false)
-    e.preventDefault()
-  }
-
-  closeActiveCollectorDeleteModal(e) {
-    AppActions.setActiveCollectorDeleteModal(false)
-    e.preventDefault()
   }
 
   render() {
@@ -127,6 +120,14 @@ class App extends React.Component {
         </div>
       break;
 
+      case 'Status':
+        page = <div>
+          <Nav location={ this.state.location } />
+          <Status statusType={ this.state.statusType } />
+          <Footer />
+        </div>
+      break;
+
       case 'Management':
         page = <div>
           <Nav location= { this.state.location } />
@@ -143,19 +144,6 @@ class App extends React.Component {
     return (
       <div>
         { page }
-        <Modal
-          isOpen={this.state.activeCollectorDeleteModal}
-          style= {modalStyle}
-          >
-          <h1>Confirm Delete Active Collector</h1>
-          <div>
-            <p>Are you sure to delete {this.state.activeCollectorChecklist.length} active collector(s)?</p>
-          </div>
-          <button type="submit" className="btn btn-primary waves-effect waves-light"
-            onClick={this.deleteActiveCollector.bind(this)}> OK </button>
-          <button type="reset" className="btn btn-default waves-effect waves-light m-l-5"
-            onClick={this.closeActiveCollectorDeleteModal.bind(this)}> Cancel </button>
-        </Modal>
       </div>
     )
   }

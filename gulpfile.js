@@ -1,6 +1,8 @@
 var gulp = require('gulp'),
   gUtil = require('gulp-util'),
   source = require('vinyl-source-stream'),
+  buffer = require('vinyl-buffer'),
+  sourcemaps = require('gulp-sourcemaps'),
   rename = require('gulp-rename'),
   browserify = require('browserify'),
   babelify = require('babelify'),
@@ -32,7 +34,10 @@ gulp.task('watch', function() {
     watcher.bundle()
       .on('error', printErrorStack)
       .pipe(source('./reflux-app/entry.js'))
+      .pipe(buffer())
+      .pipe(sourcemaps.init({loadMaps: true}))
       .pipe(rename({dirname: ''}))
+      .pipe(sourcemaps.write('./'))
       .pipe(gulp.dest('./public/js/app/'));
   }
 
@@ -70,7 +75,10 @@ gulp.task('install', function() {
         console.log('conalog-node-red build error: ', err)
       }
     })
-  
+
   gulp.src(['./node_modules/pegjs/lib/**'])
     .pipe(gulp.dest('./public/vendor/pegjs/'))
+
+  gulp.src(['./node_modules/antd/dist/**'])
+    .pipe(gulp.dest('./public/vendor/antd/'))
 });

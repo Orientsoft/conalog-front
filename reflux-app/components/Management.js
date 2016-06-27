@@ -28,9 +28,9 @@ class Login extends React.Component {
     e.preventDefault()
 
     // get value from controls, with refs
-    let oldPass = this.refs.old.getDOMNode().value.trim()
-    let newPass = this.refs.new.getDOMNode().value.trim()
-    let repeatedNewPass = this.refs.repeat.getDOMNode().value.trim()
+    let oldPass = this.refs.old.value.trim()
+    let newPass = this.refs.new.value.trim()
+    let repeatedNewPass = this.refs.repeat.value.trim()
 
     // submit
     AppActions.changeManagementPassword({oldPass: oldPass,
@@ -52,7 +52,7 @@ class Login extends React.Component {
               <div className=""></div>
               <form className="form-horizontal m-t-20" action="#">
                 <div className="form-group ">
-                  <div className="col-xs-12">
+                  <div className="col-xs-24">
                     <input className="form-control"
                       type="password"
                       required=""
@@ -62,7 +62,7 @@ class Login extends React.Component {
                   </div>
                 </div>
                 <div className="form-group">
-                  <div className="col-xs-12">
+                  <div className="col-xs-24">
                     <input
                       className="form-control"
                       type="password"
@@ -73,7 +73,7 @@ class Login extends React.Component {
                   </div>
                 </div>
                 <div className="form-group ">
-                  <div className="col-xs-12">
+                  <div className="col-xs-24">
                     <input
                       className="form-control"
                       type="password"
@@ -83,7 +83,7 @@ class Login extends React.Component {
                   </div>
                 </div>
                 <div className="form-group text-center m-t-40">
-                  <div className="col-xs-12">
+                  <div className="col-xs-24">
                     <button className="btn btn-pink btn-block text-uppercase waves-effect waves-light" type="submit" onClick={this.changeManagementPassword.bind(this)}>Change Password</button>
                   </div>
                 </div>

@@ -8,6 +8,7 @@ class History extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
+      history: {},
       historyPageContent: [],
       historyPageNo: 0,
       historyPageCount: 0,
@@ -59,7 +60,14 @@ class History extends React.Component {
     }
   }
 
+  loadHistoryDetail(e) {
+    // TO DO: get id!
+    let id = e.target.dataset.hid
+    AppActions.getHistory(id)
+  }
+
   render() {
+    let that = this
     let createLine = function(line, index) {
       let d = new Date()
       d.setTime(line.ts)
@@ -81,7 +89,10 @@ class History extends React.Component {
         default:
           context = 'danger'
       }
-      let historyLine = <tr className={ context } key={ index }>
+      let historyLine = <tr className={ context }
+        key={ index }
+        data-hid={ line._id }
+        onClick={ that.loadHistoryDetail }>
         <td>{ line._id }</td>
         <td>{ line.level }</td>
         <td>{ d.toLocaleString() }</td>
@@ -158,7 +169,7 @@ class History extends React.Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col-md-2">
+          <div className="col-md-4">
             <div className="form-group">
               <label>Module</label>
               <select className="form-control">
@@ -170,7 +181,7 @@ class History extends React.Component {
               </select>
             </div>
           </div>
-          <div className="col-md-2">
+          <div className="col-md-4">
             <div className="form-group">
               <label>EventID</label>
               <select className="form-control">
@@ -182,7 +193,7 @@ class History extends React.Component {
               </select>
             </div>
           </div>
-          <div className="col-md-2">
+          <div className="col-md-4">
             <div className="form-group">
               <label>Source</label>
               <select className="form-control">
@@ -194,7 +205,7 @@ class History extends React.Component {
               </select>
             </div>
           </div>
-          <div className="col-md-2">
+          <div className="col-md-4">
             <div className="form-group">
               <label>Type</label>
               <select className="form-control">
@@ -206,7 +217,7 @@ class History extends React.Component {
               </select>
             </div>
           </div>
-          <div className="col-md-2">
+          <div className="col-md-4">
             <div className="form-group">
               <label>From</label>
               <div className="input-group"> <span className="input-group-addon"><i className="fa fa-calendar"></i></span>
@@ -214,7 +225,7 @@ class History extends React.Component {
               </div>
             </div>
           </div>
-          <div className="col-md-2">
+          <div className="col-md-4">
             <div className="form-group">
               <label>To</label>
               <div className="input-group"> <span className="input-group-addon"><i className="fa fa-calendar"></i></span>
@@ -222,31 +233,31 @@ class History extends React.Component {
               </div>
             </div>
           </div>
-          <div className="col-md-1">
+          <div className="col-md-2">
             <div className="checkbox">
               <input id="checkbox0" type="checkbox" />
               <label htmlFor="checkbox0"> Default </label>
             </div>
             </div>
-             <div className="col-md-1">
+             <div className="col-md-2">
              <div className="checkbox">
               <input id="checkbox1" type="checkbox" />
               <label htmlFor="checkbox1"> Default </label>
             </div>
             </div>
-             <div className="col-md-1">
+             <div className="col-md-2">
              <div className="checkbox">
               <input id="checkbox2" type="checkbox" />
               <label htmlFor="checkbox2"> Default </label>
             </div>
           </div>
-          <div className="col-md-1">
+          <div className="col-md-2">
              <div className="checkbox">
               <input id="checkbox3" type="checkbox" />
               <label htmlFor="checkbox3"> Default </label>
             </div>
           </div>
-          <div className="col-md-8">
+          <div className="col-md-16">
             <div className="form-group text-right m-b-0 m-t-20">
               <button className="btn btn-primary waves-effect waves-light" type="submit"> Submit </button>
               <button type="reset" className="btn btn-default waves-effect waves-light m-l-5"> Cancel </button>
@@ -255,7 +266,7 @@ class History extends React.Component {
         </div>
 
         <div className="row">
-          <div className="col-sm-12 p-t-60">
+          <div className="col-sm-24 p-t-60">
 
 
             <table id="demo-custom-toolbar" className="table table-hover">
@@ -280,70 +291,70 @@ class History extends React.Component {
 
         <div className="row p-t-10">
         <div className="card-box">
-          <div className="col-sm-12 p-t-10 ">
+          <div className="col-sm-24 p-t-10 ">
 
             <form className="form-horizontal from-m-b10" role="form">
-              <div className="col-md-6">
+              <div className="col-md-12">
                 <div className="form-group">
-                  <label className="col-sm-3 control-label">Module:</label>
-                  <div className="col-sm-9">
-                    <p className="form-control-static">Parser</p>
+                  <label className="col-sm-6 control-label">Module:</label>
+                  <div className="col-sm-18">
+                    <p className="form-control-static">{ history.module }</p>
                   </div>
                 </div>
                 <div className="form-group">
-                  <label className="col-sm-3 control-label">Source:</label>
-                  <div className="col-sm-9">
-                    <p className="form-control-static">Tploader</p>
+                  <label className="col-sm-6 control-label">Source:</label>
+                  <div className="col-sm-18">
+                    <p className="form-control-static">{ history.source }</p>
                   </div>
                 </div>
                 <div className="form-group">
-                  <label className="col-sm-3 control-label">EventID:</label>
-                  <div className="col-sm-9">
-                    <p className="form-control-static">401</p>
+                  <label className="col-sm-6 control-label">EventID:</label>
+                  <div className="col-sm-18">
+                    <p className="form-control-static">{ history.eventId }</p>
                   </div>
                 </div>
                 <div className="form-group">
-                  <label className="col-sm-3 control-label">Level:</label>
-                  <div className="col-sm-9">
-                    <p className="form-control-static"> Warning</p>
+                  <label className="col-sm-6 control-label">Level:</label>
+                  <div className="col-sm-18">
+                    <p className="form-control-static">{ history.level }</p>
                   </div>
                 </div>
                  <div className="form-group">
-                  <label className="col-sm-3 control-label">User:</label>
-                  <div className="col-sm-9">
-                    <p className="form-control-static"> N/A</p>
+                  <label className="col-sm-6 control-label">User:</label>
+                  <div className="col-sm-18">
+                    <p className="form-control-static">{ history.user }</p>
                   </div>
                 </div>
               </div>
 
-              <div className="col-md-6">
+              <div className="col-md-12">
                 <div className="form-group">
-                  <label className="col-sm-3 control-label">Log Time:</label>
-                  <div className="col-sm-9">
-                    <p className="form-control-static">2016-02-17 15:29:43</p>
+                  <label className="col-sm-6 control-label">Log Time:</label>
+                  <div className="col-sm-18">
+                    <p className="form-control-static">{ new Date(parseInt(history.ts)).toString() }</p>
                   </div>
                 </div>
                 <div className="form-group">
-                  <label className="col-sm-3 control-label">Type:</label>
-                  <div className="col-sm-9">
-                    <p className="form-control-static">Unexpxct Input</p>
+                  <label className="col-sm-6 control-label">Type:</label>
+                  <div className="col-sm-18">
+                    <p className="form-control-static">{ history.type }</p>
                   </div>
                 </div>
                 <div className="form-group">
-                  <label className="col-sm-3 control-label">Machine</label>
-                  <div className="col-sm-9">
-                    <p className="form-control-static">192.168.0.101</p>
+                  <label className="col-sm-6 control-label">Machine</label>
+                  <div className="col-sm-18">
+                    <p className="form-control-static">{ history.machine }</p>
                   </div>
                 </div>
                  <div className="form-group">
-                  <label className="col-sm-3 control-label">Description:</label>
-                  <div className="col-sm-9">
-                    <p className="form-control-static">Unexpxt Input at Line 1</p>
+                  <label className="col-sm-6 control-label">Description:</label>
+                  <div className="col-sm-18">
+                    <p className="form-control-static">{ history.desc }</p>
                   </div>
                 </div>
                 <div className="form-group">
-                  <label className="col-sm-3 control-label"></label>
-                  <div className="col-sm-9">
+                  <label className="col-sm-6 control-label"></label>
+                  <div className="col-sm-18">
                     <p className="form-control-static">
                       <button className="btn btn-primary waves-effect waves-light" type="submit"> Parser Editor </button>
                     </p>

@@ -13,7 +13,7 @@ class Footer extends React.Component {
     return (
       <div className="container p-t-60">
       <footer className="footer">
-                         2015 © Ubold.
+                         2016 © Orientsoft.
                      </footer>
       </div>
     )
