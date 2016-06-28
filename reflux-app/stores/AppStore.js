@@ -20,6 +20,8 @@ let state = {
   historyPageCount: 0,
   historySortField: '',
   historySortDir: '',
+  historyPager: { showSizeChanger: true },
+  historyLoadingFlag: false,
 
   // Active Collector
   activeCollectorUpdated: false,
@@ -62,26 +64,50 @@ let AppStore = Reflux.createStore({
   },
 
   // History
-  onGetHistoryPage: async function() {
-    // Ajax - GET /history/page/[pageNo]
-    $.ajax(conalogUrl + '/history/page/' + state.historyPageNo,
-      {
-        crossDomain: true,
-        xhrFields: { withCredentials: true },
-        success: (data) => {
-          // { pageContent: [] }
-          // console.log('onGetHistoryPage: ', data)
-          state.historyPageContent = data.pageContent
-        },
-        dataType: 'json'
-      }
-    )
-    .fail((err) => {
-      console.log('onGetHistoryPage error:', err)
-      message.error('onGetHistoryPage Error:' + JSON.stringify(err), 5)
+  onGetHistoryPage: async function(pageInfo) {
+    // Ajax - GET /history/page?...
+    console.log(pageInfo)
+
+    AppActions.setHistoryLoadingFlag(true)
+
+    let url = conalogUrl + '/history/page'
+    $.ajax(url, {
+      crossDomain: true,
+      xhrFields: { withCredentials: true },
+      data: pageInfo,
+      success: data => {
+        AppActions.getHistoryCount(pageInfo)
+
+        // data = { pageContent: [] }
+        state.historyPageContent = data.pageContent
+        this.trigger(state)
+      },
+      dataType: 'json'
+    })
+    .fail(err => {
+      message.error('onGetHistoryPage Error: ' + JSON.stringify(err), 5)
     })
     .always(() => {
-      this.trigger(state)
+      AppActions.setHistoryLoadingFlag(false)
+    })
+  },
+
+  onGetHistoryCount: async function(pageInfo) {
+    let url = conalogUrl + '/history/count'
+    $.ajax(url, {
+      crossDomain: true,
+      xhrFields: { withCredentials: true },
+      data: pageInfo,
+      success: data => {
+        // data = { count: 10000 }
+        console.log('onGetHistoryCount', data.count)
+        state.historyPager.total = data.count
+        this.trigger(state)
+      },
+      dataType: 'json'
+    })
+    .fail(err => {
+      message.error('onGetHistoryCount Error: ' + JSON.stringify(err), 5)
     })
   },
 
@@ -176,6 +202,16 @@ let AppStore = Reflux.createStore({
     .always(() => {
       this.trigger(state)
     })
+  },
+
+  onSetHistoryLoadingFlag: async function(flag) {
+    state.historyLoadingFlag = flag
+    this.trigger(state)
+  },
+
+  onSetHistoryPager: async function(pager) {
+    state.historyPager = pager
+    this.trigger(state)
   },
 
   onGetActiveCollectorList: async function() {

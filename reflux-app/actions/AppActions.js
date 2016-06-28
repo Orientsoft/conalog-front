@@ -6,11 +6,14 @@ let AppActions = Reflux.createActions({
 
   // History
   'getHistoryPage': {asyncResult: true},
+  'getHistoryCount': {asyncResult: true},
   'getHistoryPageCount': {asyncResult: true},
   'getHistory': {asyncResult: true},
   'setHistoryPageNo': {asyncResult: true},
   'setHistoryPageSize': {asyncResult: true},
   'setHistorySort': {asyncResult: true},
+  'setHistoryLoadingFlag': {asyncResult: true},
+  'setHistoryPager': {asyncResult: true},
 
   // Collecotr
   'getActiveCollectorList': {asyncResult: true},

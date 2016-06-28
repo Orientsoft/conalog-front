@@ -3,7 +3,8 @@ import ReactDom from 'react-dom'
 // import Modal from 'react-modal'
 import _ from 'lodash'
 // import 'antd/dist/antd.css'
-import { message, Modal } from 'antd'
+let message = require('antd/lib/message')
+let Modal = require('antd/lib/modal')
 const confirm = Modal.confirm
 
 import AppActions from './actions/AppActions'
