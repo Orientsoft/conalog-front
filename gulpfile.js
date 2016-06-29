@@ -1,5 +1,6 @@
 var gulp = require('gulp'),
   gUtil = require('gulp-util'),
+  babel = require('gulp-babel'),
   source = require('vinyl-source-stream'),
   buffer = require('vinyl-buffer'),
   sourcemaps = require('gulp-sourcemaps'),
@@ -48,6 +49,28 @@ gulp.task('watch', function() {
 
   build();
 });
+
+gulp.task('compile', function() {
+  var bundler = browserify({
+    entries: ['./reflux-app/entry.js'],
+    transform: [babelify],
+    debug: false,
+    cache: {},
+    packageCache: {}
+  });
+
+  gUtil.log('Compiling ./reflux-app/entry.js to ./public/js/app/');
+
+  function build() {
+    bundler.bundle()
+      .on('error', printErrorStack)
+      .pipe(source('./reflux-app/entry.js'))
+      .pipe(rename({dirname: ''}))
+      .pipe(gulp.dest('./public/js/app/'));
+  }
+
+  build();
+})
 
 gulp.task('install', function() {
   /*
