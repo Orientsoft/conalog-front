@@ -105,3 +105,6 @@ gulp.task('install', function() {
   gulp.src(['./node_modules/antd/dist/**'])
     .pipe(gulp.dest('./public/vendor/antd/'))
 });
+
+gulp.task('go', ['compile'], function() {
+})
