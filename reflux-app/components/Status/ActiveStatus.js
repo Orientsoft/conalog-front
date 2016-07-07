@@ -67,7 +67,8 @@ class ActiveStatus extends React.Component {
         execCount = line.status.lastActivity.execCounter
         lastActivityTs = new Date(parseInt(line.status.lastActivity.ts)).toLocaleString()
 
-        if (line.status.lastActivity.success) {
+        switch (line.status.lastActivity.status) {
+          case 'Success':
           lastActivityMsg = <td>
             <Tag color="blue">stdout</Tag>
             { line.status.lastActivity.stdout }
@@ -75,10 +76,23 @@ class ActiveStatus extends React.Component {
             <Tag color="green">stderr</Tag>
             { line.status.lastActivity.stderr }
           </td>
-        }
-        else {
+          break
+
+          case 'Error':
+          lastActivityMsg = <td>
+            <Tag color="blue">stdout</Tag>
+            { line.status.lastActivity.stdout }
+            <br />
+            <Tag color="red">stderr</Tag>
+            { line.status.lastActivity.stderr }
+          </td>
+          break
+
+          default:
+          execCount = 0
           lastActivityTs = 'N/A'
-          lastActivityMsg = <td> <Tag color="red"> Pending </Tag> </td>
+          lastActivityMsg = <td> <Tag color="yellow"> Pending </Tag> </td>
+          break
         }
       }
       else {

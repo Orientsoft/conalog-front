@@ -2,6 +2,7 @@ import React from 'react'
 let message = require('antd/lib/message')
 let TimePicker = require('antd/lib/time-picker')
 let Switch = require('antd/lib/switch')
+let Tag = require('antd/lib/tag')
 import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
 import constants from '../../const'
@@ -66,10 +67,19 @@ class PassiveStatus extends React.Component {
         execCount = line.status.lastActivity.execCounter
         lastActivityTs = new Date(parseInt(line.status.lastActivity.ts)).toLocaleString()
 
-        if (line.status.lastActivity.success)
-          lastActivityMsg = line.status.lastActivity.data.toString()
-        else
-          lastActivityMsg = 'Pending'
+        switch (line.status.lastActivity.status) {
+          case 'Success':
+          lastActivityMsg = <td> <Tag color="green"> stdout </Tag> { line.status.lastActivity.data.toString() } </td>
+          break
+
+          case 'Error':
+          lastActivityMsg = <td> <Tag color="red"> stderr </Tag> { line.status.lastActivity.data.toString() } </td>
+          break
+
+          default:
+          lastActivityMsg = <td> <Tag color="yellow"> Pending </Tag> </td>
+          break
+        }
 
         operation = <Switch data-id={line._id}
           data-switch={false}
@@ -80,7 +90,7 @@ class PassiveStatus extends React.Component {
       else {
         execCount = 0
         lastActivityTs = 'N/A'
-        lastActivityMsg = 'N/A'
+        lastActivityMsg = <td> <Tag color="yellow"> N/A </Tag> </td>
 
         operation = <Switch data-id={line._id}
           data-switch={true}
@@ -98,7 +108,7 @@ class PassiveStatus extends React.Component {
           <td>{ line.host }</td>
           <td>{ execCount }</td>
           <td>{ lastActivityTs }</td>
-          <td>{ lastActivityMsg }</td>
+          { lastActivityMsg }
           <td>{ operation }</td>
         </tr>
       else
@@ -110,7 +120,7 @@ class PassiveStatus extends React.Component {
           <td>{ line.host }</td>
           <td>{ execCount }</td>
           <td>{ lastActivityTs }</td>
-          <td>{ lastActivityMsg }</td>
+          { lastActivityMsg }
           <td>{ operation }</td>
         </tr>
 
