@@ -222,8 +222,23 @@ let AppStore = Reflux.createStore({
         xhrFields: { withCredentials: true },
         method: 'GET',
         success: (data) => {
-          console.log(data)
-          state.activeCollectorList = data.activeCollectorList
+          // console.log(data)
+
+          // Issue #1 - offset with timezone
+          // fixed by xd, 2016.07.06
+          let acList = data.activeCollectorList.map(collector => {
+            if (collector.type == 'Interval') {
+              let trigger = parseInt(collector.trigger)
+              let now = new Date()
+              let offset = now.getTimezoneOffset() * 60 * 1000 // convert minute to ms
+              trigger += offset
+              collector.trigger = trigger.toString()
+            }
+
+            return collector
+          })
+
+          state.activeCollectorList = acList
           this.trigger(state)
         },
         dataType: 'json'
@@ -236,7 +251,16 @@ let AppStore = Reflux.createStore({
   },
 
   onSaveActiveCollector: async function(activeCollector) {
-    console.log(activeCollector)
+    // console.log(activeCollector)
+
+    // Issue #1 - offset with timezone
+    // fixed by xd, 2016.07.06
+    if (activeCollector.type == 'Interval') {
+      let now = new Date()
+      let offset = now.getTimezoneOffset() * 60 * 1000 // convert minute to ms
+      activeCollector.trigger -= offset
+    }
+
     // save activeCollector
     $.ajax(conalogUrl + '/collector/active',
       {
@@ -269,10 +293,21 @@ let AppStore = Reflux.createStore({
         crossDomain: true,
         xhrFields: { withCredentials: true },
         success: (data) => {
-          console.log(data)
+          // console.log(data)
           state.activeCollector = data
           state.activeCollector._id = undefined
-          let triggerDate = new Date(parseInt(data.trigger))
+
+          // Issue #1 - offset with timezone
+          // fixed by xd, 2016.07.06
+          let triggerDate
+          if (data.type == 'Interval') {
+            let trigger = parseInt(data.trigger)
+            let now = new Date()
+            let offset = now.getTimezoneOffset() * 60 * 1000 // convert minute to ms
+            trigger += offset
+            triggerDate = new Date(trigger)
+          }
+
           state.activeCollectorTime = triggerDate
           this.trigger(state)
         },
@@ -631,6 +666,20 @@ let AppStore = Reflux.createStore({
         xhrFields: { withCredentials: true },
         method: 'GET',
         success: (data => {
+          // Issue #1 - offset with timezone
+          // fixed by xd, 2016.07.06
+          let acList = data.activeCollectorStatusList.map(status => {
+            if (status.type == 'Interval') {
+              let trigger = parseInt(status.trigger)
+              let now = new Date()
+              let offset = now.getTimezoneOffset() * 60 * 1000 // convert minute to ms
+              trigger += offset
+              status.trigger = trigger.toString()
+            }
+
+            return status
+          })
+
           state.activeStatusList = data.activeCollectorStatusList
           // console.log(state.activeStatusList)
           this.trigger(state)
