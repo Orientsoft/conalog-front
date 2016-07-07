@@ -149,7 +149,7 @@ class PassiveCollector extends React.Component {
     let paramInput
     let hostInput
 
-    nameInput = <div className="col-md-6">
+    nameInput = <div className="ant-col-md-6">
       <Tooltip title="Output Redis channel defaults to pc_[COLLECTOR_NAME]">
         <div className="form-group">
           <label>Name</label>
@@ -162,7 +162,7 @@ class PassiveCollector extends React.Component {
       </Tooltip>
     </div>
 
-    typeInput = <div className="col-md-6">
+    typeInput = <div className="ant-col-md-6">
       <div className="form-group">
         <label>Type</label>
         <select className="form-control"
@@ -176,7 +176,7 @@ class PassiveCollector extends React.Component {
       </div>
     </div>
 
-    paramInput = <div className="col-md-6">
+    paramInput = <div className="ant-col-md-6">
       <Tooltip title="For FILE_TAIL - Absolute file path, for NET_CAP - Listening port">
         <div className="form-group">
           <label>Parameter</label>
@@ -189,7 +189,7 @@ class PassiveCollector extends React.Component {
       </Tooltip>
     </div>
 
-    hostInput = <div className="col-md-6">
+    hostInput = <div className="ant-col-md-6">
       <div className="form-group">
         <label>Host</label>
         <input type="text" placeholder="Host" className="form-control"
@@ -248,7 +248,7 @@ class PassiveCollector extends React.Component {
           { typeInput }
           { paramInput }
           { hostInput }
-          <div className="col-md-24">
+          <div className="ant-col-md-24">
             <div className="form-group text-right m-b-0">
               <button className="btn btn-primary waves-effect waves-light" type="submit"
                 onClick={this.savePassiveCollector.bind(this)}> Save </button>

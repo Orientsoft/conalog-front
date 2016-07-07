@@ -34,7 +34,7 @@ class Flow extends React.Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col-sm-12 p-t-60">
+          <div className="ant-col-sm-12 p-t-60">
             <table id="demo-custom-toolbar"  data-toggle="table"
       										   data-toolbar=""
       										   data-search="false"

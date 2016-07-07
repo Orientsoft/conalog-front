@@ -35,7 +35,7 @@ class Collector extends React.Component {
     return (
       <div className="container">
         <div className="row">
-          <div className="col-lg-24">
+          <div className="ant-col-lg-24">
             <ul id="myTabs" className="nav nav-tabs" role="tablist">
               <li role="presentation"
                 className= { this.props.collectorType === 'Active' ? "active text-center" : "text-center"}

@@ -180,7 +180,7 @@ class ActiveCollector extends React.Component {
     let hostInput
 
     // name
-    nameInput = <div className="col-md-4">
+    nameInput = <div className="ant-col-md-4">
       <Tooltip title="Output Redis channel defaults to ac_[COLLECTOR_NAME]">
         <div className="form-group">
           <label>Name</label>
@@ -194,7 +194,7 @@ class ActiveCollector extends React.Component {
     </div>
 
     // type
-    typeInput = <div className="col-md-4">
+    typeInput = <div className="ant-col-md-4">
       <div className="form-group">
         <label>Type</label>
         <select className="form-control"
@@ -208,7 +208,7 @@ class ActiveCollector extends React.Component {
       </div>
     </div>
 
-    triggerInput = <div className="col-md-4">
+    triggerInput = <div className="ant-col-md-4">
       <div className="form-group">
         <label>Trigger</label><br />
         <TimePicker
@@ -222,7 +222,7 @@ class ActiveCollector extends React.Component {
 
 
     // cmd
-    cmdInput = <div className="col-md-4">
+    cmdInput = <div className="ant-col-md-4">
       <div className="form-group">
         <label>Command</label>
         <input type="text" placeholder="Command" className="form-control"
@@ -234,7 +234,7 @@ class ActiveCollector extends React.Component {
     </div>
 
     // param
-    paramInput = <div className="col-md-4">
+    paramInput = <div className="ant-col-md-4">
       <div className="form-group">
         <label>Parameter</label>
         <input type="text" placeholder="Parameter" className="form-control"
@@ -246,7 +246,7 @@ class ActiveCollector extends React.Component {
     </div>
 
     // host
-    hostInput = <div className="col-md-4">
+    hostInput = <div className="ant-col-md-4">
       <div className="form-group">
         <label>Host</label>
         <input type="text" placeholder="Host" className="form-control"
@@ -324,7 +324,7 @@ class ActiveCollector extends React.Component {
           { cmdInput }
           { paramInput }
           { hostInput }
-          <div className="col-md-24">
+          <div className="ant-col-md-24">
             <div className="form-group text-right m-b-0">
               <button className="btn btn-primary waves-effect waves-light" type="submit"
                 onClick={this.saveActiveCollector.bind(this)}> Save </button>

@@ -54,17 +54,17 @@ class Login extends React.Component {
             <div className="panel-body">
               <form className="form-horizontal m-t-20" action="#">
                 <div className="form-group ">
-                  <div className="col-xs-24">
+                  <div className="ant-col-xs-24">
                     <input className="form-control" type="text" required="" placeholder="Username" onChange={this.updateUser.bind(this)}/>
                   </div>
                 </div>
                 <div className="form-group">
-                  <div className="col-xs-24">
+                  <div className="ant-col-xs-24">
                     <input className="form-control" type="password" required="" placeholder="Password" onChange={this.updatePass.bind(this)}/>
                   </div>
                 </div>
                 <div className="form-group ">
-                  <div className="col-xs-24">
+                  <div className="ant-col-xs-24">
                     <div className="checkbox checkbox-primary">
                       <input id="checkbox-signup" type="checkbox" />
                       <label htmlFor="checkbox-signup"> Remember me </label>
@@ -72,18 +72,18 @@ class Login extends React.Component {
                   </div>
                 </div>
                 <div className="form-group text-center m-t-40">
-                  <div className="col-xs-24">
+                  <div className="ant-col-xs-24">
                     <button className="btn btn-pink btn-block text-uppercase waves-effect waves-light" type="submit" onClick={this.login.bind(this)}>Log In</button>
                   </div>
                 </div>
                 <div className="form-group m-t-30 m-b-0">
-                  <div className="col-sm-24"> <a href="page-recoverpw.html"  className="text-dark"><i className="fa fa-lock m-r-5"></i> Forgot your password?</a> </div>
+                  <div className="ant-col-sm-24"> <a href="page-recoverpw.html"  className="text-dark"><i className="fa fa-lock m-r-5"></i> Forgot your password?</a> </div>
                 </div>
               </form>
             </div>
           </div>
           <div className="row">
-            <div className="col-sm-24 text-center">
+            <div className="ant-col-sm-24 text-center">
               <p>Don't have an account? <a href="page-register.html"  className="text-primary m-l-5"><b>Sign Up</b></a></p>
             </div>
           </div>

@@ -123,7 +123,7 @@ class History extends React.Component {
       <div className="container">
 
         <div className="row">
-          <div className="col-sm-24 p-t-60">
+          <div className="ant-col-sm-24 p-t-60">
           { antdTable }
           </div>
         </div>

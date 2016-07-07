@@ -42,7 +42,7 @@ class Nav extends React.Component {
     else {
       url = <div className="container p-t-60">
         <div className="row p-t-10">
-          <div className="col-sm-12">
+          <div className="ant-col-sm-24">
             <ol className="breadcrumb">
               <li> <a href="#" onClick={ this.onNavClick } data-location='Home'>Conalog</a> </li>
               <li className="active"> { this.props.location } </li>
