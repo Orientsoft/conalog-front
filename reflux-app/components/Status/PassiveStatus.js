@@ -39,7 +39,7 @@ class PassiveStatus extends React.Component {
 
   setPassiveSwitch(switcher) {
     let id = this["data-id"]
-    console.log('setPassiveSwitch', {id: id, switch: switcher, category: 'passive'})
+    // console.log('setPassiveSwitch', {id: id, switch: switcher, category: 'passive'})
     AppActions.setCollectorSwitch({id: id, switch: switcher, category: 'passive'})
   }
 
@@ -51,7 +51,7 @@ class PassiveStatus extends React.Component {
       // lastActivity = { ts, success[, stdout, stderr] }
       let passiveStatus
 
-      console.log('PassiveStatus::render', line.status)
+      // console.log('PassiveStatus::render', line.status)
 
       let date = new Date(line.ts)
       date = date.toLocaleString()

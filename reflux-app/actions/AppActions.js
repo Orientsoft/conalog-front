@@ -14,6 +14,10 @@ let AppActions = Reflux.createActions({
   'setHistorySort': {asyncResult: true},
   'setHistoryLoadingFlag': {asyncResult: true},
   'setHistoryPager': {asyncResult: true},
+  'setHistorySorter': {asyncResult: true},
+  'setHistoryFilters': {asyncResult: true},
+  'setHistoryEventIdFilterFocus': {asyncResult: true},
+  'setHistoryEventIdFilter': {asyncResult: true},
 
   // Collecotr
   'getActiveCollectorList': {asyncResult: true},

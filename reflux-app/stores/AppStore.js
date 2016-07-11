@@ -20,8 +20,12 @@ let state = {
   historyPageCount: 0,
   historySortField: '',
   historySortDir: '',
-  historyPager: { showSizeChanger: true },
+  historyPager: { showSizeChanger: true, current: 1, pageSize: 10 },
+  historySorter: null,
+  historyFilters: null,
   historyLoadingFlag: false,
+  historyEventIdFilter: '',
+  historyEventIdFilterFocus: false,
 
   // Active Collector
   activeCollectorUpdated: false,
@@ -67,6 +71,8 @@ let AppStore = Reflux.createStore({
   onGetHistoryPage: async function(pageInfo) {
     // Ajax - GET /history/page?...
     console.log(pageInfo)
+
+    // TODO Issue #15 : consider filters from inputs
 
     AppActions.setHistoryLoadingFlag(true)
 
@@ -211,6 +217,26 @@ let AppStore = Reflux.createStore({
 
   onSetHistoryPager: async function(pager) {
     state.historyPager = pager
+    this.trigger(state)
+  },
+
+  onSetHistorySorter: async function(sorter) {
+    state.historySorter = sorter
+    this.trigger(state)
+  },
+
+  onSetHistoryFilters: async function(filters) {
+    state.historyFilters = filters
+    this.trigger(state)
+  },
+
+  onSetHistoryEventIdFilterFocus: async function(focus) {
+    state.historyEventIdFilterFocus = focus
+    this.trigger(state)
+  },
+
+  onSetHistoryEventIdFilter: async function(filter) {
+    state.historyEventIdFilter = filter
     this.trigger(state)
   },
 
