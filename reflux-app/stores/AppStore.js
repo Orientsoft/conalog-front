@@ -72,8 +72,6 @@ let AppStore = Reflux.createStore({
     // Ajax - GET /history/page?...
     console.log(pageInfo)
 
-    // TODO Issue #15 : consider filters from inputs
-
     AppActions.setHistoryLoadingFlag(true)
 
     let url = conalogUrl + '/history/page'
@@ -86,7 +84,7 @@ let AppStore = Reflux.createStore({
 
         // data = { pageContent: [] }
         state.historyPageContent = data.pageContent
-        this.trigger(state)
+        // this.trigger(state)
       },
       dataType: 'json'
     })
@@ -560,7 +558,7 @@ let AppStore = Reflux.createStore({
         method: 'GET',
         data: json,
         success: data => {
-          console.log('onLogin', data)
+          // console.log('onLogin', data)
           state.location = "Home"
           this.trigger(state)
         }
