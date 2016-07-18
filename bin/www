@@ -83,7 +83,7 @@ app.use(function(err, req, res, next) {
  */
 
 server.listen(port);
-Red.start();
+// Red.start();
 
 server.on('error', onError);
 server.on('listening', onListening);
