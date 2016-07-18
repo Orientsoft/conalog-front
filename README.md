@@ -1,8 +1,8 @@
-# conalog-front-docker  
+# conalog-front   
 # Depoly  
 Suppose ./ = /home/voyager/xd/docker/conalog-front/  
 Also suppose you have prepared a mongodb docker container named 'mongo' and a redis docker container named 'redis'.  
-You should first setup 'conalog' container before heading to 'conalog-front'.  
+**You should first setup 'conalog' container before heading to 'conalog-front'.**  
 ```  
 git clone https://github.com/Orientsoft/conalog-front.git  
 cd conalog-front  
