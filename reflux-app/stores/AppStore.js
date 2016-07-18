@@ -6,7 +6,7 @@ import $ from 'jquery'
 import sha256 from 'crypto-js/sha256'
 import { message } from 'antd'
 
-let conalogUrl = 'http://' + config.conalogHost + ':' + config.conalogPort.toString()
+let conalogUrl = 'http://' + config.conalogFrontHost + ':' + config.conalogFrontPort.toString()
 
 let state = {
   // Collector
