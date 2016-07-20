@@ -187,7 +187,7 @@ class ActiveCollector extends React.Component {
           <input type="text" placeholder="Name" className="form-control"
             data-field="name"
             ref="nameInput"
-            value={this.state.activeCollector.name}
+            defaultValue={this.state.activeCollector.name}
             onChange={this.updateActiveCollector.bind(this)} />
         </div>
       </Tooltip>
@@ -220,7 +220,6 @@ class ActiveCollector extends React.Component {
       </div>
     </div>
 
-
     // cmd
     cmdInput = <div className="ant-col-md-4">
       <div className="form-group">
@@ -228,7 +227,7 @@ class ActiveCollector extends React.Component {
         <input type="text" placeholder="Command" className="form-control"
           data-field="cmd"
           ref="cmdInput"
-          value={this.state.activeCollector.cmd}
+          defaultValue={this.state.activeCollector.cmd}
           onChange={this.updateActiveCollector.bind(this)} />
       </div>
     </div>
@@ -240,7 +239,7 @@ class ActiveCollector extends React.Component {
         <input type="text" placeholder="Parameter" className="form-control"
           data-field="param"
           ref="paramInput"
-          value={this.state.activeCollector.param}
+          defaultValue={this.state.activeCollector.param}
           onChange={this.updateActiveCollector.bind(this)} />
       </div>
     </div>
@@ -252,7 +251,7 @@ class ActiveCollector extends React.Component {
         <input type="text" placeholder="Host" className="form-control"
           data-field="host"
           ref="hostInput"
-          value={this.state.activeCollector.host}
+          defaultValue={this.state.activeCollector.host}
           onChange={this.updateActiveCollector.bind(this)} />
       </div>
     </div>

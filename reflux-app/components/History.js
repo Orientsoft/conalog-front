@@ -193,7 +193,7 @@ class History extends React.Component {
           <div className="ant-col-sm-4 p-t-60">
             <div className="ant-search-input-wrapper">
               <InputGroup className={searchClass}>
-                <Input placeholder="EventID" data-name="eventid" value={this.state.historyEventIdFilter} onChange={this.handleFilterChange.bind(this)}
+                <Input placeholder="EventID" data-name="eventid" defaultValue={this.state.historyEventIdFilter} onChange={this.handleFilterChange.bind(this)}
                   onFocus={this.handleFilterBlur.bind(this)} onBlur={this.handleFilterBlur.bind(this)} onPressEnter={this.handleSearch.bind(this)} />
                 <div className="ant-input-group-wrap">
                   <Button icon="search" data-name="eventid" className={buttonClass} onClick={this.handleSearch.bind(this)} />
