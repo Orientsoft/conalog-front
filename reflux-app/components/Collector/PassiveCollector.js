@@ -109,7 +109,10 @@ class PassiveCollector extends React.Component {
   }
 
   clearPassiveCollector() {
-    AppActions.setPassiveCollector({})
+    AppActions.setPassiveCollector('name', '')
+    AppActions.setPassiveCollector('type', 'FileTail')
+    AppActions.setPassiveCollector('param', '')
+    AppActions.setPassiveCollector('host', '')
   }
 
   updatePassiveCollector(e) {

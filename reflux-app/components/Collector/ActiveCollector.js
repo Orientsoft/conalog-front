@@ -137,7 +137,11 @@ class ActiveCollector extends React.Component {
   }
 
   clearActiveCollector() {
-    AppActions.setActiveCollector({})
+    AppActions.setActiveCollector('name', '')
+    AppActions.setActiveCollector('type', 'Interval')
+    AppActions.setActiveCollector('cmd', '')
+    AppActions.setActiveCollector('param', '')
+    AppActions.setActiveCollector('host', '')
     AppActions.setActiveCollectorTime(null)
   }
 
@@ -180,6 +184,18 @@ class ActiveCollector extends React.Component {
     let hostInput
 
     // name
+    nameInput = <div className="ant-col-md-4">
+      <Tooltip title="Output Redis channel defaults to ac_[COLLECTOR_NAME]">
+        <div className="form-group">
+          <label>Name</label>
+          <input type="text" placeholder="Name" className="form-control"
+            data-field="name"
+            ref="nameInput"
+            value={this.state.activeCollector.name}
+            onChange={this.updateActiveCollector.bind(this)} />
+        </div>
+      </Tooltip>
+    </div>
 
     // type
     typeInput = <div className="ant-col-md-4">
@@ -305,18 +321,7 @@ class ActiveCollector extends React.Component {
     return (
       <div>
         <div className="row">
-          <div className="ant-col-md-4">
-            <Tooltip title="Output Redis channel defaults to ac_[COLLECTOR_NAME]">
-              <div className="form-group">
-                <label>Name</label>
-                <input type="text" placeholder="Name" className="form-control"
-                  data-field="name"
-                  ref="nameInput"
-                  value={this.state.activeCollector.name}
-                  onChange={this.updateActiveCollector.bind(this)} />
-              </div>
-            </Tooltip>
-          </div>
+          { nameInput }
           { typeInput }
           { triggerInput }
           { cmdInput }
