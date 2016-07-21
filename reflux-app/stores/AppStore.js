@@ -233,7 +233,7 @@ let AppStore = Reflux.createStore({
     this.trigger(state)
   },
 
-  onSetHistoryEventIdFilter: async function(filter) {
+  onSetHistoryEventIdFilter: function(filter) {
     state.historyEventIdFilter = filter
     this.trigger(state)
   },
@@ -344,9 +344,9 @@ let AppStore = Reflux.createStore({
     })
   },
 
-  onSetActiveCollector: async function(activeCollector) {
-    console.log(activeCollector)
-    state.activeCollector = activeCollector
+  onSetActiveCollector: function(field, value) {
+    state.activeCollector[field] = value
+    console.log(state.activeCollector)
     this.trigger(state)
   },
 
@@ -473,9 +473,9 @@ let AppStore = Reflux.createStore({
     })
   },
 
-  onSetPassiveCollector: async function(passiveCollector) {
-    console.log(passiveCollector)
-    state.passiveCollector = passiveCollector
+  onSetPassiveCollector: function(field, value) {
+    state.passiveCollector[field] = value
+    console.log(state.passiveCollector)
     this.trigger(state)
   },
 

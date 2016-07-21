@@ -142,9 +142,9 @@ class ActiveCollector extends React.Component {
   }
 
   updateActiveCollector(e) {
-    // console.log(e.target.dataset.field, e.target.type, e.target.value)
-    AppActions.setActiveCollector(_.set(this.state.activeCollector, e.target.dataset.field, e.target.value))
+    // AppActions.setActiveCollector(_.set(this.state.activeCollector, e.target.dataset.field, e.target.value))
     e.preventDefault()
+    AppActions.setActiveCollector(e.target.dataset.field, e.target.value)
   }
 
   updateActiveCollectorChecklist() {
@@ -180,18 +180,6 @@ class ActiveCollector extends React.Component {
     let hostInput
 
     // name
-    nameInput = <div className="ant-col-md-4">
-      <Tooltip title="Output Redis channel defaults to ac_[COLLECTOR_NAME]">
-        <div className="form-group">
-          <label>Name</label>
-          <input type="text" placeholder="Name" className="form-control"
-            data-field="name"
-            ref="nameInput"
-            defaultValue={this.state.activeCollector.name}
-            onChange={this.updateActiveCollector.bind(this)} />
-        </div>
-      </Tooltip>
-    </div>
 
     // type
     typeInput = <div className="ant-col-md-4">
@@ -227,7 +215,7 @@ class ActiveCollector extends React.Component {
         <input type="text" placeholder="Command" className="form-control"
           data-field="cmd"
           ref="cmdInput"
-          defaultValue={this.state.activeCollector.cmd}
+          value={this.state.activeCollector.cmd}
           onChange={this.updateActiveCollector.bind(this)} />
       </div>
     </div>
@@ -239,7 +227,7 @@ class ActiveCollector extends React.Component {
         <input type="text" placeholder="Parameter" className="form-control"
           data-field="param"
           ref="paramInput"
-          defaultValue={this.state.activeCollector.param}
+          value={this.state.activeCollector.param}
           onChange={this.updateActiveCollector.bind(this)} />
       </div>
     </div>
@@ -251,7 +239,7 @@ class ActiveCollector extends React.Component {
         <input type="text" placeholder="Host" className="form-control"
           data-field="host"
           ref="hostInput"
-          defaultValue={this.state.activeCollector.host}
+          value={this.state.activeCollector.host}
           onChange={this.updateActiveCollector.bind(this)} />
       </div>
     </div>
@@ -317,7 +305,18 @@ class ActiveCollector extends React.Component {
     return (
       <div>
         <div className="row">
-          { nameInput }
+          <div className="ant-col-md-4">
+            <Tooltip title="Output Redis channel defaults to ac_[COLLECTOR_NAME]">
+              <div className="form-group">
+                <label>Name</label>
+                <input type="text" placeholder="Name" className="form-control"
+                  data-field="name"
+                  ref="nameInput"
+                  value={this.state.activeCollector.name}
+                  onChange={this.updateActiveCollector.bind(this)} />
+              </div>
+            </Tooltip>
+          </div>
           { typeInput }
           { triggerInput }
           { cmdInput }

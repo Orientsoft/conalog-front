@@ -115,7 +115,7 @@ class PassiveCollector extends React.Component {
   updatePassiveCollector(e) {
     // console.log(e.target.dataset.field, e.target.type, e.target.value)
     e.preventDefault()
-    AppActions.setPassiveCollector(_.set(this.state.passiveCollector, e.target.dataset.field, e.target.value))
+    AppActions.setPassiveCollector(e.target.dataset.field, e.target.value)
   }
 
   updatePassiveCollectorChecklist() {
@@ -156,7 +156,7 @@ class PassiveCollector extends React.Component {
           <input type="text" placeholder="Name" className="form-control"
             data-field="name"
             ref="nameInput"
-            defaultValue={this.state.passiveCollector.name}
+            value={this.state.passiveCollector.name}
             onChange={this.updatePassiveCollector.bind(this)} />
         </div>
       </Tooltip>
@@ -183,7 +183,7 @@ class PassiveCollector extends React.Component {
           <input type="text" placeholder="Parameter" className="form-control"
             data-field="param"
             ref="paramInput"
-            defaultValue={this.state.passiveCollector.param}
+            value={this.state.passiveCollector.param}
             onChange={this.updatePassiveCollector.bind(this)} />
         </div>
       </Tooltip>
@@ -195,7 +195,7 @@ class PassiveCollector extends React.Component {
         <input type="text" placeholder="Host" className="form-control"
           data-field="host"
           ref="hostInput"
-          defaultValue={this.state.passiveCollector.host}
+          value={this.state.passiveCollector.host}
           onChange={this.updatePassiveCollector.bind(this)} />
       </div>
     </div>
