@@ -265,7 +265,7 @@ class ActiveCollector extends React.Component {
       let triggerDate = new Date(parseInt(line.trigger))
 
       if (idx == -1)
-        activeCollector = <tr key={ index }>
+        activeCollector = <tr key={ line._id.toString() }>
           <td><Checkbox defaultChecked={ false }
             onChange={ this.updateActiveCollectorChecklist }
             data-id={ line._id }
@@ -287,7 +287,7 @@ class ActiveCollector extends React.Component {
           <td>{ line.host }</td>
         </tr>
       else
-        activeCollector = <tr key={ index }>
+        activeCollector = <tr key={ line._id.toString() }>
         <td><Checkbox defaultChecked={ true }
           onChange={ this.updateActiveCollectorChecklist }
           data-id={ line._id }
