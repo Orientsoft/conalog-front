@@ -34,7 +34,7 @@ class Collector extends React.Component {
   render() {
     return (
       <div className="container">
-        <div className="row">
+        <div className="row clbody">
           <div className="ant-col-lg-24">
             <ul id="myTabs" className="nav nav-tabs" role="tablist">
               <li role="presentation"

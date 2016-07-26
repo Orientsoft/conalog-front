@@ -34,7 +34,7 @@ class Status extends React.Component {
   render() {
     return (
       <div className="container">
-        <div className="row">
+        <div className="row clbody">
           <div className="ant-col-lg-24">
             <ul id="myTabs" className="nav nav-tabs" role="tablist">
               <li role="presentation"
@@ -62,7 +62,7 @@ class Status extends React.Component {
                   aria-expanded="false">Passive</a>
               </li>
             </ul>
-            <div id="myTabContent" className="tab-content p-20">
+            <div id="myTabContent" className="tab-content p-t-10">
               <div role="tabpanel"
                 className={ this.props.statusType === 'Active' ? "tab-pane fade active in" : "tab-pane fade " }
                 id="home"

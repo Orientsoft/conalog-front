@@ -131,7 +131,7 @@ class PassiveStatus extends React.Component {
 
     return (
       <div>
-        <div className=" p-b-10 p-t-60">
+        <div className=" p-b-10 p-t-10">
           <table id="demo-custom-toolbar"  data-toggle="table"
                      data-toolbar="#demo-delete-row"
                      data-search="true"
@@ -141,7 +141,7 @@ class PassiveStatus extends React.Component {
                      data-sort-name="id"
                      data-page-list="[5, 10, 20]"
                      data-page-size="5"
-                     data-pagination="true" data-show-pagination-switch="true" className="table table-hover">
+                     data-pagination="true" data-show-pagination-switch="true" className="table table-bordered table-hover">
             <thead>
               <tr>
                 <th data-field="name" data-sortable="true">Name</th>

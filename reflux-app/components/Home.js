@@ -49,9 +49,9 @@ class Home extends React.Component {
               </div>
             </div>
             <div className="ant-col-md-6 text-center">
-              <p className="text-center orient-ico"><i data-nav="Parser" className="fa fa-cogs"></i></p>
-              <div className="caption">
-                <h3 data-nav="Parser" >Parser</h3>
+              <p className="text-center orient-ico disablebtn2"><i data-nav="Parser" className="fa fa-cogs"></i></p>
+              <div className="caption disfontcolor">
+                <h3 data-nav="Parser">Parser</h3>
                 <p> Quickly build parser flows and write parser arammar interactivelv.</p>
               </div>
             </div>

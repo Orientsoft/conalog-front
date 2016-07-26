@@ -189,8 +189,8 @@ class History extends React.Component {
 
     return (
       <div className="container">
-        <div className="row">
-          <div className="ant-col-sm-4 p-t-60">
+        <div className="row clbody">
+          <div className="ant-col-sm-4 p-t-10 p-b-10 pull-right">
             <div className="ant-search-input-wrapper">
               <InputGroup className={searchClass}>
                 <Input placeholder="EventID" data-name="eventid" defaultValue={this.state.historyEventIdFilter} onChange={this.handleFilterChange.bind(this)}
@@ -201,14 +201,10 @@ class History extends React.Component {
               </InputGroup>
             </div>
           </div>
-        </div>
-
-        <div className="row">
-          <div className="ant-col-sm-24 p-t-60">
+          <div className="ant-col-sm-24 p-t-10">
           { antdTable }
           </div>
         </div>
-
       </div>
     )
   }

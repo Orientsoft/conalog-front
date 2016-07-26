@@ -64,7 +64,7 @@ class Nav extends React.Component {
               <ul className="nav navbar-nav">
                 <li><a className={ this.props.location == 'Home' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='Home'>Home</a></li>
                 <li><a className={ this.props.location == 'Collector' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='Collector'>Collector</a></li>
-                <li><a className={ this.props.location == 'Parser' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='Parser' disabled>Parser</a></li>
+                <li className="disablebtn"><a className={ this.props.location == 'Parser' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='Parser' disabled="disabled">Parser</a></li>
                 <li><a className={ this.props.location == 'Status' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='Status'>Status</a></li>
                 <li><a className={ this.props.location == 'History' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='History'>History</a></li>
               </ul>

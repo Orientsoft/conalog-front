@@ -320,7 +320,7 @@ class ActiveCollector extends React.Component {
 
     return (
       <div>
-        <div className="row">
+        <div className="row clhead">
           { nameInput }
           { typeInput }
           { triggerInput }
@@ -328,27 +328,15 @@ class ActiveCollector extends React.Component {
           { paramInput }
           { hostInput }
           <div className="ant-col-md-24">
-            <div className="form-group text-right m-b-0">
+            <div className="form-group text-right m-t-20">
               <button className="btn btn-primary waves-effect waves-light" type="submit"
                 onClick={this.saveActiveCollector.bind(this)}> Save </button>
-              <button type="reset" className="btn btn-default waves-effect waves-light m-l-5"
+              <button type="reset" className="btn btn-default waves-effect waves-light m-l-10"
                 onClick={this.clearActiveCollector.bind(this)}> clear </button>
             </div>
           </div>
         </div>
         <div className=" p-b-10 p-t-60">
-          <button id="deleteToTable-1"
-            onClick={this.editActiveCollector.bind(this)}
-            className="btn btn-primary waves-effect waves-light pull-left m-t-10 m-r-10" >
-            <i className="fa fa-cogs m-r-5"></i>
-            Edit
-          </button>
-          <button id="deleteToTable-2"
-            onClick={this.showDeleteConfirm.bind(this)}
-            className="btn btn-danger waves-effect waves-light pull-left m-t-10 m-r-10" >
-            <i className="fa fa-minus m-r-5"></i>
-            Delete
-          </button>
           <table id="demo-custom-toolbar"  data-toggle="table"
                      data-toolbar="#demo-delete-row"
                      data-search="true"
@@ -358,7 +346,7 @@ class ActiveCollector extends React.Component {
                      data-sort-name="id"
                      data-page-list="[5, 10, 20]"
                      data-page-size="5"
-                     data-pagination="true" data-show-pagination-switch="true" className="table table-hover">
+                     data-pagination="true" data-show-pagination-switch="true" className="table table-bordered table-hover">
             <thead>
               <tr>
                 <th data-field="state" data-checkbox="true"></th>
@@ -375,6 +363,18 @@ class ActiveCollector extends React.Component {
               { activeCollectorTable }
             </tbody>
           </table>
+          <button id="deleteToTable-1"
+            onClick={this.editActiveCollector.bind(this)}
+            className="btn btn-primary waves-effect waves-light pull-left m-t-10 m-r-10" >
+            <i className="fa fa-cogs m-r-5"></i>
+            Edit
+          </button>
+          <button id="deleteToTable-2"
+            onClick={this.showDeleteConfirm.bind(this)}
+            className="btn btn-danger waves-effect waves-light pull-left m-t-10 m-r-10" >
+            <i className="fa fa-minus m-r-5"></i>
+            Delete
+          </button>
         </div>
       </div>
     )
