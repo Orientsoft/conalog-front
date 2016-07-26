@@ -1,9 +1,9 @@
 var config = {
   logLevel: 'info',
   conalogHost: '192.168.0.230',
-  conalogPort: 19537,
-  mongoUrl: 'mongodb://127.0.0.1:27017/conalog',
-  redisUrl: 'redis://127.0.0.1:6379',
+  conalogPort: 19527,
+  mongoUrl: 'mongodb://mongo:27017/conalog',
+  redisUrl: 'redis://redis:6379',
   activeCollectorPrefix: 'ac_',
   passiveCollectorPrefix: 'pc_',
   apiGatewayHost: 'apigateway',
