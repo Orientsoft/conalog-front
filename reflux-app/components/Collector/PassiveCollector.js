@@ -126,10 +126,10 @@ class PassiveCollector extends React.Component {
 
   updatePassiveCollectorChecklist() {
     let id = this["data-id"]
-    let idx = _.indexOf(that.state.passiveCollectorChecklist, id)
+    let idx = _.indexOf(this.that.state.passiveCollectorChecklist, id)
     console.log('updateActiveCollectorChecklist', id, idx)
 
-    let checklist = that.state.passiveCollectorChecklist
+    let checklist = this.that.state.passiveCollectorChecklist
     if (idx == -1)
       checklist.push(id)
     else
