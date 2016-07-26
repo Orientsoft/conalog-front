@@ -104,6 +104,7 @@ class PassiveStatus extends React.Component {
           <td>{ line.name }</td>
           <td>{ date }</td>
           <td>{ line.type }</td>
+          <td>{ (line.cmd == '') ? 'N/A' : line.cmd }</td>
           <td>{ line.param }</td>
           <td>{ line.host }</td>
           <td>{ execCount }</td>
@@ -116,6 +117,7 @@ class PassiveStatus extends React.Component {
           <td>{ line.name }</td>
           <td>{ date }</td>
           <td>{ line.type }</td>
+          <td>{ (line.cmd == '') ? 'N/A' : line.cmd }</td>
           <td>{ line.param }</td>
           <td>{ line.host }</td>
           <td>{ execCount }</td>
@@ -147,6 +149,7 @@ class PassiveStatus extends React.Component {
                 <th data-field="name" data-sortable="true">Name</th>
                 <th data-field="date" data-sortable="true" data-formatter="dateFormatter">Date</th>
                 <th data-field="amount" data-align="center" data-sortable="true" data-sorter="">Type</th>
+                <th data-field="cmd" data-align="center" data-sortable="true" data-sorter="">Command</th>
                 <th data-field="parameter" data-align="center" data-sortable="true" data-sorter="">Parameter</th>
                 <th data-field="host" data-align="center" data-sortable="true" data-sorter="">Host</th>
                 <th data-field="execCount" data-align="center" data-sortable="true" data-sorter="">Exec Count</th>
