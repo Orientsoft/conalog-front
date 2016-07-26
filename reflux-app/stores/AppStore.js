@@ -36,7 +36,7 @@ let state = {
 
   // Passvice Collector
   passiveCollectorUpdated: false,
-  passiveCollector: {},
+  passiveCollector: { type: 'LongScript' },
   passiveCollectorList: [],
   passiveCollectorChecklist: [],
 

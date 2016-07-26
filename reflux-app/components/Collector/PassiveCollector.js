@@ -14,7 +14,7 @@ class PassiveCollector extends React.Component {
     super(props)
     this.state = {
       passiveCollectorFlag: false,
-      passiveCollector: {},
+      passiveCollector: { type: 'LongScript' },
       passiveCollectorList: [],
       passiveCollectorChecklist: []
     }
@@ -60,6 +60,7 @@ class PassiveCollector extends React.Component {
         that.state.passiveCollector = {
           name: that.refs.nameInput.value.trim(),
           type: that.refs.typeInput.value.trim(),
+          cmd: that.refs.cmdInput.value.trim(),
           param: that.refs.paramInput.value.trim(),
           host: that.refs.hostInput.value.trim()
         }
@@ -101,6 +102,7 @@ class PassiveCollector extends React.Component {
     this.state.passiveCollector = {
       name: this.refs.nameInput.value.trim(),
       type: this.refs.typeInput.value.trim(),
+      cmd: this.refs.cmdInput.value.trim(),
       param: this.refs.paramInput.value.trim(),
       host: this.refs.hostInput.value.trim()
     }
@@ -110,7 +112,8 @@ class PassiveCollector extends React.Component {
 
   clearPassiveCollector() {
     AppActions.setPassiveCollector('name', '')
-    AppActions.setPassiveCollector('type', 'FileTail')
+    AppActions.setPassiveCollector('type', 'LongScript')
+    AppActions.setPassiveCollector('cmd', '')
     AppActions.setPassiveCollector('param', '')
     AppActions.setPassiveCollector('host', '')
   }
@@ -123,10 +126,10 @@ class PassiveCollector extends React.Component {
 
   updatePassiveCollectorChecklist() {
     let id = this["data-id"]
-    let idx = _.indexOf(this.that.state.passiveCollectorChecklist, id)
+    let idx = _.indexOf(that.state.passiveCollectorChecklist, id)
     console.log('updateActiveCollectorChecklist', id, idx)
 
-    let checklist = this.that.state.passiveCollectorChecklist
+    let checklist = that.state.passiveCollectorChecklist
     if (idx == -1)
       checklist.push(id)
     else
@@ -147,12 +150,16 @@ class PassiveCollector extends React.Component {
   }
 
   render() {
+    let inputLine
     let nameInput
     let typeInput
+    let cmdInput
     let paramInput
     let hostInput
 
-    nameInput = <div className="ant-col-md-6">
+    let colClassName = "ant-col-md-4"
+
+    nameInput = <div className={colClassName}>
       <Tooltip title="Output Redis channel defaults to pc_[COLLECTOR_NAME]">
         <div className="form-group">
           <label>Name</label>
@@ -165,7 +172,7 @@ class PassiveCollector extends React.Component {
       </Tooltip>
     </div>
 
-    typeInput = <div className="ant-col-md-6">
+    typeInput = <div className={colClassName}>
       <div className="form-group">
         <label>Type</label>
         <select className="form-control"
@@ -173,13 +180,14 @@ class PassiveCollector extends React.Component {
           ref="typeInput"
           value={this.state.passiveCollector.type}
           onChange={this.updatePassiveCollector.bind(this)}>
+          <option>LongScript</option>
           <option>FileTail</option>
           { /* <option>NetCap</option> */ }
         </select>
       </div>
     </div>
 
-    paramInput = <div className="ant-col-md-6">
+    paramInput = <div className={colClassName}>
       <Tooltip title="For FILE_TAIL - Absolute file path, for NET_CAP - Listening port">
         <div className="form-group">
           <label>Parameter</label>
@@ -192,7 +200,7 @@ class PassiveCollector extends React.Component {
       </Tooltip>
     </div>
 
-    hostInput = <div className="ant-col-md-6">
+    hostInput = <div className={colClassName}>
       <div className="form-group">
         <label>Host</label>
         <input type="text" placeholder="Host" className="form-control"
@@ -203,6 +211,26 @@ class PassiveCollector extends React.Component {
       </div>
     </div>
 
+    cmdInput = <div className={colClassName}>
+      <div className="form-group">
+        <label>Command</label>
+        <input type="text" placeholder="Command" className="form-control"
+          disabled={(this.state.passiveCollector.type == "LongScript") ? false : true}
+          data-field="cmd"
+          ref="cmdInput"
+          value={(this.state.passiveCollector.type == "LongScript") ? this.state.passiveCollector.cmd : ""}
+          onChange={this.updatePassiveCollector.bind(this)} />
+      </div>
+    </div>
+
+    inputLine = <div className="row">
+        { nameInput }
+        { typeInput }
+        { cmdInput }
+        { paramInput }
+        { hostInput }
+      </div>
+
     let createPassiveCollector = (line, index) => {
       let date = new Date(line.ts)
       date = date.toLocaleString()
@@ -211,7 +239,7 @@ class PassiveCollector extends React.Component {
       let passiveCollector
 
       if (idx == -1)
-        passiveCollector = <tr key={ index }>
+        passiveCollector = <tr key={ line._id }>
           <td><Checkbox defaultChecked={ false }
             onChange={this.updatePassiveCollectorChecklist}
             data-id={ line._id }
@@ -221,11 +249,12 @@ class PassiveCollector extends React.Component {
           <td>{ line.name }</td>
           <td>{ date }</td>
           <td>{ line.type }</td>
+          <td>{ (line.cmd == '') ? 'N/A' : line.cmd }</td>
           <td>{ line.param }</td>
           <td>{ line.host }</td>
         </tr>
       else
-        passiveCollector = <tr key={ index }>
+        passiveCollector = <tr key={ line._id }>
           <td><Checkbox defaultChecked={ true }
             onChange={this.updatePassiveCollectorChecklist}
             data-id={ line._id }
@@ -235,6 +264,7 @@ class PassiveCollector extends React.Component {
           <td>{ line.name }</td>
           <td>{ date }</td>
           <td>{ line.type }</td>
+          <td>{ (line.cmd == '') ? 'N/A' : line.cmd }</td>
           <td>{ line.param }</td>
           <td>{ line.host }</td>
         </tr>
@@ -246,11 +276,8 @@ class PassiveCollector extends React.Component {
 
     return (
       <div>
+        { inputLine }
         <div className="row">
-          { nameInput }
-          { typeInput }
-          { paramInput }
-          { hostInput }
           <div className="ant-col-md-24">
             <div className="form-group text-right m-b-0">
               <button className="btn btn-primary waves-effect waves-light" type="submit"
@@ -289,6 +316,7 @@ class PassiveCollector extends React.Component {
                 <th data-field="name" data-sortable="true">Name</th>
                 <th data-field="date" data-sortable="true" data-formatter="dateFormatter">Date</th>
                 <th data-field="amount" data-align="center" data-sortable="true" data-sorter="">Type</th>
+                <th data-field="cmd" data-align="center" data-sortable="true" data-sorter="">Command</th>
                 <th data-field="parameter" data-align="center" data-sortable="true" data-sorter="">Parameter</th>
                 <th data-field="host" data-align="center" data-sortable="true" data-sorter="">Host</th>
               </tr>
