@@ -157,9 +157,7 @@ class PassiveCollector extends React.Component {
     let paramInput
     let hostInput
 
-    let colClassName = "ant-col-md-4"
-
-    nameInput = <div className={colClassName}>
+    nameInput = <div className="ant-col-md-5">
       <Tooltip title="Output Redis channel defaults to pc_[COLLECTOR_NAME]">
         <div className="form-group">
           <label>Name</label>
@@ -172,7 +170,7 @@ class PassiveCollector extends React.Component {
       </Tooltip>
     </div>
 
-    typeInput = <div className={colClassName}>
+    typeInput = <div className="ant-col-md-4">
       <div className="form-group">
         <label>Type</label>
         <select className="form-control"
@@ -187,7 +185,7 @@ class PassiveCollector extends React.Component {
       </div>
     </div>
 
-    paramInput = <div className={colClassName}>
+    paramInput = <div className="ant-col-md-5">
       <Tooltip title="For FILE_TAIL - Absolute file path, for NET_CAP - Listening port">
         <div className="form-group">
           <label>Parameter</label>
@@ -200,7 +198,7 @@ class PassiveCollector extends React.Component {
       </Tooltip>
     </div>
 
-    hostInput = <div className={colClassName}>
+    hostInput = <div className="ant-col-md-5">
       <div className="form-group">
         <label>Host</label>
         <input type="text" placeholder="Host" className="form-control"
@@ -211,7 +209,7 @@ class PassiveCollector extends React.Component {
       </div>
     </div>
 
-    cmdInput = <div className={colClassName}>
+    cmdInput = <div className="ant-col-md-5">
       <div className="form-group">
         <label>Command</label>
         <input type="text" placeholder="Command" className="form-control"
