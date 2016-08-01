@@ -23,7 +23,7 @@ class Login extends React.Component {
       this.unsubscribe()
   }
 
-  changeManagementPassword() {
+  changeManagementPassword(e) {
     // prevent default submit
     e.preventDefault()
 

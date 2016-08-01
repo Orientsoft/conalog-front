@@ -47,6 +47,7 @@ let state = {
   loginOldPass: '',
   loginNewPass: '',
   loginNewPassRepeat: '',
+  sessionId: '',
 
   // Status
   activeStatusList: [],
@@ -78,6 +79,7 @@ let AppStore = Reflux.createStore({
     $.ajax(url, {
       crossDomain: true,
       xhrFields: { withCredentials: true },
+      beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
       data: pageInfo,
       success: data => {
         AppActions.getHistoryCount(pageInfo)
@@ -101,6 +103,7 @@ let AppStore = Reflux.createStore({
     $.ajax(url, {
       crossDomain: true,
       xhrFields: { withCredentials: true },
+      beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
       data: pageInfo,
       success: data => {
         // data = { count: 10000 }
@@ -121,6 +124,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         method: 'GET',
         success: (data) => {
           // success - { pageCount: 10 }
@@ -144,6 +148,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         method: 'GET',
         dataType: 'json',
         success: (data) => {
@@ -167,6 +172,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         method: 'POST',
         data: { pageSize: pageSize },
         success: (data) => {
@@ -188,6 +194,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         method: 'POST',
         data: {sortField: field, sortDir: dir},
         success: (data) => {
@@ -244,6 +251,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         method: 'GET',
         success: (data) => {
           // console.log(data)
@@ -290,6 +298,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         success: (data) => {
           // do nothing
         },
@@ -316,6 +325,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         success: (data) => {
           // console.log(data)
           state.activeCollector = data
@@ -366,6 +376,7 @@ let AppStore = Reflux.createStore({
       method: 'DELETE',
       crossDomain: true,
       xhrFields: { withCredentials: true },
+      beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
       data: { list: state.activeCollectorChecklist }
     })
     .fail(err => {
@@ -394,6 +405,7 @@ let AppStore = Reflux.createStore({
       method: 'PUT',
       crossDomain: true,
       xhrFields: { withCredentials: true },
+      beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
       data: activeCollector,
       success: (data) => {
         // refresh list
@@ -412,6 +424,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         method: 'GET',
         dataType: 'json',
         success: (data) => {
@@ -434,6 +447,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         success: (data) => {
           AppActions.getPassiveCollectorList()
         },
@@ -458,6 +472,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         success: (data) => {
           console.log(data)
           state.passiveCollector = data
@@ -495,6 +510,7 @@ let AppStore = Reflux.createStore({
       method: 'DELETE',
       crossDomain: true,
       xhrFields: { withCredentials: true },
+      beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
       data: { list: state.passiveCollectorChecklist },
       success: (data) => {
         state.passiveCollectorChecklist = []
@@ -517,6 +533,7 @@ let AppStore = Reflux.createStore({
       method: 'PUT',
       crossDomain: true,
       xhrFields: { withCredentials: true },
+      beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
       data: passiveCollector,
       success: (data) => {
         // refresh list
@@ -555,10 +572,12 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         method: 'GET',
         data: json,
         success: data => {
           // console.log('onLogin', data)
+          state.sessionId = data
           state.location = "Home"
           this.trigger(state)
         }
@@ -578,6 +597,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         method: 'GET',
         success: data => {
           // do nothing
@@ -610,18 +630,16 @@ let AppStore = Reflux.createStore({
       this.trigger(state)
     }
 
-    let hash = Crypto.createHash('sha256')
-
     let now = new Date();
-    let salt = now.getTime();
-    hash.update(info.oldPass + salt.toString())
-    let saltedPass = hash.digest('hex')
+    let salt = now.getTime().toString();
+    let saltedPass = sha256(state.loginPass + salt).toString()
 
     $.ajax(conalogUrl + '/users/update',
       {
         crossDomain: true,
-        xhrFields: { withCredentials: true },
+        // xhrFields: { withCredentials: true },
         method: 'POST',
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         success: data => {
           // do nothing
         },
@@ -666,6 +684,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         method: 'GET',
         success: (data => {
           // do nothing
@@ -688,6 +707,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         method: 'GET',
         success: (data => {
           // Issue #1 - offset with timezone
@@ -719,6 +739,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
+        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         method: 'GET',
         success: (data => {
           state.passiveStatusList = data.passiveCollectorStatusList
