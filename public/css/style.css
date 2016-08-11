@@ -33,6 +33,9 @@ body,html{
 .form-group{
 	margin-left: 10px;
 }
+table.table-bordered tbody th, table.table-bordered tbody td{
+	max-width: 180px;
+}
 .ant-time-picker-input {
   position: relative;
   display: inline-block;
