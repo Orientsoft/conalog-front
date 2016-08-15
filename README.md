@@ -17,6 +17,7 @@ var config = {
   logLevel: 'info', (may be debug, info, warning, error)
   conalogHost: '192.168.0.230', (set to user browser address)
   conalogPort: 19527,
+  conalogFrontPort: 9527,
   mongoUrl: 'mongodb://mongo:27017/conalog', (don't touch this if you use docker)
   redisUrl: 'redis://redis:6379', (don't touch this if you use docker)
   activeCollectorPrefix: 'ac_', (the following configs are reserved, don't touch)
