@@ -152,7 +152,7 @@ class PassiveStatus extends React.Component {
                 <th data-field="cmd" data-align="center" data-sortable="true" data-sorter="">Command</th>
                 <th data-field="parameter" data-align="center" data-sortable="true" data-sorter="">Parameter</th>
                 <th data-field="host" data-align="center" data-sortable="true" data-sorter="">Host</th>
-                <th data-field="execCount" data-align="center" data-sortable="true" data-sorter="">Exec Count</th>
+                <th data-field="execCount" data-align="center" data-sortable="true" data-sorter="">Msg Count</th>
                 <th data-field="lastTs" data-align="center" data-sortable="true" data-sorter="">Last Activity Time</th>
                 <th data-field="lastMsg" data-align="center" data-sortable="true" data-sorter="">Last Activity Message</th>
                 <th data-field="operation" data-align="center" data-sortable="true" data-sorter="">Operation</th>
