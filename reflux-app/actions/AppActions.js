@@ -54,7 +54,19 @@ let AppActions = Reflux.createActions({
   'changeStatusType': {asyncResult: true},
   'setCollectorSwitch': {asyncResult: true},
   'getActiveStatusList': {asyncResult: true},
-  'getPassiveStatusList': {asyncResult: true}
+  'getPassiveStatusList': {asyncResult: true},
+
+  // Cert
+  'getCert': {asyncResult: true},
+  'listCert': {asyncResult: true},
+  'setCertLoadingFlag': {asyncResult: true},
+  'setCurrentCert': {sync: true},
+  'updateCurrentCert': {sync: true},
+  'saveCurrentCert': {asyncResult: true},
+  'deleteCurrentCert': {asyncResult: true},
+  'clearCurrentCert': {asyncResult: true},
+  'setCertAddModalVisible': {asyncResult: true},
+  'setCertEditModalVisible': {asyncResult: true}
 })
 
 export default AppActions

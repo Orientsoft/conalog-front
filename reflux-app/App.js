@@ -14,6 +14,7 @@ import Nav from './components/Common/Nav'
 import Footer from './components/Common/Footer'
 
 import Home from './components/Home'
+import Cert from './components/Cert'
 import Collector from './components/Collector'
 import Flow from './components/Flow'
 import Parser from './components/Parser'
@@ -80,6 +81,14 @@ class App extends React.Component {
       case 'Login':
         page = <div><Login /></div>
       break;
+
+      case 'Cert':
+        page = <div>
+          <Nav location={ this.state.location } />
+          <Cert />
+          <Footer />
+        </div>
+      break
 
       case 'Collector':
         page = <div>

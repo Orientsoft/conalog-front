@@ -51,7 +51,14 @@ let state = {
 
   // Status
   activeStatusList: [],
-  statusType: 'Active'
+  statusType: 'Active',
+
+  // Cert
+  cert: {},
+  certList: [],
+  certLoadingFlag: false,
+  addModalVisible: false,
+  editModalVisible: false
 }
 
 let AppStore = Reflux.createStore({
@@ -750,7 +757,129 @@ let AppStore = Reflux.createStore({
       .fail(err => {
         message.error('onGetPassiveStatusList Error: ' + JSON.stringify(err), 5)
       })
+  },
+
+  onGetCert(host) {
+    $.ajax(conalogUrl + '/cert/' + host,
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'GET',
+        success: data => {
+          state.cert = data
+          this.trigger(state)
+        }
+      })
+      .fail(err => {
+        message.error('onGetCert Error: ' + JSON.stringify(err), 5)
+      })
+  },
+
+  onListCert() {
+    $.ajax(conalogUrl + '/cert',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'GET',
+        success: data => {
+          state.certList = data
+          this.trigger(state)
+        }
+      })
+      .fail(err => {
+        message.error('onListCert Error: ' + JSON.stringify(err), 5)
+      })
+  },
+
+  onSetCertLoadingFlag(flag) {
+    state.certLoadingFlag = flag
+    this.trigger(state)
+  },
+
+  onSetCurrentCert(cert) {
+    // TODO : check fields
+
+    state.cert = cert
+    this.trigger(state)
+  },
+
+  onUpdateCurrentCert(fields) {
+    // TODO : check fields
+
+    _assign(state.cert, fields)
+    this.trigger(state)
+  },
+
+  onSaveCurrentCert() {
+    let method = ''
+    if (state.cert._id !== undefined)
+      method = 'PUT'
+    else
+      method = 'POST'
+
+    $.ajax(conalogUrl + '/cert',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: method,
+        data: cert,
+        success: data => {
+          // do nothing
+        }
+      })
+      .fail(err => {
+        message.error('onListCert Error: ' + JSON.stringify(err), 5)
+      })
+  },
+
+  onDeleteCurrentCert() {
+    $.ajax(conalogUrl + '/cert/' + cert.host,
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'DELETE',
+        success: data => {
+          // do nothing
+        }
+      })
+      .fail(err => {
+        message.error('onListCert Error: ' + JSON.stringify(err), 5)
+      })
+  },
+
+  onClearCurrentCert() {
+    state.cert = {}
+    this.trigger(state)
+  },
+
+  onSetCertAddModalVisible(visible) {
+    state.certAddModalVisible = true
+    this.trigger(state)
+  },
+
+  onSetCertEditModalVisible(visible) {
+    state.certEditModalVisible = true
+    this.trigger(state)
+  },
+
+  /*
+  onSetCertDeleteModalVisible(visible) {
+    state.certDeleteModalVisible = true
+    this.trigger(state)
   }
+  */
 
 }) // AppStore
 

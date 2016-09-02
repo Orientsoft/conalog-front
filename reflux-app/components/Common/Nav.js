@@ -63,6 +63,7 @@ class Nav extends React.Component {
             <div className="navbar-collapse collapse " role="navigation" aria-expanded="true">
               <ul className="nav navbar-nav">
                 <li><a className={ this.props.location == 'Home' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='Home'>Home</a></li>
+                <li><a className={ this.props.location == 'Cert' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='Cert'>Cert</a></li>
                 <li><a className={ this.props.location == 'Collector' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='Collector'>Collector</a></li>
                 <li className="disablebtn"><a className={ this.props.location == 'Parser' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='Parser' disabled="disabled">Parser</a></li>
                 <li><a className={ this.props.location == 'Status' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='Status'>Status</a></li>
