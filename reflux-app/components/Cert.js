@@ -21,33 +21,43 @@ class Cert extends React.Component {
   }
 
   componentDidMount() {
+    /*
     this.unsubscribe = AppStore.listen(function(state) {
       this.setState(state);
     }.bind(this));
-
+    */
     AppActions.listCert()
   }
 
   componentWillUnmount() {
+    /*
     if (_.isFunction(this.unsubscribe))
       this.unsubscribe();
+    */
   }
 
   onItemAdd(e) {
+    console.log('onItemAdd')
+
     AppActions.clearCurrentCert()
     AppActions.setCertAddModalVisible(true)
   }
 
   onAddOk() {
-    AppActions.saveCurrentCert()
-    AppActions.clearCurrentCert()
-    AppActions.listCert()
-    AppActions.setCertEditModalVisible(false)
+    AppActions.saveCurrentCert.triggerAsync()
+      .then(() => {
+        AppActions.clearCurrentCert()
+        return AppActions.listCert()
+      })
+      .catch(err => {
+        // do nothing
+      })
+    AppActions.setCertAddModalVisible(false)
   }
 
   onAddCancel() {
     AppActions.clearCurrentCert()
-    AppActions.setCertEditModalVisible(false)
+    AppActions.setCertAddModalVisible(false)
   }
 
   onItemEdit(e) {
@@ -58,9 +68,14 @@ class Cert extends React.Component {
   }
 
   onEditOk() {
-    AppActions.saveCurrentCert()
-    AppActions.clearCurrentCert()
-    AppActions.listCert()
+    AppActions.saveCurrentCert.triggerAsync()
+      .then(() => {
+        AppActions.clearCurrentCert()
+        return AppActions.listCert()
+      })
+      .catch(err => {
+        // do nothing
+      })
     AppActions.setCertEditModalVisible(false)
   }
 
@@ -76,17 +91,23 @@ class Cert extends React.Component {
     confirm({
       title: 'Confirm Delete',
       content: 'Are you sure to delete cert of ' + host + '?',
-      onOk: onDeleteOk,
-      onCancel: onDeleteCancel
+      onOk: this.onDeleteOk,
+      onCancel: this.onDeleteCancel
     })
 
     AppActions.getCert(host)
   }
 
   onDeleteOk() {
-    AppActions.deleteCurrentCert()
-    AppActions.clearCurrentCert()
-    AppActions.listCert()
+
+    AppActions.deleteCurrentCert.triggerAsync()
+      .then(() => {
+        AppActions.clearCurrentCert()
+        return AppActions.listCert()
+      })
+      .catch(err => {
+        // do nothing
+      })
     // AppActions.setCertDeleteModalVisible(false)
   }
 
@@ -96,6 +117,8 @@ class Cert extends React.Component {
   }
 
   render() {
+    // console.log('Cert::render', this.props)
+
     // ant design table
     let antdTableColumns = [
       {
@@ -124,20 +147,20 @@ class Cert extends React.Component {
       },
       {
         title: 'Operation',
-        render: (text, record) => {
+        render: (text, record) => (
           <span>
-            <a onClick={this.onItemEdit} data-host={record.host} href="#">Edit</a>
+            <a onClick={this.onItemEdit.bind(this)} data-host={record.host} href="#">Edit</a>
             <span className="ant-divider"></span>
-            <a onClick={this.onItemDelete} data-host={record.host} href="#">Delete</a>
+            <a onClick={this.onItemDelete.bind(this)} data-host={record.host} href="#">Delete</a>
           </span>
-        }
+        )
       }
     ]
 
     let antdTable = <Table rowKey={line => line._id}
       columns={antdTableColumns}
-      dataSource={this.state.certList}
-      loading={this.state.certLoadingFlag}
+      dataSource={this.props.appStore.certList}
+      loading={this.props.appStore.certLoadingFlag}
       expandedRowRender={record => <p><b>Password</b> - {record.pass}</p>}
     />
 
@@ -175,16 +198,32 @@ class Cert extends React.Component {
       </FormItem>
     </Form>
 
+    // console.log('this.props.appStore', this.props.appStore)
+
     return (
       <div className="container">
 
         <Modal title="Add Cert"
-          visible={this.state.addModalVisible}
-          onOK={this.onAddOk}
+          visible={this.props.appStore.certAddModalVisible}
+          onOk={this.onAddOk}
           onCancel={this.onAddCancel}
         >
           {antdForm}
         </Modal>
+
+        <Modal title="Edit Cert"
+          visible={this.props.appStore.certEditModalVisible}
+          onOk={this.onEditOk}
+          onCancel={this.onEditCancel}
+        >
+          {antdForm}
+        </Modal>
+
+        <div className="row clbody">
+          <div className="ant-col-sm24 p-t-10">
+            <Button type="primary" icon="plus-circle-o" onClick={this.onItemAdd} />
+          </div>
+        </div>
 
         <div className="row clbody">
           <div className="ant-col-sm-24 p-t-10">
@@ -197,55 +236,50 @@ class Cert extends React.Component {
 }
 
 Cert.propTypes = {
-  cert: React.PropTypes.object,
-  certList: React.PropTypes.array,
-  certLoadingFlag: React.PropTypes.bool,
-  addModalVisible: React.PropTypes.bool,
-  editModalVisible: React.PropTypes.bool
+  appStore: React.PropTypes.object
 }
 
 Cert.defaultProps = {
 
 }
 
-// 1. connect Cert with AppStore, so Cert has a prop named appStore
-const CertConnect = refluxConnect({
-  cert: AppStore.cert,
-  certList: AppStore.certList,
-  certLoadingFlag: AppStore.certLoadingFlag,
-  addModalVisible: AppStore.addModalVisible,
-  editModalVisible: AppStore.editModalVisible
-})((state) => {
-  return {
-    cert: state.cert,
-    certList: state.certList,
-    certLoadingFlag: state.certLoadingFlag,
-    addModalVisible: state.addModalVisible,
-    editModalVisible: state.editModalVisible
-  }
-})
-let ConnectedCert = CertConnect(Cert)
-
-// 2. in createForm, bind appStore prop to form bi-directionally
+// 1. in createForm, bind appStore prop to form bi-directionally
 Cert = createForm({
   onFieldsChange: (props, fields) => {
     // actually we don't care about props in reflux, just call AppActions to update state
-    AppActions.updateCurrentCert(fields)
+    console.log('onFieldsChange', props, fields)
+
+    let stateObj = {}
+    for (let field in fields) {
+      stateObj[fields[field].name] = fields[field].value
+    }
+
+    AppActions.updateCurrentCert(stateObj)
   },
   mapPropsToFields: (props) => {
     console.log('mapPropsToFields', props)
-    /*
-    if (props === undefined || props == null || props == {})
-      return {}
+    if (props.appStore.cert == {})
+      return { }
 
     return {
-      host: props.cert.host,
-      port: props.cert.port,
-      user: props.cert.user,
-      pass: props.cert.pass
+      host: {name: 'host', value: props.appStore.cert.host},
+      port: {name: 'port', value: props.appStore.cert.port},
+      user: {name: 'user', value: props.appStore.cert.user},
+      pass: {name: 'pass', value: props.appStore.cert.pass}
     }
-    */
   }
-})(ConnectedCert)
+})(Cert)
+
+// 2. connect Cert with AppStore, so Cert has a prop named appStore
+const CertConnect = refluxConnect({
+  appStore: AppStore
+})(state => {
+  // console.log('mapStateToProps', state)
+
+  return {
+    appStore: state.appStore
+  }
+}, null, null, {pure: false})
+Cert = CertConnect(Cert)
 
 export default Cert

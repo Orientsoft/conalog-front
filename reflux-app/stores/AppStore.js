@@ -1,12 +1,63 @@
 import Reflux from 'reflux'
+import RefluxPromise from 'reflux-promise'
+import Promise from 'bluebird'
+Reflux.use(RefluxPromise(Promise))
+
 import AppActions from '../actions/AppActions'
 import constants from '../const'
 import config from '../../config/config.js'
 import $ from 'jquery'
+// import Crypto from 'crypto'
+import Crypto from 'crypto-js'
 import sha256 from 'crypto-js/sha256'
+import aes from 'crypto-js/aes'
 import { message } from 'antd'
 
 let conalogUrl = 'http://' + config.conalogHost + ':' + config.conalogPort.toString()
+
+// helper
+// cert codec
+let encodePass = (rawCert, conalogPass) => {
+  // 1. create key
+  let keySeed = rawCert.host + conalogPass + rawCert.ts
+  let key = sha256(keySeed).toString(Crypto.enc.Hex)
+  console.log(key)
+
+  // 2. encode pass
+  let encodedPass = aes.encrypt(rawCert.pass, Crypto.enc.Hex.parse(key), { iv:'', mode: Crypto.mode.ECB, padding: Crypto.pad.Pkcs7 })
+
+  /*
+  // 1. create key
+  let keySeed = rawCert.host + conalogPass + rawCert.ts
+  let hash = Crypto.createHash('sha256')
+  hash.update(keySeed)
+  let key = hash.digest('hex')
+
+  // 2. encode pass
+  let cipher = Crypto.createCipher('aes256', key)
+  let encodedPass = cipher.update(rawCert.pass, 'ascii', 'hex')
+  encodedPass += cipher.final('hex')
+  */
+
+  console.log('encodePass', rawCert, key, encodedPass.ciphertext.toString())
+
+  return encodedPass.ciphertext.toString()
+}
+
+let decodePass = (encodedCert, conalogPass) => {
+  // 1. create key
+  let keySeed = encodedCert.host + conalogPass + encodedCert.ts
+  let hash = Crypto.createHash('sha256')
+  hash.update(keySeed)
+  let key = hash.digest('hex')
+
+  // 2. decode pass
+  let decipher = Crypto.createDecipher('aes256', key)
+  let decodedPass = decipher.update(encodedCert.pass, 'hex', 'ascii')
+  decodedPass += decipher.final('ascii')
+
+  return decodedPass
+}
 
 let state = {
   // Collector
@@ -57,12 +108,17 @@ let state = {
   cert: {},
   certList: [],
   certLoadingFlag: false,
-  addModalVisible: false,
-  editModalVisible: false
+  certAddModalVisible: false,
+  certEditModalVisible: false
 }
 
 let AppStore = Reflux.createStore({
+
   listenables: AppActions,
+
+  getInitialState() {
+    return state
+  },
 
   onNav: async function(location) {
     state.location = location
@@ -497,7 +553,7 @@ let AppStore = Reflux.createStore({
 
   onSetPassiveCollector: function(field, value) {
     state.passiveCollector[field] = value
-    console.log(state.passiveCollector)
+    // console.log(state.passiveCollector)
     this.trigger(state)
   },
 
@@ -579,7 +635,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+        // beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
         method: 'GET',
         data: json,
         success: data => {
@@ -788,6 +844,7 @@ let AppStore = Reflux.createStore({
         },
         method: 'GET',
         success: data => {
+          console.log('AppStore::onListCert', data)
           state.certList = data
           this.trigger(state)
         }
@@ -812,7 +869,7 @@ let AppStore = Reflux.createStore({
   onUpdateCurrentCert(fields) {
     // TODO : check fields
 
-    _assign(state.cert, fields)
+    _.assign(state.cert, fields)
     this.trigger(state)
   },
 
@@ -822,6 +879,24 @@ let AppStore = Reflux.createStore({
       method = 'PUT'
     else
       method = 'POST'
+
+    console.log('onSaveCurrentCert', state.cert)
+
+    let cert = {
+      host: state.cert.host,
+      port: parseInt(state.cert.port),
+      user: state.cert.user,
+      pass: state.cert.pass
+    }
+
+    let now = new Date()
+    cert.ts = now.getTime()
+    cert.name = state.loginUser
+    cert.pass = encodePass(cert, state.loginPass)
+
+    if (state.cert._id !== undefined) {
+      cert._id = state.cert._id
+    }
 
     $.ajax(conalogUrl + '/cert',
       {
@@ -834,15 +909,18 @@ let AppStore = Reflux.createStore({
         data: cert,
         success: data => {
           // do nothing
+          console.log('AppStore::onSaveCurrentCert', data)
+          AppActions.saveCurrentCert.completed()
         }
       })
       .fail(err => {
         message.error('onListCert Error: ' + JSON.stringify(err), 5)
+        return AppActions.saveCurrentCert.failed(err)
       })
   },
 
   onDeleteCurrentCert() {
-    $.ajax(conalogUrl + '/cert/' + cert.host,
+    $.ajax(conalogUrl + '/cert/' + state.cert.host,
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
@@ -851,26 +929,28 @@ let AppStore = Reflux.createStore({
         },
         method: 'DELETE',
         success: data => {
-          // do nothing
+          AppActions.deleteCurrentCert.completed()
         }
       })
       .fail(err => {
         message.error('onListCert Error: ' + JSON.stringify(err), 5)
+        return AppActions.deleteCurrentCert.failed(err)
       })
   },
 
   onClearCurrentCert() {
+    console.log('AppStore::onClearCurrentCert')
     state.cert = {}
     this.trigger(state)
   },
 
   onSetCertAddModalVisible(visible) {
-    state.certAddModalVisible = true
+    state.certAddModalVisible = visible
     this.trigger(state)
   },
 
   onSetCertEditModalVisible(visible) {
-    state.certEditModalVisible = true
+    state.certEditModalVisible = visible
     this.trigger(state)
   },
 

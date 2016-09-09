@@ -1,4 +1,7 @@
 import Reflux from 'reflux'
+import RefluxPromise from 'reflux-promise'
+import Promise from 'bluebird'
+Reflux.use(RefluxPromise(Promise))
 
 let AppActions = Reflux.createActions({
   'nav': {asyncResult: true},
@@ -59,14 +62,14 @@ let AppActions = Reflux.createActions({
   // Cert
   'getCert': {asyncResult: true},
   'listCert': {asyncResult: true},
-  'setCertLoadingFlag': {asyncResult: true},
+  'setCertLoadingFlag': {sync: true},
   'setCurrentCert': {sync: true},
   'updateCurrentCert': {sync: true},
   'saveCurrentCert': {asyncResult: true},
   'deleteCurrentCert': {asyncResult: true},
-  'clearCurrentCert': {asyncResult: true},
-  'setCertAddModalVisible': {asyncResult: true},
-  'setCertEditModalVisible': {asyncResult: true}
+  'clearCurrentCert': {sync: true},
+  'setCertAddModalVisible': {sync: true},
+  'setCertEditModalVisible': {sync: true}
 })
 
 export default AppActions

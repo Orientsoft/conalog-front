@@ -1,6 +1,11 @@
 import React from 'react'
 import ReactDom from 'react-dom'
-// import Modal from 'react-modal'
+
+import Reflux from 'reflux'
+import RefluxPromise from 'reflux-promise'
+import Promise from 'bluebird'
+Reflux.use(RefluxPromise(Promise))
+
 import _ from 'lodash'
 // import 'antd/dist/antd.css'
 let message = require('antd/lib/message')
