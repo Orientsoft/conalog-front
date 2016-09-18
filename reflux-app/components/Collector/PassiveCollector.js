@@ -16,7 +16,8 @@ class PassiveCollector extends React.Component {
       passiveCollectorFlag: false,
       passiveCollector: { type: 'LongScript' },
       passiveCollectorList: [],
-      passiveCollectorChecklist: []
+      passiveCollectorChecklist: [],
+      certList: []
     }
   }
 
@@ -25,8 +26,9 @@ class PassiveCollector extends React.Component {
       this.setState(state)
     }.bind(this))
 
-    // get passive collector list
+    // get passive collector & cert list
     AppActions.getPassiveCollectorList()
+    AppActions.listCert()
   }
 
   componentWillUnmount() {
@@ -198,14 +200,24 @@ class PassiveCollector extends React.Component {
       </Tooltip>
     </div>
 
-    hostInput = <div className="ant-col-md-5">
+    let createHostOptions = () => {
+        // console.log('createHostOptions', this.state)
+        return this.state.certList.map(cert => {
+          return <option value={cert.host}>{cert.host + ':' + cert.port}</option>
+        })
+    }
+    let hostOptions = createHostOptions()
+
+    // host
+    hostInput = <div className="ant-col-md-4">
       <div className="form-group">
         <label>Host</label>
-        <input type="text" placeholder="Host" className="form-control"
+        <select className="form-control"
           data-field="host"
           ref="hostInput"
-          value={this.state.passiveCollector.host}
-          onChange={this.updatePassiveCollector.bind(this)} />
+          onChange={this.updatePassiveCollector.bind(this)}>
+          {hostOptions}
+        </select>
       </div>
     </div>
 

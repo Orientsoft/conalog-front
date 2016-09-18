@@ -4,6 +4,8 @@ let TimePicker = require('antd/lib/time-picker')
 let Checkbox = require('antd/lib/checkbox')
 let Modal = require('antd/lib/modal')
 let Tooltip = require('antd/lib/tooltip')
+let Select = require('antd/lib/select')
+const Option = Select.Option
 import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
 import _ from 'lodash'
@@ -19,7 +21,8 @@ class ActiveCollector extends React.Component {
       activeCollectorList: [],
       activeCollectorChecklist: [],
       activeCollectorDeleteModal: false,
-      activeCollectorTime: null
+      activeCollectorTime: null,
+      certList: []
     }
   }
 
@@ -28,8 +31,9 @@ class ActiveCollector extends React.Component {
       this.setState(state)
     }.bind(this))
 
-    // get active collector list
+    // get active collector & cert list
     AppActions.getActiveCollectorList()
+    AppActions.listCert()
   }
 
   componentWillUnmount() {
@@ -248,15 +252,24 @@ class ActiveCollector extends React.Component {
       </div>
     </div>
 
+    let createHostOptions = () => {
+        // console.log('createHostOptions', this.state)
+        return this.state.certList.map(cert => {
+          return <option value={cert.host}>{cert.host + ':' + cert.port}</option>
+        })
+    }
+    let hostOptions = createHostOptions()
+
     // host
     hostInput = <div className="ant-col-md-4">
       <div className="form-group">
         <label>Host</label>
-        <input type="text" placeholder="Host" className="form-control"
+        <select className="form-control"
           data-field="host"
           ref="hostInput"
-          value={this.state.activeCollector.host}
-          onChange={this.updateActiveCollector.bind(this)} />
+          onChange={this.updateActiveCollector.bind(this)}>
+          {hostOptions}
+        </select>
       </div>
     </div>
 
