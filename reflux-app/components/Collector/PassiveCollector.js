@@ -64,7 +64,8 @@ class PassiveCollector extends React.Component {
           type: that.refs.typeInput.value.trim(),
           cmd: that.refs.cmdInput.value.trim(),
           param: that.refs.paramInput.value.trim(),
-          host: that.refs.hostInput.value.trim()
+          host: that.refs.hostInput.value.trim(),
+          desc: that.refs.descInput.value.trim()
         }
 
         // ok, save
@@ -106,7 +107,8 @@ class PassiveCollector extends React.Component {
       type: this.refs.typeInput.value.trim(),
       cmd: this.refs.cmdInput.value.trim(),
       param: this.refs.paramInput.value.trim(),
-      host: this.refs.hostInput.value.trim()
+      host: this.refs.hostInput.value.trim(),
+      desc: this.refs.descInput.value.trim()
     }
 
     AppActions.savePassiveCollector(this.state.passiveCollector)
@@ -118,6 +120,7 @@ class PassiveCollector extends React.Component {
     AppActions.setPassiveCollector('cmd', '')
     AppActions.setPassiveCollector('param', '')
     AppActions.setPassiveCollector('host', '')
+    AppActions.setPassiveCollector('desc', '')
   }
 
   updatePassiveCollector(e) {
@@ -129,7 +132,7 @@ class PassiveCollector extends React.Component {
   updatePassiveCollectorChecklist() {
     let id = this["data-id"]
     let idx = _.indexOf(this.that.state.passiveCollectorChecklist, id)
-    console.log('updateActiveCollectorChecklist', id, idx)
+    // console.log('updateActiveCollectorChecklist', id, idx)
 
     let checklist = this.that.state.passiveCollectorChecklist
     if (idx == -1)
@@ -158,6 +161,7 @@ class PassiveCollector extends React.Component {
     let cmdInput
     let paramInput
     let hostInput
+    let descInput
 
     nameInput = <div className="ant-col-md-5">
       <Tooltip title="Output Redis channel defaults to pc_[COLLECTOR_NAME]">
@@ -233,12 +237,28 @@ class PassiveCollector extends React.Component {
       </div>
     </div>
 
+    // desc
+    descInput = <div className="ant-col-md-24">
+      <div className="form-group">
+        <label>Description</label>
+        <textarea
+          placeholder="Collector Usage & Source & Destination"
+          className="form-control"
+          data-field="desc"
+          ref="descInput"
+          value={this.state.passiveCollector.desc}
+          onChange={this.updatePassiveCollector.bind(this)}>
+        </textarea>
+      </div>
+    </div>
+
     inputLine = <div className="row clhead">
         { nameInput }
         { typeInput }
         { cmdInput }
         { paramInput }
         { hostInput }
+        { descInput }
       </div>
 
     let createPassiveCollector = (line, index) => {

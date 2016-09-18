@@ -76,7 +76,8 @@ class ActiveCollector extends React.Component {
           trigger: that.state.activeCollectorTime.getTime(),
           cmd: that.refs.cmdInput.value.trim(),
           param: that.refs.paramInput.value.trim(),
-          host: that.refs.hostInput.value.trim()
+          host: that.refs.hostInput.value.trim(),
+          desc: this.refs.descInput.value.trim()
         }
 
         // ok, save
@@ -128,7 +129,8 @@ class ActiveCollector extends React.Component {
       trigger: this.state.activeCollectorTime.getTime(),
       cmd: this.refs.cmdInput.value.trim(),
       param: this.refs.paramInput.value.trim(),
-      host: this.refs.hostInput.value.trim()
+      host: this.refs.hostInput.value.trim(),
+      desc: this.refs.descInput.value.trim()
     }
 
     // ok, save
@@ -147,6 +149,7 @@ class ActiveCollector extends React.Component {
     AppActions.setActiveCollector('param', '')
     AppActions.setActiveCollector('host', '')
     AppActions.setActiveCollectorTime(null)
+    AppActions.setActiveCollector('desc', '')
   }
 
   updateActiveCollector(e) {
@@ -186,6 +189,7 @@ class ActiveCollector extends React.Component {
     let cmdInput
     let paramInput
     let hostInput
+    let descInput
 
     // name
     nameInput = <div className="ant-col-md-4">
@@ -273,6 +277,21 @@ class ActiveCollector extends React.Component {
       </div>
     </div>
 
+    // desc
+    descInput = <div className="ant-col-md-24">
+      <div className="form-group">
+        <label>Description</label>
+        <textarea
+          placeholder="Collector Usage & Source & Destination"
+          className="form-control"
+          data-field="desc"
+          ref="descInput"
+          value={this.state.activeCollector.desc}
+          onChange={this.updateActiveCollector.bind(this)}>
+        </textarea>
+      </div>
+    </div>
+
     let createActiveCollector = (line, index) => {
       let date = new Date(line.ts)
       date = date.toLocaleString()
@@ -340,6 +359,7 @@ class ActiveCollector extends React.Component {
           { cmdInput }
           { paramInput }
           { hostInput }
+          { descInput }
           <div className="ant-col-md-24">
             <div className="form-group text-right m-t-20">
               <button className="btn btn-primary waves-effect waves-light" type="submit"
