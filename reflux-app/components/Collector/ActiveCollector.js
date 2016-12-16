@@ -77,6 +77,7 @@ class ActiveCollector extends React.Component {
           cmd: that.refs.cmdInput.value.trim(),
           param: that.refs.paramInput.value.trim(),
           host: that.refs.hostInput.value.trim(),
+          encoding: that.refs.encodingInput.value.trim(),
           desc: this.refs.descInput.value.trim()
         }
 
@@ -130,6 +131,7 @@ class ActiveCollector extends React.Component {
       cmd: this.refs.cmdInput.value.trim(),
       param: this.refs.paramInput.value.trim(),
       host: this.refs.hostInput.value.trim(),
+      encoding: this.refs.encodingInput.value.trim(),
       desc: this.refs.descInput.value.trim()
     }
 
@@ -149,6 +151,7 @@ class ActiveCollector extends React.Component {
     AppActions.setActiveCollector('param', '')
     AppActions.setActiveCollector('host', '')
     AppActions.setActiveCollectorTime(null)
+    AppActions.setActiveCollector('encoding', '')
     AppActions.setActiveCollector('desc', '')
   }
 
@@ -189,6 +192,7 @@ class ActiveCollector extends React.Component {
     let cmdInput
     let paramInput
     let hostInput
+    let encodingInput
     let descInput
 
     // name
@@ -259,7 +263,7 @@ class ActiveCollector extends React.Component {
     let createHostOptions = () => {
         // console.log('createHostOptions', this.state)
         return this.state.certList.map(cert => {
-          return <option value={cert.host}>{cert.host + ':' + cert.port}</option>
+          return <option key={cert._id.toString()} value={cert.host}>{cert.host + ':' + cert.port}</option>
         })
     }
     let hostOptions = createHostOptions()
@@ -273,6 +277,21 @@ class ActiveCollector extends React.Component {
           ref="hostInput"
           onChange={this.updateActiveCollector.bind(this)}>
           {hostOptions}
+        </select>
+      </div>
+    </div>
+
+    // encoding
+    encodingInput = <div className="ant-col-md-4">
+      <div className="form-group">
+        <label>Encoding</label>
+        <select className="form-control"
+          data-field="encoding"
+          ref="encodingInput"
+          onChange={this.updateActiveCollector.bind(this)}>
+          <option key="ASCII">ASCII</option>
+          <option key="GB2312">GB2312</option>
+          <option key="UTF-8">UTF-8</option>
         </select>
       </div>
     </div>
@@ -321,6 +340,7 @@ class ActiveCollector extends React.Component {
           <td>{ line.cmd }</td>
           <td>{ line.param }</td>
           <td>{ line.host }</td>
+          <td>{ line.encoding }</td>
         </tr>
       else
         activeCollector = <tr key={ line._id.toString() }>
@@ -343,6 +363,7 @@ class ActiveCollector extends React.Component {
           <td>{ line.cmd }</td>
           <td>{ line.param }</td>
           <td>{ line.host }</td>
+          <td>{ line.encoding }</td>
         </tr>
 
       return activeCollector
@@ -359,6 +380,7 @@ class ActiveCollector extends React.Component {
           { cmdInput }
           { paramInput }
           { hostInput }
+          { encodingInput }
           { descInput }
           <div className="ant-col-md-24">
             <div className="form-group text-right m-t-20">
@@ -390,6 +412,7 @@ class ActiveCollector extends React.Component {
                 <th data-field="command" data-align="center" data-sortable="true" data-sorter="">Command</th>
                 <th data-field="parameter" data-align="center" data-sortable="true" data-sorter="">Parameter</th>
                 <th data-field="host" data-align="center" data-sortable="true" data-sorter="">Host</th>
+                <th data-field="encoding" data-align="center" data-sortable="true" data-sorter="">Encoding</th>
               </tr>
             </thead>
             <tbody>

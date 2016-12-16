@@ -65,6 +65,7 @@ class PassiveCollector extends React.Component {
           cmd: that.refs.cmdInput.value.trim(),
           param: that.refs.paramInput.value.trim(),
           host: that.refs.hostInput.value.trim(),
+          encoding: that.refs.encodingInput.value.trim(),
           desc: that.refs.descInput.value.trim()
         }
 
@@ -108,6 +109,7 @@ class PassiveCollector extends React.Component {
       cmd: this.refs.cmdInput.value.trim(),
       param: this.refs.paramInput.value.trim(),
       host: this.refs.hostInput.value.trim(),
+      encoding: this.refs.encodingInput.value.trim(),
       desc: this.refs.descInput.value.trim()
     }
 
@@ -120,6 +122,7 @@ class PassiveCollector extends React.Component {
     AppActions.setPassiveCollector('cmd', '')
     AppActions.setPassiveCollector('param', '')
     AppActions.setPassiveCollector('host', '')
+    AppActions.setPassiveCollector('encoding', '')
     AppActions.setPassiveCollector('desc', '')
   }
 
@@ -161,6 +164,7 @@ class PassiveCollector extends React.Component {
     let cmdInput
     let paramInput
     let hostInput
+    let encodingInput
     let descInput
 
     nameInput = <div className="ant-col-md-5">
@@ -207,7 +211,7 @@ class PassiveCollector extends React.Component {
     let createHostOptions = () => {
         // console.log('createHostOptions', this.state)
         return this.state.certList.map(cert => {
-          return <option value={cert.host}>{cert.host + ':' + cert.port}</option>
+          return <option key={cert._id.toString()} value={cert.host}>{cert.host + ':' + cert.port}</option>
         })
     }
     let hostOptions = createHostOptions()
@@ -237,6 +241,21 @@ class PassiveCollector extends React.Component {
       </div>
     </div>
 
+    // encoding
+    encodingInput = <div className="ant-col-md-4">
+      <div className="form-group">
+        <label>Encoding</label>
+        <select className="form-control"
+          data-field="encoding"
+          ref="encodingInput"
+          onChange={this.updatePassiveCollector.bind(this)}>
+          <option key="ASCII">ASCII</option>
+          <option key="GB2312">GB2312</option>
+          <option key="UTF-8">UTF-8</option>
+        </select>
+      </div>
+    </div>
+
     // desc
     descInput = <div className="ant-col-md-24">
       <div className="form-group">
@@ -258,6 +277,7 @@ class PassiveCollector extends React.Component {
         { cmdInput }
         { paramInput }
         { hostInput }
+        { encodingInput }
         { descInput }
       </div>
 
@@ -282,6 +302,7 @@ class PassiveCollector extends React.Component {
           <td>{ (line.cmd == '') ? 'N/A' : line.cmd }</td>
           <td>{ line.param }</td>
           <td>{ line.host }</td>
+          <td>{ line.encoding }</td>
         </tr>
       else
         passiveCollector = <tr key={ line._id }>
@@ -297,6 +318,7 @@ class PassiveCollector extends React.Component {
           <td>{ (line.cmd == '') ? 'N/A' : line.cmd }</td>
           <td>{ line.param }</td>
           <td>{ line.host }</td>
+          <td>{ line.encoding }</td>
         </tr>
 
       return passiveCollector
@@ -337,6 +359,7 @@ class PassiveCollector extends React.Component {
                 <th data-field="cmd" data-align="center" data-sortable="true" data-sorter="">Command</th>
                 <th data-field="parameter" data-align="center" data-sortable="true" data-sorter="">Parameter</th>
                 <th data-field="host" data-align="center" data-sortable="true" data-sorter="">Host</th>
+                <th data-field="encoding" data-align="center" data-sortable="true" data-sorter="">Encoding</th>
               </tr>
             </thead>
             <tbody>
