@@ -251,7 +251,18 @@ class PassiveCollector extends React.Component {
           onChange={this.updatePassiveCollector.bind(this)}>
           <option key="ASCII">ASCII</option>
           <option key="GB2312">GB2312</option>
+          <option key="GBK">GBK</option>
+          <option key="GB18030">GB18030</option>
+          <option key="Big5">Big5</option>
+          <option key="Big5-HKSCS">Big5-HKSCS</option>
+          <option key="Shift_JIS">Shift_JIS</option>
+          <option key="EUC-JP">EUC-JP</option>
           <option key="UTF-8">UTF-8</option>
+          <option key="UTF-16LE">UTF-16LE</option>
+          <option key="UTF-16BE">UTF-16BE</option>
+          <option key="binary">binary</option>
+          <option key="base64">base64</option>
+          <option key="hex">hex</option>
         </select>
       </div>
     </div>
