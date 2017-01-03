@@ -78,6 +78,7 @@ class ActiveCollector extends React.Component {
           param: that.refs.paramInput.value.trim(),
           host: that.refs.hostInput.value.trim(),
           encoding: that.refs.encodingInput.value.trim(),
+          channel: that.refs.channelInput.value.trim(),
           desc: this.refs.descInput.value.trim()
         }
 
@@ -132,6 +133,7 @@ class ActiveCollector extends React.Component {
       param: this.refs.paramInput.value.trim(),
       host: this.refs.hostInput.value.trim(),
       encoding: this.refs.encodingInput.value.trim(),
+      channel: this.refs.channelInput.value.trim(),
       desc: this.refs.descInput.value.trim()
     }
 
@@ -152,6 +154,7 @@ class ActiveCollector extends React.Component {
     AppActions.setActiveCollector('host', '')
     AppActions.setActiveCollectorTime(null)
     AppActions.setActiveCollector('encoding', '')
+    AppActions.setActiveCollector('channel', '')
     AppActions.setActiveCollector('desc', '')
   }
 
@@ -193,6 +196,7 @@ class ActiveCollector extends React.Component {
     let paramInput
     let hostInput
     let encodingInput
+    let channelInput
     let descInput
 
     // name
@@ -307,6 +311,20 @@ class ActiveCollector extends React.Component {
       </div>
     </div>
 
+    // channel
+    channelInput = <div className="ant-col-md-4">
+      <div className="form-group">
+        <label>Channel</label>
+        <select className="form-control"
+          data-field="channel"
+          ref="channelInput"
+          onChange={this.updateActiveCollector.bind(this)}>
+          <option key="Redis PubSub">Redis PubSub</option>
+          <option key="Nanomsg Queue">Nanomsg Queue</option>
+        </select>
+      </div>
+    </div>
+
     // desc
     descInput = <div className="ant-col-md-24">
       <div className="form-group">
@@ -352,6 +370,7 @@ class ActiveCollector extends React.Component {
           <td>{ line.param }</td>
           <td>{ line.host }</td>
           <td>{ line.encoding }</td>
+          <td>{ line.channel }</td>
         </tr>
       else
         activeCollector = <tr key={ line._id.toString() }>
@@ -375,6 +394,7 @@ class ActiveCollector extends React.Component {
           <td>{ line.param }</td>
           <td>{ line.host }</td>
           <td>{ line.encoding }</td>
+          <td>{ line.channel }</td>
         </tr>
 
       return activeCollector
@@ -392,6 +412,7 @@ class ActiveCollector extends React.Component {
           { paramInput }
           { hostInput }
           { encodingInput }
+          { channelInput }
           { descInput }
           <div className="ant-col-md-24">
             <div className="form-group text-right m-t-20">
@@ -424,6 +445,7 @@ class ActiveCollector extends React.Component {
                 <th data-field="parameter" data-align="center" data-sortable="true" data-sorter="">Parameter</th>
                 <th data-field="host" data-align="center" data-sortable="true" data-sorter="">Host</th>
                 <th data-field="encoding" data-align="center" data-sortable="true" data-sorter="">Encoding</th>
+                <th data-field="channel" data-align="center" data-sortable="true" data-sorter="">Channel</th>
               </tr>
             </thead>
             <tbody>
