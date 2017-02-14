@@ -22,11 +22,6 @@ var config = {
   redisUrl: 'redis://redis:6379', (don't touch this if you use docker)
   activeCollectorPrefix: 'ac_', (the following configs are reserved, don't touch)
   passiveCollectorPrefix: 'pc_',
-  apiGatewayHost: 'apigateway',
-  apiGatewayPort: 1234,
-  apiGatewayToken: '12345',
-  apiGatewayUid: '67890',
-  apiGatewayType: 'user'
 }
 
 module.exports = config;
