@@ -79,7 +79,7 @@ class ActiveCollector extends React.Component {
           host: that.refs.hostInput.value.trim(),
           encoding: that.refs.encodingInput.value.trim(),
           channel: that.refs.channelInput.value.trim(),
-          desc: this.refs.descInput.value.trim()
+          desc: that.refs.descInput.value.trim()
         }
 
         // ok, save

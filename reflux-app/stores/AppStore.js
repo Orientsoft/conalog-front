@@ -142,7 +142,7 @@ let AppStore = Reflux.createStore({
     $.ajax(url, {
       crossDomain: true,
       xhrFields: { withCredentials: true },
-      beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+      beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
       data: pageInfo,
       success: data => {
         AppActions.getHistoryCount(pageInfo)
@@ -166,7 +166,7 @@ let AppStore = Reflux.createStore({
     $.ajax(url, {
       crossDomain: true,
       xhrFields: { withCredentials: true },
-      beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+      beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
       data: pageInfo,
       success: data => {
         // data = { count: 10000 }
@@ -187,7 +187,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         method: 'GET',
         success: (data) => {
           // success - { pageCount: 10 }
@@ -211,7 +211,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         method: 'GET',
         dataType: 'json',
         success: (data) => {
@@ -235,7 +235,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         method: 'POST',
         data: { pageSize: pageSize },
         success: (data) => {
@@ -257,7 +257,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         method: 'POST',
         data: {sortField: field, sortDir: dir},
         success: (data) => {
@@ -310,18 +310,16 @@ let AppStore = Reflux.createStore({
 
   onGetActiveCollectorList: async function() {
     // refresh collector list
-    $.ajax(conalogUrl + '/collector/list/active',
+    $.ajax(conalogUrl + '/collectors?category=active',
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         method: 'GET',
-        success: (data) => {
-          // console.log(data)
-
+        success: (collectors) => {
           // Issue #1 - offset with timezone
           // fixed by xd, 2016.07.06
-          let acList = data.activeCollectorList.map(collector => {
+          let acList = collectors.map(collector => {
             if (collector.type == 'Interval') {
               let trigger = parseInt(collector.trigger)
               let now = new Date()
@@ -346,8 +344,6 @@ let AppStore = Reflux.createStore({
   },
 
   onSaveActiveCollector: async function(activeCollector) {
-    // console.log(activeCollector)
-
     // Issue #1 - offset with timezone
     // fixed by xd, 2016.07.06
     if (activeCollector.type == 'Interval') {
@@ -356,12 +352,14 @@ let AppStore = Reflux.createStore({
       activeCollector.trigger -= offset
     }
 
+    activeCollector.category = 'active'
+
     // save activeCollector
-    $.ajax(conalogUrl + '/collector/active',
+    $.ajax(conalogUrl + '/collectors',
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         success: (data) => {
           // do nothing
         },
@@ -383,22 +381,22 @@ let AppStore = Reflux.createStore({
     let that = this
     // load the first one in checklist to table
     let id = state.activeCollectorChecklist[0]
+
     // remove _id from activeCollector
-    $.ajax(conalogUrl + '/collector/' + id,
+    $.ajax(conalogUrl + '/collectors/' + id,
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
-        success: (data) => {
-          // console.log(data)
-          state.activeCollector = data
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
+        success: (collector) => {
+          state.activeCollector = collector
           state.activeCollector._id = undefined
 
           // Issue #1 - offset with timezone
           // fixed by xd, 2016.07.06
           let triggerDate
-          if (data.type == 'Interval') {
-            let trigger = parseInt(data.trigger)
+          if (collector.type == 'Interval') {
+            let trigger = parseInt(collector.trigger)
             let now = new Date()
             let offset = now.getTimezoneOffset() * 60 * 1000 // convert minute to ms
             trigger += offset
@@ -419,7 +417,6 @@ let AppStore = Reflux.createStore({
 
   onSetActiveCollector: function(field, value) {
     state.activeCollector[field] = value
-    console.log(state.activeCollector)
     this.trigger(state)
   },
 
@@ -435,11 +432,11 @@ let AppStore = Reflux.createStore({
 
   onDeleteActiveCollector: async function() {
     // ajax delete
-    $.ajax(conalogUrl + '/collector/active', {
+    $.ajax(conalogUrl + '/collectors', {
       method: 'DELETE',
       crossDomain: true,
       xhrFields: { withCredentials: true },
-      beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+      beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
       data: { list: state.activeCollectorChecklist }
     })
     .fail(err => {
@@ -463,12 +460,12 @@ let AppStore = Reflux.createStore({
   },
 
   onUpdateActiveCollector: async function(activeCollector) {
-    // ajax delete
-    $.ajax(conalogUrl + '/collector/active', {
+    // ajax update
+    $.ajax(conalogUrl + '/collectors', {
       method: 'PUT',
       crossDomain: true,
       xhrFields: { withCredentials: true },
-      beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+      beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
       data: activeCollector,
       success: (data) => {
         // refresh list
@@ -483,16 +480,15 @@ let AppStore = Reflux.createStore({
   // passive collector
   onGetPassiveCollectorList: async function() {
     // refresh collector list
-    $.ajax(conalogUrl + '/collector/list/passive',
+    $.ajax(conalogUrl + '/collectors?category=passive',
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         method: 'GET',
         dataType: 'json',
-        success: (data) => {
-          console.log(data)
-          state.passiveCollectorList = data.passiveCollectorList
+        success: (collectors) => {
+          state.passiveCollectorList = collectors
           this.trigger(state)
         }
       },
@@ -504,13 +500,14 @@ let AppStore = Reflux.createStore({
   },
 
   onSavePassiveCollector: async function(passiveCollector) {
-    console.log(passiveCollector)
-    // save activeCollector
-    $.ajax(conalogUrl + '/collector/passive',
+    // save passiveCollector
+    passiveCollector.category = 'passive'
+
+    $.ajax(conalogUrl + '/collectors',
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         success: (data) => {
           AppActions.getPassiveCollectorList()
         },
@@ -525,20 +522,18 @@ let AppStore = Reflux.createStore({
   },
 
   onEditPassiveCollector: async function() {
-    console.log(state.passiveCollectorChecklist)
-
     let that = this
     // load the first one in checklist to table
     let id = state.passiveCollectorChecklist[0]
+
     // remove _id from activeCollector
-    $.ajax(conalogUrl + '/collector/' + id,
+    $.ajax(conalogUrl + '/collectors/' + id,
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
-        success: (data) => {
-          console.log(data)
-          state.passiveCollector = data
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
+        success: (collector) => {
+          state.passiveCollector = collector
           state.passiveCollector._id = undefined
           this.trigger(state)
         },
@@ -553,7 +548,6 @@ let AppStore = Reflux.createStore({
 
   onSetPassiveCollector: function(field, value) {
     state.passiveCollector[field] = value
-    // console.log(state.passiveCollector)
     this.trigger(state)
   },
 
@@ -569,14 +563,13 @@ let AppStore = Reflux.createStore({
 
   onDeletePassiveCollector: async function() {
     // ajax delete
-    $.ajax(conalogUrl + '/collector/passive', {
+    $.ajax(conalogUrl + '/collectors', {
       method: 'DELETE',
       crossDomain: true,
       xhrFields: { withCredentials: true },
-      beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+      beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
       data: { list: state.passiveCollectorChecklist },
       success: (data) => {
-        state.passiveCollectorChecklist = []
         AppActions.getPassiveCollectorList()
       }
     })
@@ -592,11 +585,11 @@ let AppStore = Reflux.createStore({
 
   onUpdatePassiveCollector: async function(passiveCollector) {
     // ajax delete
-    $.ajax(conalogUrl + '/collector/passive', {
+    $.ajax(conalogUrl + '/collectors', {
       method: 'PUT',
       crossDomain: true,
       xhrFields: { withCredentials: true },
-      beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+      beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
       data: passiveCollector,
       success: (data) => {
         // refresh list
@@ -635,11 +628,9 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        // beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
-        method: 'GET',
+        method: 'POST',
         data: json,
         success: data => {
-          // console.log('onLogin', data)
           state.sessionId = data
           state.location = "Home"
           this.trigger(state)
@@ -660,7 +651,7 @@ let AppStore = Reflux.createStore({
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         method: 'GET',
         success: data => {
           // do nothing
@@ -702,7 +693,7 @@ let AppStore = Reflux.createStore({
         crossDomain: true,
         // xhrFields: { withCredentials: true },
         method: 'POST',
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         success: data => {
           // do nothing
         },
@@ -733,49 +724,44 @@ let AppStore = Reflux.createStore({
 
   onSetCollectorSwitch(switcher) {
     // switch = { id: id, switch: switch, category: '' }
-    let url
-    if (switcher.switch) {
-      url = conalogUrl + '/collector/start/' + switcher.id
-    }
-    else {
-      url = conalogUrl + '/collector/stop/' + switcher.id
-    }
+    let data = { id: switcher.id }
+    let url = conalogUrl + '/collectors/instances'
+    url = switcher.switch? url : url + '/' + switcher.id
 
-    console.log('onChangeStatusType', url)
-
-    $.ajax(url,
+    $.ajax(url, 
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
-        method: 'GET',
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
+        method: switcher.switch? 'POST' : 'DELETE',
+        data: switcher.switch? data : null,
         success: (data => {
           // do nothing
         })
-      })
-      .fail(err => {
-        message.error('onSetCollectorSwitch Error: ' + err.toString(), 5)
-      })
-      .always(() => {
-        // refresh status list
-        if (switcher.category == 'active')
-          AppActions.getActiveStatusList()
-        else
-          AppActions.getPassiveStatusList()
-      })
+    })
+    .fail(error => {
+      message.error('onSetCollectorSwitch Error: ' + JSON.stringify(error), 5)
+    })
+    .always(() => {
+      // refresh status list
+      if (switcher.category == 'active')
+        AppActions.getActiveStatusList()
+      else
+        AppActions.getPassiveStatusList()
+    }) 
   },
 
   onGetActiveStatusList() {
-    $.ajax(conalogUrl + '/collector/status/list/active',
+    $.ajax(conalogUrl + '/collectors/status/active',
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         method: 'GET',
-        success: (data => {
+        success: (statusList => {
           // Issue #1 - offset with timezone
           // fixed by xd, 2016.07.06
-          let acList = data.activeCollectorStatusList.map(status => {
+          let asList = statusList.map(status => {
             if (status.type == 'Interval') {
               let trigger = parseInt(status.trigger)
               let now = new Date()
@@ -787,8 +773,7 @@ let AppStore = Reflux.createStore({
             return status
           })
 
-          state.activeStatusList = data.activeCollectorStatusList
-          // console.log(state.activeStatusList)
+          state.activeStatusList = asList
           this.trigger(state)
         })
       })
@@ -798,15 +783,14 @@ let AppStore = Reflux.createStore({
   },
 
   onGetPassiveStatusList() {
-    $.ajax(conalogUrl + '/collector/status/list/passive',
+    $.ajax(conalogUrl + '/collectors/status/passive',
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
-        beforeSend: xhr => {xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId);},
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         method: 'GET',
-        success: (data => {
-          state.passiveStatusList = data.passiveCollectorStatusList
-          // console.log(state.activeStatusList)
+        success: (statusList => {
+          state.passiveStatusList = statusList
           this.trigger(state)
         })
       })
@@ -880,7 +864,7 @@ let AppStore = Reflux.createStore({
     else
       method = 'POST'
 
-    console.log('onSaveCurrentCert', state.cert)
+    // console.log('onSaveCurrentCert', state.cert)
 
     let cert = {
       host: state.cert.host,
