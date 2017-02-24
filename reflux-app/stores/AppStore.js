@@ -12,6 +12,7 @@ import Crypto from 'crypto-js'
 import sha256 from 'crypto-js/sha256'
 import aes from 'crypto-js/aes'
 import { message } from 'antd'
+import Moment from 'moment'
 
 let conalogUrl = 'http://' + config.conalogHost + ':' + config.conalogPort.toString()
 
@@ -83,7 +84,7 @@ let state = {
   activeCollector: {},
   activeCollectorList: [],
   activeCollectorChecklist: [],
-  activeCollectorTime: null,
+  activeCollectorTime: new Date('2017-01-01 00:00:10'),
 
   // Passvice Collector
   passiveCollectorUpdated: false,

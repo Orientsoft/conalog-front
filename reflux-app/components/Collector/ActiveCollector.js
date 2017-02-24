@@ -9,6 +9,7 @@ const Option = Select.Option
 import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
 import _ from 'lodash'
+import Moment from 'moment'
 
 const confirm = Modal.confirm
 
@@ -21,7 +22,7 @@ class ActiveCollector extends React.Component {
       activeCollectorList: [],
       activeCollectorChecklist: [],
       activeCollectorDeleteModal: false,
-      activeCollectorTime: null,
+      activeCollectorTime: new Date('2017-01-01 00:00:10'),
       certList: []
     }
   }
@@ -62,7 +63,7 @@ class ActiveCollector extends React.Component {
       content: 'Are you sure to update ' + that.state.activeCollector.name + ' active collector?',
       onOk() {
         // check time
-        if (that.state.activeCollectorTime == null) {
+        if (that.state.activeCollectorTime == null && that.state.activeCollector.type != 'OneShot') {
           message.error('Empty trigger, please select trigger.')
           return
         }
@@ -117,7 +118,7 @@ class ActiveCollector extends React.Component {
     }
 
     // check time
-    if (this.state.activeCollectorTime == null) {
+    if (this.state.activeCollectorTime == null && this.state.activeCollector.type != 'OneShot') {
       message.error('Empty trigger, please select trigger.')
       return
     }
@@ -152,7 +153,7 @@ class ActiveCollector extends React.Component {
     AppActions.setActiveCollector('cmd', '')
     AppActions.setActiveCollector('param', '')
     AppActions.setActiveCollector('host', '')
-    AppActions.setActiveCollectorTime(null)
+    AppActions.setActiveCollectorTime(new Date('2017-01-01 00:00:10'))
     AppActions.setActiveCollector('encoding', '')
     AppActions.setActiveCollector('channel', '')
     AppActions.setActiveCollector('desc', '')
@@ -224,6 +225,7 @@ class ActiveCollector extends React.Component {
           onChange={this.updateActiveCollector.bind(this)}>
           <option>Interval</option>
           <option>Time</option>
+          <option>OneShot</option>
         </select>
       </div>
     </div>
@@ -232,6 +234,7 @@ class ActiveCollector extends React.Component {
       <div className="form-group">
         <label>Trigger</label><br />
         <TimePicker
+          disabled={(this.state.activeCollector.type == 'OneShot') ? true : false}
           value={this.state.activeCollectorTime}
           onChange={this.updateTime.bind(this)}
           format="HH:mm:ss"
