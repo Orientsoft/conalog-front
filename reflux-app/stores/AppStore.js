@@ -12,7 +12,6 @@ import Crypto from 'crypto-js'
 import sha256 from 'crypto-js/sha256'
 import aes from 'crypto-js/aes'
 import { message } from 'antd'
-import Moment from 'moment'
 
 let conalogUrl = 'http://' + config.conalogHost + ':' + config.conalogPort.toString()
 
@@ -84,7 +83,7 @@ let state = {
   activeCollector: {},
   activeCollectorList: [],
   activeCollectorChecklist: [],
-  activeCollectorTime: new Date('2017-01-01 00:00:10'),
+  activeCollectorTime: null,
 
   // Passvice Collector
   passiveCollectorUpdated: false,
@@ -801,7 +800,7 @@ let AppStore = Reflux.createStore({
   },
 
   onGetCert(host) {
-    $.ajax(conalogUrl + '/cert/' + host,
+    $.ajax(conalogUrl + '/certificates/' + host + '?name=' + state.loginUser,
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
@@ -810,6 +809,7 @@ let AppStore = Reflux.createStore({
         },
         method: 'GET',
         success: data => {
+          // console.log('onGetCert', data)
           state.cert = data
           this.trigger(state)
         }
@@ -820,7 +820,7 @@ let AppStore = Reflux.createStore({
   },
 
   onListCert() {
-    $.ajax(conalogUrl + '/cert',
+    $.ajax(conalogUrl + '/certificates',
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
@@ -829,7 +829,7 @@ let AppStore = Reflux.createStore({
         },
         method: 'GET',
         success: data => {
-          console.log('AppStore::onListCert', data)
+          // console.log('AppStore::onListCert', data)
           state.certList = data
           this.trigger(state)
         }
@@ -865,7 +865,7 @@ let AppStore = Reflux.createStore({
     else
       method = 'POST'
 
-    // console.log('onSaveCurrentCert', state.cert)
+    console.log('onSaveCurrentCert', state.cert)
 
     let cert = {
       host: state.cert.host,
@@ -877,13 +877,13 @@ let AppStore = Reflux.createStore({
     let now = new Date()
     cert.ts = now.getTime()
     cert.name = state.loginUser
-    cert.pass = encodePass(cert, state.loginPass)
+    // cert.pass = encodePass(cert, state.loginPass)
 
     if (state.cert._id !== undefined) {
       cert._id = state.cert._id
     }
 
-    $.ajax(conalogUrl + '/cert',
+    $.ajax(conalogUrl + '/certificates',
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
@@ -894,7 +894,7 @@ let AppStore = Reflux.createStore({
         data: cert,
         success: data => {
           // do nothing
-          console.log('AppStore::onSaveCurrentCert', data)
+          // console.log('AppStore::onSaveCurrentCert', data)
           AppActions.saveCurrentCert.completed()
         }
       })
@@ -905,7 +905,7 @@ let AppStore = Reflux.createStore({
   },
 
   onDeleteCurrentCert() {
-    $.ajax(conalogUrl + '/cert/' + state.cert.host,
+    $.ajax(conalogUrl + '/certificates/' + state.cert._id,
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },

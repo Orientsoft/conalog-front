@@ -86,20 +86,19 @@ class Cert extends React.Component {
 
   onItemDelete(e) {
     let host = e.target.dataset.host
+    let id = e.target.dataset.id
 
-    // AppActions.setCertDeleteModalVisible(true)
+    AppActions.getCert(host)
+    
     confirm({
       title: 'Confirm Delete',
       content: 'Are you sure to delete cert of ' + host + '?',
       onOk: this.onDeleteOk,
       onCancel: this.onDeleteCancel
-    })
-
-    AppActions.getCert(host)
+    })  
   }
 
   onDeleteOk() {
-
     AppActions.deleteCurrentCert.triggerAsync()
       .then(() => {
         AppActions.clearCurrentCert()
@@ -108,12 +107,10 @@ class Cert extends React.Component {
       .catch(err => {
         // do nothing
       })
-    // AppActions.setCertDeleteModalVisible(false)
   }
 
   onDeleteCancel() {
     AppActions.clearCurrentCert()
-    // AppActions.setCertDeleteModalVisible(false)
   }
 
   render() {
@@ -149,9 +146,9 @@ class Cert extends React.Component {
         title: 'Operation',
         render: (text, record) => (
           <span>
-            <a onClick={this.onItemEdit.bind(this)} data-host={record.host} href="#">Edit</a>
+            <a onClick={this.onItemEdit.bind(this)} data-id={record._id} data-host={record.host} href="#">Edit</a>
             <span className="ant-divider"></span>
-            <a onClick={this.onItemDelete.bind(this)} data-host={record.host} href="#">Delete</a>
+            <a onClick={this.onItemDelete.bind(this)} data-id={record._id} data-host={record.host} href="#">Delete</a>
           </span>
         )
       }
