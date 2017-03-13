@@ -116,11 +116,15 @@ class Cert extends React.Component {
     AppActions.clearCurrentCert()
     // AppActions.setCertDeleteModalVisible(false)
   }
+
   onShowPass(e){
-     AppActions.showPass(e.target.dataset._id)
-    }
+    var showPassword=true;
+    AppActions.toggleCertPass(e.target.dataset._id,showPassword)
+  }
+
   onHidePass(e){
-     AppActions.hidePass(e.target.dataset._id)
+    var showPassword=false;
+    AppActions.toggleCertPass(e.target.dataset._id,showPassword)
   }
   render() {
     // ant design table
@@ -132,7 +136,7 @@ class Cert extends React.Component {
       {
         title:'Password',
         render:(text,record)=>(
-	  <span>
+	        <span>
             <span>{record.originPass}</span>
           </span>
 	)
@@ -165,7 +169,7 @@ class Cert extends React.Component {
             <span className="ant-divider"></span>
             <a onClick={this.onItemDelete.bind(this)} data-host={record.host} href="#">Delete</a>
 	    <span className="ant-divider"></span>
-	   <a> <Icon data-_id={record._id} type="eye" onMouseOver={this.onShowPass.bind(this)} onMouseLeave={this.onHidePass.bind(this)} ></Icon></a>
+	    <a><Icon data-_id={record._id} type="eye" onMouseOver={this.onShowPass.bind(this)} onMouseLeave={this.onHidePass.bind(this)} ></Icon></a>
           </span>
         )
       }

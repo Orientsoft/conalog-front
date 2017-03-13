@@ -830,26 +830,17 @@ let AppStore = Reflux.createStore({
         method: 'GET',
         success: data => {
           console.log('AppStore::onListCert', data)
-//          state.certList = data;
-//	  for (var i=0;i<data.length;i++){
-//	    state.certList[i].originPass="********";
-//	}
-  //        this.trigger(state)
-	state.certList = data;
-            // 添加originPass属性
-            for(var i=0;i<data.length;i++){
-              var pass=state.certList[i].pass;
-              var temp="";
-              for(var j = 0; j < pass.length; j++){
-                  temp = temp + "*"
-              }
-	      state.certList[i].replacePass=temp;
-              state.certList[i].originPass=state.certList[i].replacePass;
+	        state.certList = data;
+          for(var i=0;i<data.length;i++){
+            var pass=state.certList[i].pass;
+            var temp="";
+            for(var j = 0; j < pass.length; j++){
+              temp = temp + "*"
+            }
+	          state.certList[i].replacePass=temp;
+            state.certList[i].originPass=state.certList[i].replacePass;
             }
             this.trigger(state)
-
-
-
         }
       })
       .fail(err => {
@@ -963,22 +954,23 @@ let AppStore = Reflux.createStore({
     this.trigger(state)
   }
   */
-  onShowPass:function(_id){
-           for(var i=0;i<state.certList.length;i++){
-             if(state.certList[i]._id==_id){
-                 state.certList[i].originPass=state.certList[i].pass
-             }
-           }
-            this.trigger(state)
-    },
-    onHidePass:function(_id){
+  onToggleCertPass(_id,showPassword){
+    if(showPassword==true){
       for(var i=0;i<state.certList.length;i++){
-          if(state.certList[i].originPass==state.certList[i].pass){
-              state.certList[i].originPass=state.certList[i].replacePass
-          }
+        if(state.certList[i]._id==_id){
+          state.certList[i].originPass=state.certList[i].pass
+        }
       }
-        this.trigger(state)
+      this.trigger(state);
+    }else{
+      for(var i=0;i<state.certList.length;i++){
+        if(state.certList[i].originPass==state.certList[i].pass){
+          state.certList[i].originPass=state.certList[i].replacePass
+        }
+      }
+      this.trigger(state)
     }
+  },
 
 }) // AppStore
 

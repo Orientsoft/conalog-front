@@ -70,8 +70,7 @@ let AppActions = Reflux.createActions({
   'clearCurrentCert': {sync: true},
   'setCertAddModalVisible': {sync: true},
   'setCertEditModalVisible': {sync: true},
-  'showPass':{sync: true},
-  'hidePass':{sync: true}
+  'toggleCertPass':{sync: true}
 })
 
 export default AppActions
