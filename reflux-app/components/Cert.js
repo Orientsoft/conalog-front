@@ -5,6 +5,7 @@ let Input = require('antd/lib/input')
 let Button = require('antd/lib/button')
 let Modal = require('antd/lib/modal')
 let Form = require('antd/lib/form')
+let Icon = require('antd/lib/icon')
 import classNames from 'classnames'
 import _ from 'lodash'
 
@@ -116,9 +117,16 @@ class Cert extends React.Component {
     // AppActions.setCertDeleteModalVisible(false)
   }
 
-  render() {
-    // console.log('Cert::render', this.props)
+  onShowPass(e){
+    var showPassword=true;
+    AppActions.toggleCertPass(e.target.dataset._id,showPassword)
+  }
 
+  onHidePass(e){
+    var showPassword=false;
+    AppActions.toggleCertPass(e.target.dataset._id,showPassword)
+  }
+  render() {
     // ant design table
     let antdTableColumns = [
       {
@@ -126,10 +134,18 @@ class Cert extends React.Component {
         dataIndex: '_id'
       },
       {
+        title:'Password',
+        render:(text,record)=>(
+	        <span>
+            <span>{record.originPass}</span>
+          </span>
+	)
+      },
+      {
         title: 'Date',
         dataIndex: 'ts',
         render: (ts) => {
-          let d = new Date(parseInt(ts)).toLocaleString()
+           let d = new Date(parseInt(ts)).toLocaleString()
           return d
         }
       },
@@ -152,6 +168,8 @@ class Cert extends React.Component {
             <a onClick={this.onItemEdit.bind(this)} data-host={record.host} href="#">Edit</a>
             <span className="ant-divider"></span>
             <a onClick={this.onItemDelete.bind(this)} data-host={record.host} href="#">Delete</a>
+	    <span className="ant-divider"></span>
+	    <a><Icon data-_id={record._id} type="eye" onMouseOver={this.onShowPass.bind(this)} onMouseLeave={this.onHidePass.bind(this)} ></Icon></a>
           </span>
         )
       }
@@ -161,13 +179,12 @@ class Cert extends React.Component {
       columns={antdTableColumns}
       dataSource={this.props.appStore.certList}
       loading={this.props.appStore.certLoadingFlag}
-      expandedRowRender={record => <p><b>Password</b> - {record.pass}</p>}
     />
 
     const { getFieldProps } = this.props.form
 
     const formItemLayout = {
-      labelCol: { span: 4 },
+     labelCol: { span: 4 },
       wrapperCol: { span: 20 },
     }
 
