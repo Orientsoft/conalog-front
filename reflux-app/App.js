@@ -102,6 +102,13 @@ class App extends React.Component {
           <Footer />
         </div>
       break;
+      case 'Parser':
+        page = <div>
+          <Nav location={ this.state.location } />
+          <Parser />
+          <Footer />
+        </div>
+      break;
 
       case 'Home':
         page = <div>
