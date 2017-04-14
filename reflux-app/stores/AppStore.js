@@ -109,7 +109,18 @@ let state = {
   certList: [],
   certLoadingFlag: false,
   certAddModalVisible: false,
-  certEditModalVisible: false
+  certEditModalVisible: false,
+
+  //Parser
+  parser:{},
+  parserList:[],
+  parserLoadingFlag:false,
+  parserAddModalVisible: false,
+  parserEditModalVisible: false,
+
+  //ParserStatus
+  instance:{},
+  instanceList:[]
 }
 
 let AppStore = Reflux.createStore({
@@ -957,7 +968,7 @@ let AppStore = Reflux.createStore({
     if (showPassword == true) {
       for (var i=0; i<state.certList.length; i++) {
         if (state.certList[i]._id == _id) {
-          state.certList[i].originPass = state.certList[i].pass
+          state.certList[i].originPass=state.certList[i].pass
         }
       }
       this.trigger(state);
@@ -970,6 +981,233 @@ let AppStore = Reflux.createStore({
       this.trigger(state)
     }
   },
+
+  //Parser
+  onListParser() {
+    $.ajax(conalogUrl + '/parsers',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'GET',
+        success: data => {
+          console.log('AppStore::onListParser', data)
+          state.parserList = data;
+          this.trigger(state)
+        }
+      })
+      .fail(err => {
+        message.error('onListParser Error: ' + JSON.stringify(err), 5)
+      })
+  },
+
+  onGetParser(name) {
+    $.ajax(conalogUrl + '/parsers?name=' + name,
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'GET',
+        success: data => {
+          state.parser = data[0]
+          console.log("get",state.parser)
+          state.parser.inputType = state.parser.input.type
+          state.parser.inputChannel = state.parser.input.channel
+          state.parser.outputType = state.parser.output.type
+          state.parser.outputChannel = state.parser.output.channel
+          this.trigger(state)
+        }
+      })
+      .fail(err => {
+        message.error('onGetParser Error: ' + JSON.stringify(err), 5)
+      })
+  },
+
+  onSetParserLoadingFlag(flag) {
+    state.parserLoadingFlag = flag
+    this.trigger(state)
+  },
+
+  onUpdateCurrentParser(fields) {
+    // TODO : check fields
+
+    _.assign(state.parser, fields)
+    this.trigger(state)
+  },
+
+  onSaveCurrentParser() {
+    let method = ''
+    if (state.parser.id !== undefined)
+      method = 'PUT'
+    else
+      method = 'POST'
+
+    let parser = {
+      name: state.parser.name,
+      path: state.parser.path,
+      parameter: state.parser.parameter,
+      remark: state.parser.remark,
+      input: {type: state.parser.inputType, channel: state.parser.inputChannel},
+      output: {type: state.parser.outputType, channel: state.parser.outputChannel},
+      ts: Date.now()
+    }
+    if (state.parser.id !== undefined) {
+      parser.id = state.parser.id
+    }
+    $.ajax(conalogUrl + '/parsers',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: method,
+        data: JSON.stringify(parser),
+        contentType: "application/json",
+        success: data => {
+          console.log('id->:', data)
+          AppActions.saveCurrentParser.completed()
+        },
+        error: (e) => console.log('xhr error:', e)
+      })
+      .fail(err => {
+        message.error('onListParser Error: ' + JSON.stringify(err), 5)
+        return AppActions.saveCurrentParser.failed(err)
+      })
+  },
+
+  onDeleteCurrentParser() {
+    console.log("delete ",state.parser)
+    $.ajax(conalogUrl + '/parsers/' + state.parser.id,
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'DELETE',
+        success: data => {
+          AppActions.deleteCurrentParser.completed()
+        },
+        error: (e) => console.log('xhr error:', e)
+      })
+      .fail(err => {
+        message.error('onListParser Error: ' + JSON.stringify(err), 5)
+        return AppActions.deleteCurrentParser.failed(err)
+      })
+  },
+
+  onClearCurrentParser() {
+    console.log('AppStore::onClearCurrentParser')
+    state.parser = {}
+    this.trigger(state)
+  },
+
+  onSetParserAddModalVisible(visible) {
+    state.parserAddModalVisible = visible
+    this.trigger(state)
+  },
+
+  onSetParserEditModalVisible(visible) {
+    state.parserEditModalVisible = visible
+    this.trigger(state)
+  },
+
+
+  //parserStatus
+  onListInstance() {
+    $.ajax(conalogUrl + '/parsers/instances',
+      {
+        crossDomain: true,
+        xhrFields: {withCredentials: true},
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'GET',
+        success: data => {
+          console.log('AppStore::onListParserInstance', data)
+          state.instanceList = data;
+          this.trigger(state)
+        },
+        error: (e) => console.log('xhr error:', e)
+      })
+      .fail(err => {
+        message.error('onListParserInstance Error: ' + JSON.stringify(err), 5)
+      })
+  },
+
+  onSaveInstance () {
+    let parserInstance = {
+      id: state.parser.id
+    }
+    $.ajax(conalogUrl + '/parsers/instances',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: "POST",
+        data: parserInstance,
+        success: data => {
+          console.log('data->:', data)
+
+          AppActions.saveInstance.completed()
+        },
+        error: (e) => console.log('xhr error:', e)
+      })
+      .fail(err => {
+        message.error('onListInstance Error: ' + JSON.stringify(err), 5)
+        return AppActions.saveInstance.failed(err)
+      })
+  },
+
+  onGetInstance(id) {
+    $.ajax(conalogUrl + '/parsers/instances?id=' + id,
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'GET',
+        success: data => {
+          console.log('getinstance->:', data)
+          state.instance = data
+          this.trigger(state)
+        }
+      })
+      .fail(err => {
+        message.error('onGetInstance Error: ' + JSON.stringify(err), 5)
+      })
+  },
+
+  onStopInstance() {
+    console.log('stopinstance-->',state.instance.id)
+    $.ajax(conalogUrl + '/parsers/instances/' + state.instance.id,
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'DELETE',
+        success: data => {
+          AppActions.stopInstance.completed()
+        },
+        error: (e) => console.log('xhr error:', e)
+      })
+      .fail(err => {
+        message.error('onListInstance Error: ' + JSON.stringify(err), 5)
+        return AppActions.stopInstance.failed(err)
+      })
+  }
+
+
 
 }) // AppStore
 

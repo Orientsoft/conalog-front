@@ -70,7 +70,26 @@ let AppActions = Reflux.createActions({
   'clearCurrentCert': {sync: true},
   'setCertAddModalVisible': {sync: true},
   'setCertEditModalVisible': {sync: true},
-  'toggleCertPass':{sync: true}
+  'toggleCertPass':{sync: true},
+
+  //Parser
+  'getParser':{asyncResult: true},
+  'listParser':{asyncResult: true},
+  'setParserLoadingFlag': {sync: true},
+  'setCurrentParser': {sync: true},
+  'updateCurrentParser': {sync: true},
+  'saveCurrentParser': {asyncResult: true},
+  'deleteCurrentParser': {asyncResult: true},
+  'clearCurrentParser': {sync: true},
+  'setParserAddModalVisible': {sync: true},
+  'setParserEditModalVisible': {sync: true},
+
+  //ParserStatus
+  'listInstance':{asyncResult: true},
+  'saveInstance':{asyncResult: true},
+  'getInstance':{asyncResult: true},
+  'startInstance':{asyncResult: true},
+  'stopInstance':{asyncResult: true}
 })
 
 export default AppActions
