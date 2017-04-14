@@ -105,6 +105,7 @@ let state = {
   activeStatusList: [],
   statusType: 'Active',
 
+
   // Cert
   cert: {},
   certList: [],
@@ -121,7 +122,18 @@ let state = {
 
   //ParserStatus
   instance:{},
-  instanceList:[]
+  instanceList:[],
+
+  //AgentCollector
+  agentCollector:{},
+  agentCollectorList:[],
+  agentCollectorLoadingFlag:false,
+  agentCollectorEditModalVisible:false,
+  agentCollectorAddModalVisible:false,
+
+  //AgentStatus
+  agentStatusList: [],
+
 }
 
 let AppStore = Reflux.createStore({
@@ -811,6 +823,7 @@ let AppStore = Reflux.createStore({
       })
   },
 
+  //cert
   onGetCert(host) {
     $.ajax(conalogUrl + '/cert/' + host,
       {
@@ -1206,7 +1219,181 @@ let AppStore = Reflux.createStore({
         message.error('onListInstance Error: ' + JSON.stringify(err), 5)
         return AppActions.stopInstance.failed(err)
       })
-  }
+  },
+
+  //agentCollector
+  onListAgentCollector() {
+    $.ajax(conalogUrl + '/collectors?category=agent',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'GET',
+        success: data => {
+          console.log('AppStore::onListAgentCollector', data)
+          state.agentCollectorList = data;
+          this.trigger(state)
+        }
+      })
+      .fail(err => {
+        message.error('onListAgentCollector Error: ' + JSON.stringify(err), 5)
+      })
+  },
+
+  onSaveAgentCollector() {
+    let method = ''
+    if (state.agentCollector._id !== undefined)
+      method = 'PUT'
+    else
+      method = 'POST'
+
+
+    let agentCollector = {
+      name: state.agentCollector.name,
+      category:"agent",
+      param:state.agentCollector.param,
+      encoding:state.agentCollector.encoding,
+      channel: state.agentCollector.channel,
+      desc:state.agentCollector.desc,
+      ts: Date.now()
+    }
+
+    console.log('onSaveCurrentAgentCollector', agentCollector)
+
+    if (state.agentCollector._id !== undefined) {
+      agentCollector._id = state.agentCollector._id
+    }
+    $.ajax(conalogUrl + '/collectors',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: method,
+        data:agentCollector,
+        success: data => {
+          console.log('id->:', data)
+          AppActions.saveAgentCollector.completed()
+        },
+        error: data => {
+          console.log('saveCollector:', data)
+        }
+      })
+
+      .fail(err => {
+        message.error('onSaveAgentCollector Error: ' + JSON.stringify(err), 5)
+        return AppActions.saveAgentCollector.failed(err)
+      })
+  },
+
+  onGetAgentCollector(name, cb) {
+    console.log("getname",name)
+    $.ajax(conalogUrl + '/collectors?name=' + name,
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'GET',
+        success: data => {
+          console.log("getagentcollector",data);
+          state.agentCollector = data[0];
+          cb(data[0]);
+          this.trigger(state);
+        }
+      })
+      .fail(err => {
+        message.error('onGetagentCollector Error: ' + JSON.stringify(err), 5)
+      })
+  },
+
+  onDeleteAgentCollector() {
+    console.log(state.agentCollector._id)
+    $.ajax(conalogUrl + '/collectors/' + state.agentCollector._id,
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'DELETE',
+        success: data => {
+          AppActions.deleteAgentCollector.completed()
+        }
+      })
+      .fail(err => {
+        message.error('onListParser Error: ' + JSON.stringify(err), 5)
+        return AppActions.deleteAgentCollector.failed(err)
+      })
+  },
+
+  onSetParserLoadingFlag(flag) {
+    state.agentCollectorLoadingFlag = flag
+    this.trigger(state)
+  },
+
+  onUpdateCurrentAgentCollector(fields) {
+    // TODO : check fields
+
+    _.assign(state.agentCollector, fields)
+    this.trigger(state)
+  },
+
+  onClearCurrentAgentCollector() {
+    console.log('AppStore::onClearCurrentAgentCollector')
+    state.agentCollector = {}
+    this.trigger(state)
+  },
+
+  onSetAgentCollectorAddModalVisible(visible) {
+    state.agentCollectorAddModalVisible = visible
+    this.trigger(state)
+  },
+
+  onSetAgentCollectorEditModalVisible(visible) {
+    state.agentCollectorEditModalVisible = visible
+    this.trigger(state)
+  },
+
+
+  //agentStatus
+  onGetAgentStatusList() {
+    $.ajax(conalogUrl + '/collectors/status/agent',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
+        method: 'GET',
+        success: (statusList => {
+          // Issue #1 - offset with timezone
+          // fixed by xd, 2016.07.06
+          let asList = statusList.map(status => {
+            if (status.type == 'Interval') {
+              let trigger = parseInt(status.trigger)
+              let now = new Date()
+              let offset = now.getTimezoneOffset() * 60 * 1000 // convert minute to ms
+              trigger += offset
+              status.trigger = trigger.toString()
+            }
+
+            return status
+          })
+
+          state.agentStatusList = asList
+          this.trigger(state)
+        })
+      })
+      .fail(err => {
+        message.error('onGetAgentStatusList Error: ' + err.toString(), 5)
+      })
+  },
+
+
+
 
 
 

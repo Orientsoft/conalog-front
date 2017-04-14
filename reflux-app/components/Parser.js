@@ -3,6 +3,7 @@ import refluxConnect from 'reflux-connect'
 import AppActions from '../actions/AppActions'
 import AppStore from '../stores/AppStore'
 import _ from 'lodash'
+import { Row, Col } from 'antd';
 
 let Table = require('antd/lib/table')
 let Input = require('antd/lib/input')
@@ -18,6 +19,8 @@ const createForm = Form.create;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const InputGroup = Input.Group;
+let existSameName;
+
 
 class Parser extends React.Component {
   constructor(props) {
@@ -34,20 +37,25 @@ class Parser extends React.Component {
   }
 
   onItemAdd() {
+    existSameName = true;
     AppActions.clearCurrentParser()
     AppActions.setParserAddModalVisible(true)
   }
 
   onAddOk() {
-    AppActions.saveCurrentParser.triggerAsync()
-      .then(() => {
-        AppActions.clearCurrentParser()
-        return AppActions.listParser()
-      })
-      .catch(err => {
-        console.log(err)
-      })
-    AppActions.setParserAddModalVisible(false)
+    if (existSameName) {
+      AppActions.saveCurrentParser.triggerAsync()
+        .then(() => {
+          AppActions.clearCurrentParser()
+          return AppActions.listParser()
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      AppActions.setParserAddModalVisible(false)
+    }else{
+      alert("The name is existed, please change another name!")
+    }
   }
 
   onAddCancel() {
@@ -104,7 +112,6 @@ class Parser extends React.Component {
   onDeleteCancel() {
     AppActions.clearCurrentParser()
   }
-
 
   render() {
 
@@ -177,7 +184,7 @@ class Parser extends React.Component {
       {
         title: 'Remark',
         render: (text, record) => (
-          <Popover overlay = {record.remark} title = "Remark">
+          <Popover content = {record.remark} title = "Remark">
             <Icon type = "eye"></Icon>
           </Popover>
         )
@@ -186,9 +193,9 @@ class Parser extends React.Component {
         title: 'Operation',
         render: (text, record) => (
           <span>
-            <a href="#" onClick={this.onItemEdit.bind(this)} data-name={record.name} >Edit</a>
-            <span className="ant-divider"></span>
-            <a href="#" onClick={this.onItemDelete.bind(this)} data-name={record.name} data-id={record.id} >Delete</a>
+            <a href = "#" onClick = {this.onItemEdit.bind(this)} data-name = {record.name} >Edit</a>
+            <span className = "ant-divider"></span>
+            <a href = "#" onClick = {this.onItemDelete.bind(this)} data-name = {record.name} data-id = {record.id} >Delete</a>
           </span>
         )
       }
@@ -206,12 +213,16 @@ class Parser extends React.Component {
       labelCol: {span: 6},
       wrapperCol: {span: 18}
     }
+    const formItemLayoutSelect = {
+      labelCol: {span: 11},
+      wrapperCol: {span: 13}
+    }
 
 
 // add parser
     let antdFormAdd = <Form horizonal form = {this.props.form}>
 
-      <FormItem {...formItemLayout} label = "Name">
+      <FormItem {...formItemLayout} label = "Name" >
         <Input {...getFieldProps('name', {})} type = "text" autoComplete = "off" />
       </FormItem>
 
@@ -223,37 +234,49 @@ class Parser extends React.Component {
         <Input {...getFieldProps('parameter', {})} type = "text" autoComplete = "off" />
       </FormItem>
 
+      <Row>
+        <Col span = "11" offset = "2" >
+          <FormItem {...formItemLayoutSelect} label = "InputChannel" className="selectType">
+            <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" />
+          </FormItem>
+        </Col>
+
+        <Col span = "11">
+          <FormItem {...formItemLayoutSelect} label = "InputType" >
+            <Select {...getFieldProps('inputType', {})}>
+              <Option value = "RedisChannel" > RedisChannel </Option>
+              <Option value = "NanomsgQueue" > NanomsgQueue </Option>
+            </Select>
+          </FormItem>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col span = "11" offset = "2" >
+          <FormItem {...formItemLayoutSelect} label = "OutputChannel" className="selectType">
+            <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" />
+          </FormItem>
+        </Col>
+
+        <Col span = "11">
+          <FormItem {...formItemLayoutSelect} label = "OutputType">
+            <Select {...getFieldProps('outputType', {})}>
+              <Option value = "RedisChannel" > RedisChannel </Option>
+              <Option value = "NanomsgQueue" > NanomsgQueue </Option>
+            </Select>
+          </FormItem>
+        </Col>
+      </Row>
+
       <FormItem {...formItemLayout} label = "Remark">
-        <Input {...getFieldProps('remark', {})} type = "text" autoComplete = "off" />
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "InputType">
-        <Select {...getFieldProps('inputType', {})}>
-          <Option value = "RedisChannel" > RedisChannel </Option>
-          <Option value = "NanomsgQueue" > NanomsgQueue </Option>
-        </Select>
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "InputChannel">
-        <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" />
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "OutputType">
-        <Select {...getFieldProps('outputType', {})} >
-          <Option value = "RedisChannel" > RedisChannel </Option>
-          <Option value = "NanomsgQueue" > NanomsgQueue </Option>
-        </Select>
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "OutputChannel">
-        <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" />
+        <Input {...getFieldProps('remark', {})} type = "textarea" rows="3" autoComplete = "off" />
       </FormItem>
 
     </Form>
 
 
 //edit parser
-    let antdFormEdit = <Form horizonal form = {this.props.form}>
+    let antdFormEdit = <Form horizonal form = {this.props.form} className = "editParser">
 
       <FormItem {...formItemLayout} label = "ID">
         <span {...getFieldProps('id', {})}>{this.props.appStore.parser.id}</span>
@@ -271,30 +294,42 @@ class Parser extends React.Component {
         <Input {...getFieldProps('parameter', {})} type = "text" autoComplete = "off" />
       </FormItem>
 
+      <Row>
+        <Col span = "11" offset = "2" >
+          <FormItem {...formItemLayoutSelect} label = "InputChannel" className = "selectType">
+            <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" />
+          </FormItem>
+        </Col>
+
+        <Col span = "11">
+          <FormItem {...formItemLayoutSelect} label = "InputType" >
+            <Select {...getFieldProps('inputType', {})}>
+              <Option value = "RedisChannel" > RedisChannel </Option>
+              <Option value = "NanomsgQueue" > NanomsgQueue </Option>
+            </Select>
+          </FormItem>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col span = "11" offset = "2" >
+          <FormItem {...formItemLayoutSelect} label = "OutputChannel" className = "selectType">
+            <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" />
+          </FormItem>
+        </Col>
+
+        <Col span = "11">
+          <FormItem {...formItemLayoutSelect} label = "OutputType">
+            <Select {...getFieldProps('outputType', {})}>
+              <Option value = "RedisChannel" > RedisChannel </Option>
+              <Option value = "NanomsgQueue" > NanomsgQueue </Option>
+            </Select>
+          </FormItem>
+        </Col>
+      </Row>
+
       <FormItem {...formItemLayout} label = "Remark">
-        <Input {...getFieldProps('remark', {})} type = "text" autoComplete = "off" />
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "InputType">
-        <Select {...getFieldProps('inputType', {})} >
-          <Option value = "RedisChannel"> RedisChannel </Option>
-          <Option value = "NanomsgQueue"> NanomsgQueue </Option>
-        </Select>
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "InputChannel">
-        <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" />
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "OutputType">
-        <Select {...getFieldProps('outputType', {})}>
-          <Option value = "RedisChannel" > RedisChannel </Option>
-          <Option value = "NanomsgQueue" > NanomsgQueue </Option>
-        </Select>
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "OutputChannel">
-        <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" />
+        <Input {...getFieldProps('remark', {})} type = "textarea" rows = "3" autoComplete = "off" />
       </FormItem>
 
     </Form>
@@ -314,7 +349,7 @@ class Parser extends React.Component {
         <Modal
           title = "Add Parser"
           visible = {this.props.appStore.parserAddModalVisible}
-          onOk = {this.onAddOk}
+          onOk = {this.onAddOk.bind(this)}
           onCancel = {this.onAddCancel}
         >
           {antdFormAdd}
@@ -380,17 +415,11 @@ Parser = createForm({
 
 
 //name of parser can not be the same !
-    var existSameName = true
     if (fields.hasOwnProperty('name')) {
       existSameName = props.appStore.parserList.every (parser => {
         return parser.name !== fields['name'].value
       })
     }
-    if (!existSameName) {
-      stateObj[fields['name'].name] = ''
-      alert('The name is existed, please change another name!')
-    }
-
 
     AppActions.updateCurrentParser(stateObj)
   },
@@ -398,6 +427,7 @@ Parser = createForm({
     console.log('mapPropsToFields', props)
     // if (props.appStore.parser == {})
     //   return { }
+
 
     return {
       id: {name: 'id', value: props.appStore.parser.id},

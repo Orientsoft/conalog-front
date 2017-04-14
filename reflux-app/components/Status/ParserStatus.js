@@ -3,7 +3,6 @@ import React from "react"
 import refluxConnect from 'reflux-connect'
 import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
-// import gear from "../../../public/img/gear.png"
 
 let Table = require('antd/lib/table')
 let Button = require('antd/lib/button')
@@ -143,17 +142,17 @@ class ParserStatus extends React.Component{
         render: (text, record) => {
           let parserInstance = [];
           let parserInstances = this.props.appStore.instanceList;
-          for (let i = 0; i < parserInstances.length; i++){
-            if (parserInstances[i].parserId == record.id){
-              parserInstance.push (parserInstances[i])
-            }
-          }
+          parserInstance = parserInstances.filter(p => p.parserId == record.id)
           let anim = ''
           if (parserInstance.length !== 0){
             anim = 'settingIcon'
           }
-          return <Icon className = { anim } type = "setting" style={{fontSize:20}}></Icon>
-          // return <span className = { anim }><img src = {gear} alt = "gear"/></span>
+          return (<span>
+                    <Icon className = { anim } type = "setting" style={{fontSize:20}}></Icon>
+                    <span className = "ant-divider"></span>
+                    <span> {parserInstance.length} </span>
+                  </span>)
+
         }
       },
       {
@@ -225,11 +224,7 @@ class ParserStatus extends React.Component{
       expandedRowRender = { record => {
         let parserInstance = [];
         let parserInstances = this.props.appStore.instanceList;
-        for (let i = 0; i < parserInstances.length; i++) {
-          if (parserInstances[i].parserId == record.id) {
-            parserInstance.push(parserInstances[i])
-          }
-        }
+        parserInstance = parserInstances.filter(p => p.parserId == record.id)
         return (<Table rowKey = { line => line.id }
           columns = {antdInstanceTableColumns}
           dataSource = {parserInstance } />)
@@ -239,7 +234,7 @@ class ParserStatus extends React.Component{
 
     return (
       <div className = "container">
-        <div className = "row clbody table2">
+        <div className = "row clbody tableParsserStatus">
           <div className = "ant-col-sm-24 p-t-10">
             { antdTable }
           </div>
