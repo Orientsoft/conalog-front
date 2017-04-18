@@ -75,7 +75,7 @@ class Collector extends React.Component {
                    aria-expanded="false">Agent</a>
               </li>
             </ul>
-            <div id="myTabContent" className="tab-content p-20" >
+            <div id="myTabContent" className="tab-content p-20">
               <div role="tabpanel"
                 className={ this.props.collectorType === 'Active' ? "tab-pane fade active in" : "tab-pane fade " }
                 id="home"

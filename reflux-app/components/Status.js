@@ -6,8 +6,9 @@ import AppStore from '../stores/AppStore'
 
 import ActiveStatus from './Status/ActiveStatus'
 import PassiveStatus from './Status/PassiveStatus'
-import AgentStatus from './Status/AgentStatus'
 import ParserStatus from './Status/ParserStatus'
+import AgentStatus from './Status/AgentStatus'
+
 
 class Status extends React.Component {
   constructor(props) {

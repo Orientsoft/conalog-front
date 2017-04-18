@@ -58,7 +58,8 @@ table.table-bordered tbody th, table.table-bordered tbody td{
     height: 38px;
 }
 .ant-table td {
-  max-width: 450px;
+  max-width: 300px;
+  word-wrap:break-word;
 }
 .settingIcon{
   -webkit-animation:change 3s linear infinite;
@@ -79,7 +80,7 @@ table.table-bordered tbody th, table.table-bordered tbody td{
   margin-left:-5px;
 }
 .ant-form-item{
-  margin-bottom:20px;
+  margin-bottom:15px;
 }
 .selectType{
   margin-left:-37px;
@@ -103,6 +104,15 @@ table.table-bordered tbody th, table.table-bordered tbody td{
   margin:20px 10px 10px -32px;
 }
 table.table-bordered tbody td{
-  max-width:450px;
+  max-width:300px;
   word-wrap:break-word;
 }
+.collectorIconEye{
+  padding-left: 25px;
+  font-size:15px;
+}
+.parserIconEye{
+  padding-left:15px;
+  font-size:15px;
+}
+

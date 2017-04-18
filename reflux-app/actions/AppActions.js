@@ -105,8 +105,6 @@ let AppActions = Reflux.createActions({
 
   //agentStatus
   'getAgentStatusList': {asyncResult: true},
-
-
 })
 
 export default AppActions

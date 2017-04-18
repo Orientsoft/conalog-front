@@ -3,6 +3,7 @@ import React from "react"
 import refluxConnect from 'reflux-connect'
 import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
+// import gear from "../../../public/img/gear.png"
 
 let Table = require('antd/lib/table')
 let Button = require('antd/lib/button')
@@ -148,7 +149,7 @@ class ParserStatus extends React.Component{
             anim = 'settingIcon'
           }
           return (<span>
-                    <Icon className = { anim } type = "setting" style={{fontSize:20}}></Icon>
+                    <Icon className = { anim } type = "setting" style = {{fontSize:20}}></Icon>
                     <span className = "ant-divider"></span>
                     <span> {parserInstance.length} </span>
                   </span>)

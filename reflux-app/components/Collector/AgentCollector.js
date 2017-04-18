@@ -196,36 +196,31 @@ class AgentCollector extends React.Component {
       },
       {
         title: 'Category',
-        key:"Category",
         dataIndex: 'category',
       },
       {
         title: 'Parameter',
-        key:"Parameter",
-        dataIndex: 'param'
+        dataIndex: 'param',
+        className:"parameterWidth"
       },
       {
         title: 'Encoding',
-        key:"Encoding",
         dataIndex: 'encoding'
       },
       {
         title: 'Channel',
-        key:"Channel",
         dataIndex: 'channel'
       },
       {
         title: 'Description',
-        key:"Description",
         render: (text, record) => (
-          <Popover content = {record.desc} title = "Description">
-            <Icon type = "eye"></Icon>
+          <Popover content = {record.desc} title = "Description" overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
+            <Icon  className="collectorIconEye" type = "eye"></Icon>
           </Popover>
         )
       },
       {
         title: 'Operation',
-        key:"Operation",
         render: (text, record) => (
           <span>
             <a href="#" onClick={this.onItemEdit.bind(this)} data-name={record.name} >Edit</a>
@@ -261,7 +256,7 @@ class AgentCollector extends React.Component {
         <Input {...getFieldProps('name', {})} type = "text" autoComplete = "off" />
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "Parameter" required help = "parameter is required">
+      <FormItem {...formItemLayout} label = "Parameter"  required help = "parameter is required">
         <Input {...getFieldProps('param', {})} type = "text" autoComplete = "off" />
       </FormItem>
 

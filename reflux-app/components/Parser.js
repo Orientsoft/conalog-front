@@ -13,14 +13,13 @@ let Form = require('antd/lib/form')
 let Select = require('antd/lib/select')
 let Popover= require('antd/lib/popover')
 let Icon = require('antd/lib/icon')
+let existSameName;
 
 const confirm = Modal.confirm;
 const createForm = Form.create;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const InputGroup = Input.Group;
-let existSameName;
-
 
 class Parser extends React.Component {
   constructor(props) {
@@ -113,6 +112,7 @@ class Parser extends React.Component {
     AppActions.clearCurrentParser()
   }
 
+
   render() {
 
     let antdTableColumns = [
@@ -184,8 +184,8 @@ class Parser extends React.Component {
       {
         title: 'Remark',
         render: (text, record) => (
-          <Popover content = {record.remark} title = "Remark">
-            <Icon type = "eye"></Icon>
+          <Popover content = {record.remark} title = "Remark" overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
+            <Icon className="parserIconEye"  type = "eye"></Icon>
           </Popover>
         )
       },
@@ -193,9 +193,9 @@ class Parser extends React.Component {
         title: 'Operation',
         render: (text, record) => (
           <span>
-            <a href = "#" onClick = {this.onItemEdit.bind(this)} data-name = {record.name} >Edit</a>
-            <span className = "ant-divider"></span>
-            <a href = "#" onClick = {this.onItemDelete.bind(this)} data-name = {record.name} data-id = {record.id} >Delete</a>
+            <a href="#" onClick={this.onItemEdit.bind(this)} data-name={record.name} >Edit</a>
+            <span className="ant-divider"></span>
+            <a href="#" onClick={this.onItemDelete.bind(this)} data-name={record.name} data-id={record.id} >Delete</a>
           </span>
         )
       }
@@ -222,7 +222,7 @@ class Parser extends React.Component {
 // add parser
     let antdFormAdd = <Form horizonal form = {this.props.form}>
 
-      <FormItem {...formItemLayout} label = "Name" >
+      <FormItem {...formItemLayout} label = "Name">
         <Input {...getFieldProps('name', {})} type = "text" autoComplete = "off" />
       </FormItem>
 
@@ -276,7 +276,7 @@ class Parser extends React.Component {
 
 
 //edit parser
-    let antdFormEdit = <Form horizonal form = {this.props.form} className = "editParser">
+    let antdFormEdit = <Form horizonal form = {this.props.form}>
 
       <FormItem {...formItemLayout} label = "ID">
         <span {...getFieldProps('id', {})}>{this.props.appStore.parser.id}</span>
@@ -349,7 +349,7 @@ class Parser extends React.Component {
         <Modal
           title = "Add Parser"
           visible = {this.props.appStore.parserAddModalVisible}
-          onOk = {this.onAddOk.bind(this)}
+          onOk = {this.onAddOk}
           onCancel = {this.onAddCancel}
         >
           {antdFormAdd}
@@ -417,7 +417,7 @@ Parser = createForm({
 //name of parser can not be the same !
     if (fields.hasOwnProperty('name')) {
       existSameName = props.appStore.parserList.every (parser => {
-        return parser.name !== fields['name'].value
+      return parser.name !== fields['name'].value
       })
     }
 
@@ -428,6 +428,12 @@ Parser = createForm({
     // if (props.appStore.parser == {})
     //   return { }
 
+    if (!props.appStore.parser.inputType) {
+      props.appStore.parser.inputType = 'RedisChannel'
+    }
+    if (!props.appStore.parser.outputType) {
+      props.appStore.parser.outputType = 'RedisChannel'
+    }
 
     return {
       id: {name: 'id', value: props.appStore.parser.id},
