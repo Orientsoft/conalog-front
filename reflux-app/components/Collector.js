@@ -6,6 +6,7 @@ import AppStore from '../stores/AppStore'
 
 import ActiveCollector from './Collector/ActiveCollector'
 import PassiveCollector from './Collector/PassiveCollector'
+import AgentCollector from './Collector/AgentCollector'
 
 class Collector extends React.Component {
   constructor(props) {
@@ -61,6 +62,18 @@ class Collector extends React.Component {
                   aria-controls="profile"
                   aria-expanded="false">Passive</a>
               </li>
+              <li role="presentation"
+                  className= { this.props.collectorType === 'Agent' ? "active text-center" : "text-center"}
+                  style={{width:"20%"}}>
+                <a href="#"
+                   role="tab"
+                   id="agent-tab"
+                   data-toggle="tab"
+                   onClick={ this.onTabClick }
+                   data-type="Agent"
+                   aria-controls="agent"
+                   aria-expanded="false">Agent</a>
+              </li>
             </ul>
             <div id="myTabContent" className="tab-content p-20">
               <div role="tabpanel"
@@ -75,6 +88,13 @@ class Collector extends React.Component {
                 id="profile"
                 aria-labelledby="profile-tab">
                 <PassiveCollector />
+              </div>
+
+              <div role="tabpanel"
+                   className={ this.props.collectorType === 'Agent' ? "tab-pane fade active in" : "tab-pane fade " }
+                   id="agent"
+                   aria-labelledby="agent-tab">
+                <AgentCollector />
               </div>
 
             </div>

@@ -89,7 +89,22 @@ let AppActions = Reflux.createActions({
   'saveInstance':{asyncResult: true},
   'getInstance':{asyncResult: true},
   'startInstance':{asyncResult: true},
-  'stopInstance':{asyncResult: true}
+  'stopInstance':{asyncResult: true},
+
+  //agentCollector
+  'listAgentCollector':{asyncResult: true},
+  'getAgentCollector':{asyncResult: true},
+  'setAgentCollectorLoadingFlag': {sync: true},
+  'setAgentCollector': {sync: true},
+  'updateCurrentAgentCollector': {sync: true},
+  'saveAgentCollector':{asyncResult: true},
+  'deleteAgentCollector':{asyncResult: true},
+  'clearCurrentAgentCollector':{sync: true},
+  'setAgentCollectorAddModalVisible': {sync: true},
+  'setAgentCollectorEditModalVisible': {sync: true},
+
+  //agentStatus
+  'getAgentStatusList': {asyncResult: true},
 })
 
 export default AppActions

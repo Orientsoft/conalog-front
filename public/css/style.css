@@ -58,7 +58,8 @@ table.table-bordered tbody th, table.table-bordered tbody td{
     height: 38px;
 }
 .ant-table td {
-  max-width: 450px;
+  max-width: 300px;
+  word-wrap:break-word;
 }
 .settingIcon{
   -webkit-animation:change 3s linear infinite;
@@ -68,9 +69,50 @@ table.table-bordered tbody th, table.table-bordered tbody td{
   0%{-webkit-transform:rotate(0deg);transform-origin: 50% 50%;}
   100%{-webkit-transform:rotate(360deg); transform-origin: 50% 50%;}
 }
-.table2{
+.tableParsserStatus{
   width:1118px;
   padding:0px !important;
   margin:10px 10px 10px -15px;
   border:none;
 }
+
+.selectEncoding{
+  margin-left:-5px;
+}
+.ant-form-item{
+  margin-bottom:15px;
+}
+.selectType{
+  margin-left:-37px;
+}
+.editParser .ant-form-item{
+  margin-bottom:10px;
+}
+.editAgentCollector .ant-form-item{
+  margin-bottom:10px;
+}
+
+.addAgentCollector{
+  width:1118px;
+  margin-top:0px;
+  margin-left:-32px;
+  padding:5px 0 10px 20px;
+}
+.tableAgentCollector{
+  width:1118px;
+  padding:10px !important;
+  margin:20px 10px 10px -32px;
+}
+table.table-bordered tbody td{
+  max-width:300px;
+  word-wrap:break-word;
+}
+.collectorIconEye{
+  padding-left: 25px;
+  font-size:15px;
+}
+.parserIconEye{
+  padding-left:15px;
+  font-size:15px;
+}
+

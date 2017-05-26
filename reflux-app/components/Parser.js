@@ -3,6 +3,7 @@ import refluxConnect from 'reflux-connect'
 import AppActions from '../actions/AppActions'
 import AppStore from '../stores/AppStore'
 import _ from 'lodash'
+import { Row, Col } from 'antd';
 
 let Table = require('antd/lib/table')
 let Input = require('antd/lib/input')
@@ -12,6 +13,7 @@ let Form = require('antd/lib/form')
 let Select = require('antd/lib/select')
 let Popover= require('antd/lib/popover')
 let Icon = require('antd/lib/icon')
+let existSameName;
 
 const confirm = Modal.confirm;
 const createForm = Form.create;
@@ -34,20 +36,25 @@ class Parser extends React.Component {
   }
 
   onItemAdd() {
+    existSameName = true;
     AppActions.clearCurrentParser()
     AppActions.setParserAddModalVisible(true)
   }
 
   onAddOk() {
-    AppActions.saveCurrentParser.triggerAsync()
-      .then(() => {
-        AppActions.clearCurrentParser()
-        return AppActions.listParser()
-      })
-      .catch(err => {
-        console.log(err)
-      })
-    AppActions.setParserAddModalVisible(false)
+    if (existSameName) {
+      AppActions.saveCurrentParser.triggerAsync()
+        .then(() => {
+          AppActions.clearCurrentParser()
+          return AppActions.listParser()
+        })
+        .catch(err => {
+          console.log(err)
+        })
+      AppActions.setParserAddModalVisible(false)
+    }else{
+      alert("The name is existed, please change another name!")
+    }
   }
 
   onAddCancel() {
@@ -177,8 +184,8 @@ class Parser extends React.Component {
       {
         title: 'Remark',
         render: (text, record) => (
-          <Popover overlay = {record.remark} title = "Remark">
-            <Icon type = "eye"></Icon>
+          <Popover content = {record.remark} title = "Remark" overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
+            <Icon className="parserIconEye"  type = "eye"></Icon>
           </Popover>
         )
       },
@@ -206,6 +213,10 @@ class Parser extends React.Component {
       labelCol: {span: 6},
       wrapperCol: {span: 18}
     }
+    const formItemLayoutSelect = {
+      labelCol: {span: 11},
+      wrapperCol: {span: 13}
+    }
 
 
 // add parser
@@ -223,30 +234,42 @@ class Parser extends React.Component {
         <Input {...getFieldProps('parameter', {})} type = "text" autoComplete = "off" />
       </FormItem>
 
+      <Row>
+        <Col span = "11" offset = "2" >
+          <FormItem {...formItemLayoutSelect} label = "InputChannel" className="selectType">
+            <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" />
+          </FormItem>
+        </Col>
+
+        <Col span = "11">
+          <FormItem {...formItemLayoutSelect} label = "InputType" >
+            <Select {...getFieldProps('inputType', {})}>
+              <Option value = "RedisChannel" > RedisChannel </Option>
+              <Option value = "NanomsgQueue" > NanomsgQueue </Option>
+            </Select>
+          </FormItem>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col span = "11" offset = "2" >
+          <FormItem {...formItemLayoutSelect} label = "OutputChannel" className="selectType">
+            <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" />
+          </FormItem>
+        </Col>
+
+        <Col span = "11">
+          <FormItem {...formItemLayoutSelect} label = "OutputType">
+            <Select {...getFieldProps('outputType', {})}>
+              <Option value = "RedisChannel" > RedisChannel </Option>
+              <Option value = "NanomsgQueue" > NanomsgQueue </Option>
+            </Select>
+          </FormItem>
+        </Col>
+      </Row>
+
       <FormItem {...formItemLayout} label = "Remark">
-        <Input {...getFieldProps('remark', {})} type = "text" autoComplete = "off" />
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "InputType">
-        <Select {...getFieldProps('inputType', {})}>
-          <Option value = "RedisChannel" > RedisChannel </Option>
-          <Option value = "NanomsgQueue" > NanomsgQueue </Option>
-        </Select>
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "InputChannel">
-        <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" />
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "OutputType">
-        <Select {...getFieldProps('outputType', {})} >
-          <Option value = "RedisChannel" > RedisChannel </Option>
-          <Option value = "NanomsgQueue" > NanomsgQueue </Option>
-        </Select>
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "OutputChannel">
-        <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" />
+        <Input {...getFieldProps('remark', {})} type = "textarea" rows="3" autoComplete = "off" />
       </FormItem>
 
     </Form>
@@ -271,30 +294,42 @@ class Parser extends React.Component {
         <Input {...getFieldProps('parameter', {})} type = "text" autoComplete = "off" />
       </FormItem>
 
+      <Row>
+        <Col span = "11" offset = "2" >
+          <FormItem {...formItemLayoutSelect} label = "InputChannel" className = "selectType">
+            <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" />
+          </FormItem>
+        </Col>
+
+        <Col span = "11">
+          <FormItem {...formItemLayoutSelect} label = "InputType" >
+            <Select {...getFieldProps('inputType', {})}>
+              <Option value = "RedisChannel" > RedisChannel </Option>
+              <Option value = "NanomsgQueue" > NanomsgQueue </Option>
+            </Select>
+          </FormItem>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col span = "11" offset = "2" >
+          <FormItem {...formItemLayoutSelect} label = "OutputChannel" className = "selectType">
+            <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" />
+          </FormItem>
+        </Col>
+
+        <Col span = "11">
+          <FormItem {...formItemLayoutSelect} label = "OutputType">
+            <Select {...getFieldProps('outputType', {})}>
+              <Option value = "RedisChannel" > RedisChannel </Option>
+              <Option value = "NanomsgQueue" > NanomsgQueue </Option>
+            </Select>
+          </FormItem>
+        </Col>
+      </Row>
+
       <FormItem {...formItemLayout} label = "Remark">
-        <Input {...getFieldProps('remark', {})} type = "text" autoComplete = "off" />
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "InputType">
-        <Select {...getFieldProps('inputType', {})} >
-          <Option value = "RedisChannel"> RedisChannel </Option>
-          <Option value = "NanomsgQueue"> NanomsgQueue </Option>
-        </Select>
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "InputChannel">
-        <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" />
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "OutputType">
-        <Select {...getFieldProps('outputType', {})}>
-          <Option value = "RedisChannel" > RedisChannel </Option>
-          <Option value = "NanomsgQueue" > NanomsgQueue </Option>
-        </Select>
-      </FormItem>
-
-      <FormItem {...formItemLayout} label = "OutputChannel">
-        <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" />
+        <Input {...getFieldProps('remark', {})} type = "textarea" rows = "3" autoComplete = "off" />
       </FormItem>
 
     </Form>
@@ -380,17 +415,11 @@ Parser = createForm({
 
 
 //name of parser can not be the same !
-    var existSameName = true
     if (fields.hasOwnProperty('name')) {
       existSameName = props.appStore.parserList.every (parser => {
-        return parser.name !== fields['name'].value
+      return parser.name !== fields['name'].value
       })
     }
-    if (!existSameName) {
-      stateObj[fields['name'].name] = ''
-      alert('The name is existed, please change another name!')
-    }
-
 
     AppActions.updateCurrentParser(stateObj)
   },
@@ -398,6 +427,13 @@ Parser = createForm({
     console.log('mapPropsToFields', props)
     // if (props.appStore.parser == {})
     //   return { }
+
+    if (!props.appStore.parser.inputType) {
+      props.appStore.parser.inputType = 'RedisChannel'
+    }
+    if (!props.appStore.parser.outputType) {
+      props.appStore.parser.outputType = 'RedisChannel'
+    }
 
     return {
       id: {name: 'id', value: props.appStore.parser.id},

@@ -7,6 +7,8 @@ import AppStore from '../stores/AppStore'
 import ActiveStatus from './Status/ActiveStatus'
 import PassiveStatus from './Status/PassiveStatus'
 import ParserStatus from './Status/ParserStatus'
+import AgentStatus from './Status/AgentStatus'
+
 
 class Status extends React.Component {
   constructor(props) {
@@ -63,6 +65,18 @@ class Status extends React.Component {
                   aria-expanded="false">Passive</a>
               </li>
               <li role="presentation"
+                  className= { this.props.statusType === 'Agent' ? "active text-center" : "text-center"}
+                  style={{width:"20%"}}>
+                <a href="#"
+                   role="tab"
+                   id="agent-tab"
+                   data-toggle="tab"
+                   onClick={ this.onTabClick }
+                   data-type="Agent"
+                   aria-controls="agent"
+                   aria-expanded="false">Agent</a>
+              </li>
+              <li role="presentation"
                   className= { this.props.statusType === 'Parser' ? "active text-center" : "text-center"}
                   style={{width:"20%"}}>
                 <a href="#"
@@ -88,6 +102,13 @@ class Status extends React.Component {
                 id="profile"
                 aria-labelledby="profile-tab">
                 <PassiveStatus />
+              </div>
+
+              <div role="tabpanel"
+                   className={ this.props.statusType === 'Agent' ? "tab-pane fade active in" : "tab-pane fade " }
+                   id="agent"
+                   aria-labelledby="agent-tab">
+                <AgentStatus />
               </div>
 
               <div role="tabpanel"
