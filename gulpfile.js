@@ -45,6 +45,7 @@ gulp.task('watch', function() {
   watcher.on('update', build)
     .on('time', (time) => {
       gUtil.log('Building time: ', time, 'ms');
+      exec('node ./bin/www', { cwd: process.cwd() }, () => console.log('Server restarted ...'))
     });
 
   build();

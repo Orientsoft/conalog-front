@@ -3,6 +3,7 @@ import React from "react"
 import refluxConnect from 'reflux-connect'
 import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
+import constants from '../../const'
 // import gear from "../../../public/img/gear.png"
 
 let Table = require('antd/lib/table')
@@ -21,6 +22,18 @@ class ParserStatus extends React.Component{
   componentDidMount() {
     AppActions.listParser();
     AppActions.listInstance();
+
+     this.loop = setInterval(function() {
+      AppActions.listInstance()
+    }, constants.STATUS_REFRESH_INTERVAL)
+  }
+
+  componentWillUnmount() {
+    // stop list loop
+    clearInterval(this.loop)
+
+    if (_.isFunction(this.unsubscribe))
+      this.unsubscribe();
   }
 
   onInstanceStart(e) {
@@ -194,7 +207,7 @@ class ParserStatus extends React.Component{
       {
         title: "Date",
         sorter: (a, b) => a.ts - b.ts,
-        dataIndex: 'ts',
+        dataIndex: 'lastActivity.ts',
         render: (ts) => {
           let d = new Date(parseInt(ts)).toLocaleString()
           return d
@@ -248,7 +261,7 @@ class ParserStatus extends React.Component{
 const ParserInstanceConnect = refluxConnect({
   appStore: AppStore
 })(state => {
-  // console.log('mapStateToProps', state)
+  console.log('mapStateToProps', state)
 
   return {
     appStore: state.appStore

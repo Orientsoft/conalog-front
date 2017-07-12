@@ -68,6 +68,7 @@ class Nav extends React.Component {
                 <li><a className={ this.props.location == 'Parser' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='Parser'>Parser</a></li>
                 <li><a className={ this.props.location == 'Status' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='Status'>Status</a></li>
                 <li><a className={ this.props.location == 'History' ? "active" : ""} href="#" onClick={ this.onNavClick } data-location='History'>History</a></li>
+                <li><a className={ this.props.location == 'Document' ? "active" : ""} href="https://orientsoft.github.io/conalog-doc/" target="view_window">Document</a></li>
               </ul>
               <ul className="nav navbar-nav navbar-right hidden-sm">
                 <li><a className="dropdown-toggle profile" data-toggle="dropdown" href="/about/" >Admin</a>

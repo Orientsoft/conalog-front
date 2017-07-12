@@ -46,8 +46,11 @@ class History extends React.Component {
 
     AppActions.getHistoryPage({
       pageNo: 1,
-      pageSize: 10
+      pageSize: 10,
+      sortField:'ts',
+      sortOrder:'descend'
     })
+    // AppActions.setHistorySorter('descend')
   }
 
   componentWillUnmount() {
@@ -62,7 +65,14 @@ class History extends React.Component {
   }
 
   handleHistoryTableChange(pager, filters, sorter) {
+    console.log('sorter',sorter)
     AppActions.setHistoryPager(pager)
+    if(sorter && !_(_.pick(sorter, ['field', 'order'])).size()) {
+      sorter.field = 'ts';
+      sorter.order = 'descend'
+    }
+    console.log('sorter2',sorter)
+
     AppActions.setHistorySorter(sorter)
     AppActions.setHistoryFilters(filters)
 
@@ -74,6 +84,7 @@ class History extends React.Component {
       sortOrder: sorter.order,
       ...filters
     }
+    console.log('paginfo:',pageInfo)
     if (this.state.historyEventIdFilter != '') {
       pageInfo.eventId = [ parseInt(this.state.historyEventIdFilter) ]
     }
@@ -150,7 +161,8 @@ class History extends React.Component {
         render: (ts) => {
           let d = new Date(parseInt(ts)).toLocaleString()
           return d
-        }
+        },
+
       },
       {
         title: 'Module',

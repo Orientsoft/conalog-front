@@ -11,6 +11,7 @@ import $ from 'jquery'
 import Crypto from 'crypto-js'
 import sha256 from 'crypto-js/sha256'
 import aes from 'crypto-js/aes'
+import _ from 'lodash'
 import { message } from 'antd'
 
 let conalogUrl = 'http://' + config.conalogHost + ':' + config.conalogPort.toString()
@@ -84,12 +85,14 @@ let state = {
   activeCollectorList: [],
   activeCollectorChecklist: [],
   activeCollectorTime: null,
+  activeCollectorListAll:[],
 
   // Passvice Collector
   passiveCollectorUpdated: false,
   passiveCollector: { type: 'LongScript' },
   passiveCollectorList: [],
   passiveCollectorChecklist: [],
+  passiveCollectorListAll:[],
 
   // Login
   loginUser: '',
@@ -125,6 +128,7 @@ let state = {
   //AgentCollector
   agentCollector:{},
   agentCollectorList:[],
+  agentCollectorListAll:[],
   agentCollectorLoadingFlag:false,
   agentCollectorEditModalVisible:false,
   agentCollectorAddModalVisible:false,
@@ -311,6 +315,7 @@ let AppStore = Reflux.createStore({
 
   onSetHistorySorter: async function(sorter) {
     state.historySorter = sorter
+    console.log('historySorter',state.historySorter)
     this.trigger(state)
   },
 
@@ -340,6 +345,7 @@ let AppStore = Reflux.createStore({
         success: (collectors) => {
           // Issue #1 - offset with timezone
           // fixed by xd, 2016.07.06
+          // console.log('showlist',collectors)
           let acList = collectors.map(collector => {
             if (collector.type == 'Interval') {
               let trigger = parseInt(collector.trigger)
@@ -348,11 +354,16 @@ let AppStore = Reflux.createStore({
               trigger += offset
               collector.trigger = trigger.toString()
             }
-
             return collector
           })
-
           state.activeCollectorList = acList
+          // state.activeCollectorList = collectors
+
+
+          // console.log('showlist2',acList)
+
+          // cb & cb(state)
+          state.activeCollectorListAll = state.activeCollectorList
           this.trigger(state)
         },
         dataType: 'json'
@@ -399,7 +410,7 @@ let AppStore = Reflux.createStore({
 
   onEditActiveCollector: async function() {
     // console.log(state.activeCollectorChecklist)
-    let that = this
+    // let that = this
     // load the first one in checklist to table
     let id = state.activeCollectorChecklist[0]
 
@@ -411,7 +422,7 @@ let AppStore = Reflux.createStore({
         beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         success: (collector) => {
           state.activeCollector = collector
-          state.activeCollector._id = undefined
+          // state.activeCollector._id = undefined
 
           // Issue #1 - offset with timezone
           // fixed by xd, 2016.07.06
@@ -423,9 +434,13 @@ let AppStore = Reflux.createStore({
             trigger += offset
             triggerDate = new Date(trigger)
           }
-
           state.activeCollectorTime = triggerDate
+
+
+          // state.activeCollectorTime = new Date(parseInt(collector.trigger))
+
           this.trigger(state)
+          AppActions.editActiveCollector.completed()
         },
         method: 'GET',
         dataType: 'json'
@@ -438,6 +453,7 @@ let AppStore = Reflux.createStore({
 
   onSetActiveCollector: function(field, value) {
     state.activeCollector[field] = value
+    console.log('success',state.activeCollector)
     this.trigger(state)
   },
 
@@ -458,7 +474,7 @@ let AppStore = Reflux.createStore({
       crossDomain: true,
       xhrFields: { withCredentials: true },
       beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
-      data: { list: state.activeCollectorChecklist }
+      data: { list: state.activeCollectorChecklist}
     })
     .fail(err => {
       message.error('onDeleteActiveCollector Error: ' + JSON.stringify(err), 5)
@@ -481,7 +497,15 @@ let AppStore = Reflux.createStore({
   },
 
   onUpdateActiveCollector: async function(activeCollector) {
+    // delete activeCollector._id
     // ajax update
+    if (activeCollector.type == 'Interval') {
+      let now = new Date()
+      let offset = now.getTimezoneOffset() * 60 * 1000 // convert minute to ms
+      activeCollector.trigger -= offset
+    }
+
+    console.log('activecollector:',activeCollector)
     $.ajax(conalogUrl + '/collectors', {
       method: 'PUT',
       crossDomain: true,
@@ -510,6 +534,7 @@ let AppStore = Reflux.createStore({
         dataType: 'json',
         success: (collectors) => {
           state.passiveCollectorList = collectors
+          state.passiveCollectorListAll = state.passiveCollectorList
           this.trigger(state)
         }
       },
@@ -555,7 +580,7 @@ let AppStore = Reflux.createStore({
         beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         success: (collector) => {
           state.passiveCollector = collector
-          state.passiveCollector._id = undefined
+          // state.passiveCollector._id = undefined
           this.trigger(state)
         },
         method: 'GET',
@@ -793,8 +818,10 @@ let AppStore = Reflux.createStore({
 
             return status
           })
-
           state.activeStatusList = asList
+
+          // state.activeStatusList = statusList
+
           this.trigger(state)
         })
       })
@@ -812,7 +839,10 @@ let AppStore = Reflux.createStore({
         method: 'GET',
         success: (statusList => {
           state.passiveStatusList = statusList
+          state.passiveStatusListAll = _.cloneDeep(statusList)
+          console.log('mmmm',state.passiveStatusListAll)
           this.trigger(state)
+          AppActions.getPassiveStatusList.completed()
         })
       })
       .fail(err => {
@@ -850,17 +880,18 @@ let AppStore = Reflux.createStore({
         },
         method: 'GET',
         success: data => {
-	  state.certList = data;
+	        state.certList = data;
           for(var i=0; i<data.length; i++){
             var pass = state.certList[i].pass;
             var temp = "";
             for(var j = 0; j < pass.length; j++){
               temp = temp + "*"
             }
-	    state.certList[i].replacePass = temp;
+	          state.certList[i].replacePass = temp;
             state.certList[i].originPass = state.certList[i].replacePass;
           }
           this.trigger(state)
+          AppActions.listCert.completed()
         }
       })
       .fail(err => {
@@ -1221,7 +1252,7 @@ let AppStore = Reflux.createStore({
 
   //agentCollector
   onListAgentCollector() {
-    $.ajax(conalogUrl + '/collectors?category=agent',
+    return $.ajax(conalogUrl + '/collectors?category=agent',
       {
         crossDomain: true,
         xhrFields: { withCredentials: true },
@@ -1232,6 +1263,8 @@ let AppStore = Reflux.createStore({
         success: data => {
           console.log('AppStore::onListAgentCollector', data)
           state.agentCollectorList = data;
+          // cb && cb(state)
+          state.agentCollectorListAll = state.agentCollectorList;
           this.trigger(state)
         }
       })
@@ -1287,8 +1320,9 @@ let AppStore = Reflux.createStore({
       })
   },
 
-  onGetAgentCollector(name, cb) {
+  onGetAgentCollector(name) {
     console.log("getname",name)
+
     $.ajax(conalogUrl + '/collectors?name=' + name,
       {
         crossDomain: true,
@@ -1300,7 +1334,6 @@ let AppStore = Reflux.createStore({
         success: data => {
           console.log("getagentcollector",data);
           state.agentCollector = data[0];
-          cb(data[0]);
           this.trigger(state);
         }
       })
@@ -1308,6 +1341,28 @@ let AppStore = Reflux.createStore({
         message.error('onGetagentCollector Error: ' + JSON.stringify(err), 5)
       })
   },
+
+  onSearchAgentCollector(name){
+    console.log("getname",name)
+    $.ajax(conalogUrl + '/collectors?name=' + name,
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'GET',
+        success: data => {
+          console.log("getagentcollector",data);
+          state.agentCollectorList = data;
+          this.trigger(state);
+        }
+      })
+      .fail(err => {
+        message.error('onGetagentCollector Error: ' + JSON.stringify(err), 5)
+      })
+  },
+
 
   onDeleteAgentCollector() {
     console.log(state.agentCollector._id)

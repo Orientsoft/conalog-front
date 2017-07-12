@@ -102,6 +102,7 @@ let AppActions = Reflux.createActions({
   'clearCurrentAgentCollector':{sync: true},
   'setAgentCollectorAddModalVisible': {sync: true},
   'setAgentCollectorEditModalVisible': {sync: true},
+  'searchAgentCollector':{sync: true},
 
   //agentStatus
   'getAgentStatusList': {asyncResult: true},

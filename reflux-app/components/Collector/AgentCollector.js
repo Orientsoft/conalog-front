@@ -4,6 +4,7 @@ import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
 import _ from 'lodash'
 import { Row, Col } from 'antd';
+import classNames from 'classnames';
 
 let Table = require('antd/lib/table')
 let Input = require('antd/lib/input')
@@ -18,16 +19,28 @@ const confirm = Modal.confirm;
 const createForm = Form.create;
 const FormItem = Form.Item;
 const Option = Select.Option;
+const InputGroup = Input.Group;
 let validates
 let existSameName
 
 class AgentCollector extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      selectContent:'name',
+      searchContent:'',
+      agentCollector:{},
+      agentCollectorList:[],
+      agentCollectorListAll:[]
+    }
   }
 
   componentDidMount() {
-    AppActions.listAgentCollector();
+    this.unsubscribe = AppStore.listen(function(state) {
+      this.setState(state);
+    }.bind(this));
+
+    AppActions.listAgentCollector()
   }
 
   componentWillUnmount() {
@@ -56,6 +69,7 @@ class AgentCollector extends React.Component {
   }
 
   onAddOk() {
+
     var result = Object.keys(validates).filter(field => validates[field].status === false)
     if (!result.length && existSameName) {
       AppActions.saveAgentCollector.triggerAsync()
@@ -103,8 +117,6 @@ class AgentCollector extends React.Component {
   }
 
   onEditOk() {
-    var result = Object.keys(validates).filter(field => validates[field].status === false)
-    if(!result.length){
       AppActions.saveAgentCollector.triggerAsync()
         .then(() => {
           AppActions.clearCurrentAgentCollector()
@@ -114,12 +126,6 @@ class AgentCollector extends React.Component {
           console.log(err)
         })
       AppActions.setAgentCollectorEditModalVisible(false)
-    }else{
-      var tip = 'Validate error: \n'
-      result.forEach(field => tip += validates[field].msg + '\n')
-      alert(tip)
-    }
-
   }
 
   onEditCancel() {
@@ -152,6 +158,45 @@ class AgentCollector extends React.Component {
 
   onDeleteCancel() {
     AppActions.clearCurrentAgentCollector()
+  }
+
+  handleSelect (e) {
+    this.setState({
+      selectContent: e
+    })
+  }
+
+  handleFilterChange(e) {
+    this.state.searchContent = e.target.value
+    this.state.agentCollectorList =  this.state.agentCollectorListAll
+  }
+
+
+  handleSearch(e) {
+    if(this.state.searchContent == ""){
+      AppActions.listAgentCollector();
+    }else {
+      var replaceList = this.state.agentCollectorListAll;
+      var searchContent = [];
+
+      if(this.state.selectContent == "name"){
+        for( var i = 0; i<replaceList.length; i++) {
+          if (replaceList[i].name.indexOf(this.state.searchContent) !== -1) {
+            searchContent.push(replaceList[i])
+          }
+        }
+      }else{
+        for( var i = 0; i<replaceList.length; i++) {
+          if (replaceList[i].param.indexOf(this.state.searchContent) !== -1) {
+            searchContent.push(replaceList[i])
+          }
+        }
+      }
+
+      this.setState({
+        agentCollectorList: searchContent
+      })
+    }
   }
 
 
@@ -233,11 +278,13 @@ class AgentCollector extends React.Component {
 
     let antdTable = <Table rowKey = {line => line._id}
                            columns = {antdTableColumns}
-                           dataSource = {this.props.appStore.agentCollectorList}
+                           dataSource = {this.state.agentCollectorList}
                            loading = {this.props.appStore.agentCollectorLoadingFlag}
     />
 
+
     const { getFieldProps } = this.props.form
+
 
     const formItemLayout = {
       labelCol: {span: 6},
@@ -247,10 +294,17 @@ class AgentCollector extends React.Component {
       labelCol: {span: 9},
       wrapperCol: {span: 15}
     }
+    const buttonClass = classNames({
+      'ant-search-btn': true,
+    })
+    const searchClass = classNames({
+      'ant-search-input': true,
+    })
 
 
   // add agentCollector
     let antdFormAdd = <Form horizonal form = {this.props.form}>
+
 
       <FormItem {...formItemLayout} label = "Name" required help = "name is required">
         <Input {...getFieldProps('name', {})} type = "text" autoComplete = "off" />
@@ -262,7 +316,7 @@ class AgentCollector extends React.Component {
 
       <Row>
         <Col span = "11" offset = "2" >
-          <FormItem {...formItemLayoutSelect} label = "Encoding" className = "selectEncoding">
+          <FormItem {...formItemLayoutSelect} label = "Encoding" className = "selectEncoding" required>
             <Select {...getFieldProps('encoding',{})}>
               <Option value="UTF-8" key="UTF-8">UTF-8</Option>
               <Option key="ASCII">ASCII</Option>
@@ -282,7 +336,7 @@ class AgentCollector extends React.Component {
           </FormItem>
         </Col>
         <Col span = "11">
-          <FormItem {...formItemLayoutSelect} label = "Channel">
+          <FormItem {...formItemLayoutSelect} label = "Channel" required>
             <Select {...getFieldProps('channel', {})}>
               <Option key = "Redis PubSub" > Redis PubSub </Option>
               <Option key = "Nanomsg Queue" > Nanomsg Queue </Option>
@@ -291,7 +345,7 @@ class AgentCollector extends React.Component {
         </Col>
       </Row>
 
-      <FormItem {...formItemLayout} label = "Description" required help = "description is required">
+       <FormItem {...formItemLayout} label = "Description" required help = "description is required">
         <Input {...getFieldProps('desc', {})} type = "textarea" rows = "3" autoComplete = "off" />
       </FormItem>
 
@@ -350,7 +404,6 @@ class AgentCollector extends React.Component {
 
     </Form>
 
-
     return (
       <div className = "container">
         <Modal
@@ -377,8 +430,26 @@ class AgentCollector extends React.Component {
           </div>
         </div>
 
-        <div className = "row clbody tableAgentCollector">
-          <div className = "ant-col-sm-24 p-t-10 ">
+
+        <div className="row clbody tableAgentCollector">
+          <div className="ant-col-sm-4 p-t-10 p-b-10 pull-right agentCollectorSelect">
+            <div className="ant-search-input-wrapper ">
+              <div className="selectDiv">
+                <Select className="searchSelect" defaultValue="name" onChange={this.handleSelect.bind(this)}>
+                  <Option value="name" selected> Name </Option>
+                  <Option value="parameter"> Parameter </Option>
+                </Select>
+              </div>
+              <InputGroup className={searchClass}>
+                <Input  data-name="name" onChange={this.handleFilterChange.bind(this)} onPressEnter={this.handleSearch.bind(this)} />
+                <div className="ant-input-group-wrap">
+                  <Button icon="search" data-name="name" className={buttonClass}
+                          onClick={this.handleSearch.bind(this)}/>
+                </div>
+              </InputGroup>
+            </div>
+          </div>
+          <div className="ant-col-sm-24 p-t-10 ">
             { antdTable }
           </div>
         </div>
@@ -430,7 +501,7 @@ AgentCollector = createForm({
     AppActions.updateCurrentAgentCollector(stateObj)
   },
   mapPropsToFields: (props) => {
-    console.log('mapPropsToFieldsAgent', props)
+    // console.log('mapPropsToFieldsAgent', props)
     // set defaultValue
     if (!props.appStore.agentCollector.encoding) {
       props.appStore.agentCollector.encoding = 'UTF-8'

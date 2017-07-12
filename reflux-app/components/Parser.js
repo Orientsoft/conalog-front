@@ -14,6 +14,7 @@ let Select = require('antd/lib/select')
 let Popover= require('antd/lib/popover')
 let Icon = require('antd/lib/icon')
 let existSameName;
+let validates;
 
 const confirm = Modal.confirm;
 const createForm = Form.create;
@@ -37,12 +38,39 @@ class Parser extends React.Component {
 
   onItemAdd() {
     existSameName = true;
+    validates = {
+      name: {
+        msg: 'name  can\'t be empty',
+        status: false
+      },
+      path:{
+        msg: 'path can\'t be empty',
+        status: false
+      },
+      parameter: {
+        msg: 'parameter can\'t be empty',
+        status: false
+      },
+      inputChannel:{
+        msg: 'inputChannel can\'t be empty',
+        status: false
+      },
+      outputChannel:{
+        msg: 'outputChannel can\'t be empty',
+        status: false
+      },
+      remark: {
+        msg: 'remark can\'t be empty',
+        status: false
+      }
+    }
     AppActions.clearCurrentParser()
     AppActions.setParserAddModalVisible(true)
   }
 
   onAddOk() {
-    if (existSameName) {
+    var result = Object.keys(validates).filter(field => validates[field].status === false)
+    if (!result.length && existSameName) {
       AppActions.saveCurrentParser.triggerAsync()
         .then(() => {
           AppActions.clearCurrentParser()
@@ -52,8 +80,14 @@ class Parser extends React.Component {
           console.log(err)
         })
       AppActions.setParserAddModalVisible(false)
-    }else{
-      alert("The name is existed, please change another name!")
+    }
+    if(!existSameName){
+      alert('The name is existed, please change another name!')
+    }
+    if (result.length) {
+      var tip = 'Validate error: \n'
+      result.forEach(field => tip += validates[field].msg + '\n')
+      alert(tip)
     }
   }
 
@@ -222,27 +256,28 @@ class Parser extends React.Component {
 // add parser
     let antdFormAdd = <Form horizonal form = {this.props.form}>
 
-      <FormItem {...formItemLayout} label = "Name">
-        <Input {...getFieldProps('name', {})} type = "text" autoComplete = "off" />
+      <FormItem {...formItemLayout} label = "Name" required >
+        <Input {...getFieldProps('name', {})} type = "text" autoComplete = "off" placeholder="name is required"/>
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "Path">
-        <Input {...getFieldProps('path', {})} type = "text" autoComplete = "off" />
+      <FormItem {...formItemLayout} label = "Path" required >
+        <Input {...getFieldProps('path', {})}  type = "text" autoComplete = "off"  placeholder="path is required"/>
+
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "Parameter">
-        <Input {...getFieldProps('parameter', {})} type = "text" autoComplete = "off" />
+      <FormItem {...formItemLayout} label = "Parameter" required >
+        <Input {...getFieldProps('parameter', {})} type = "text" autoComplete = "off" placeholder="parameter is required"/>
       </FormItem>
 
       <Row>
         <Col span = "11" offset = "2" >
-          <FormItem {...formItemLayoutSelect} label = "InputChannel" className="selectType">
-            <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" />
+          <FormItem {...formItemLayoutSelect} label = "InputChannel" className="selectType" required >
+            <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" placeholder="inputChannel is required" />
           </FormItem>
         </Col>
 
         <Col span = "11">
-          <FormItem {...formItemLayoutSelect} label = "InputType" >
+          <FormItem {...formItemLayoutSelect} label = "InputType" required >
             <Select {...getFieldProps('inputType', {})}>
               <Option value = "RedisChannel" > RedisChannel </Option>
               <Option value = "NanomsgQueue" > NanomsgQueue </Option>
@@ -253,13 +288,13 @@ class Parser extends React.Component {
 
       <Row>
         <Col span = "11" offset = "2" >
-          <FormItem {...formItemLayoutSelect} label = "OutputChannel" className="selectType">
-            <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" />
+          <FormItem {...formItemLayoutSelect} label = "OutputChannel" className="selectType" required>
+            <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" placeholder="outputChannel is required"/>
           </FormItem>
         </Col>
 
         <Col span = "11">
-          <FormItem {...formItemLayoutSelect} label = "OutputType">
+          <FormItem {...formItemLayoutSelect} label = "OutputType" required >
             <Select {...getFieldProps('outputType', {})}>
               <Option value = "RedisChannel" > RedisChannel </Option>
               <Option value = "NanomsgQueue" > NanomsgQueue </Option>
@@ -268,8 +303,8 @@ class Parser extends React.Component {
         </Col>
       </Row>
 
-      <FormItem {...formItemLayout} label = "Remark">
-        <Input {...getFieldProps('remark', {})} type = "textarea" rows="3" autoComplete = "off" />
+      <FormItem {...formItemLayout} label = "Remark" required >
+        <Input {...getFieldProps('remark', {})} type = "textarea" rows="3" autoComplete = "off" placeholder="remark is required"/>
       </FormItem>
 
     </Form>
@@ -334,15 +369,7 @@ class Parser extends React.Component {
 
     </Form>
 
-//search button and input
-    {/*const buttonClass = classNames({*/}
-//       'ant-search-btn': true,
-//       // 'ant-search-btn-noempty': !!this.state.historyEventIdFilter.trim()
-//     })
-//     const searchClass = classNames({
-//       'ant-search-input': true,
-//       // 'ant-search-input-focus': this.state.historyEventIdFilterFocus
-//     })
+
 
     return (
       <div className = "container">
@@ -371,18 +398,6 @@ class Parser extends React.Component {
         </div>
 
         <div className = "row clbody">
-          {/*search */}
-          {/*<div className="ant-col-sm-4 p-t-10 p-b-10 pull-right">*/}
-          {/*<div className="ant-search-input-wrapper">*/}
-          {/*<InputGroup className={searchClass}>*/}
-          {/*<Input placeholder="" data-name="" /*defaultValue={}/>*/}
-          {/*<div className="ant-input-group-wrap">*/}
-          {/*<Button icon="search" data-name="" className={buttonClass}  />*/}
-          {/*</div>*/}
-          {/*</InputGroup>*/}
-          {/*</div>*/}
-          {/*</div>*/}
-
           <div className = "ant-col-sm-24 p-t-10">
             { antdTable }
           </div>
@@ -419,6 +434,26 @@ Parser = createForm({
       existSameName = props.appStore.parserList.every (parser => {
       return parser.name !== fields['name'].value
       })
+    }
+
+    //input can not be empty
+    if(fields.hasOwnProperty('name')){
+      validates.name.status = !!fields['name'].value
+    }
+    if(fields.hasOwnProperty('path')){
+      validates.path.status = !!fields['path'].value
+    }
+    if(fields.hasOwnProperty('parameter')){
+      validates.parameter.status = !!fields['parameter'].value
+    }
+    if(fields.hasOwnProperty('inputChannel')){
+      validates.inputChannel.status = !!fields['inputChannel'].value
+    }
+    if(fields.hasOwnProperty('outputChannel')){
+      validates.outputChannel.status = !!fields['outputChannel'].value
+    }
+    if(fields.hasOwnProperty('remark')) {
+      validates.remark.status = !!fields['remark'].value
     }
 
     AppActions.updateCurrentParser(stateObj)

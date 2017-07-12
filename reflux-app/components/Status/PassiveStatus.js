@@ -69,23 +69,23 @@ class PassiveStatus extends React.Component {
 
         switch (line.status.lastActivity.status) {
           case 'Success':
-          lastActivityMsg = <td> <Tag color="green"> stdout </Tag> { line.status.lastActivity.data.toString() } </td>
-          break
+            lastActivityMsg = <td> <Tag color="green"> stdout </Tag> { line.status.lastActivity.data.toString() } </td>
+            break
 
           case 'Error':
-          lastActivityMsg = <td> <Tag color="red"> stderr </Tag> { line.status.lastActivity.data.toString() } </td>
-          break
+            lastActivityMsg = <td> <Tag color="red"> stderr </Tag> { line.status.lastActivity.data.toString() } </td>
+            break
 
           default:
-          lastActivityMsg = <td> <Tag color="yellow"> Pending </Tag> </td>
-          break
+            lastActivityMsg = <td> <Tag color="yellow"> Pending </Tag> </td>
+            break
         }
 
         operation = <Switch data-id={line._id}
-          data-switch={false}
-          defaultChecked={true}
-          onChange={this.setPassiveSwitch}
-          size="small" />
+                            data-switch={false}
+                            defaultChecked={true}
+                            onChange={this.setPassiveSwitch}
+                            size="small" />
       }
       else {
         execCount = 0
@@ -93,10 +93,10 @@ class PassiveStatus extends React.Component {
         lastActivityMsg = <td> <Tag color="yellow"> N/A </Tag> </td>
 
         operation = <Switch data-id={line._id}
-          data-switch={true}
-          defaultChecked={false}
-          onChange={this.setPassiveSwitch}
-          size="small" />
+                            data-switch={true}
+                            defaultChecked={false}
+                            onChange={this.setPassiveSwitch}
+                            size="small" />
       }
 
       if (idx == -1)
@@ -135,31 +135,31 @@ class PassiveStatus extends React.Component {
       <div>
         <div className=" p-b-10 p-t-10">
           <table id="demo-custom-toolbar"  data-toggle="table"
-                     data-toolbar="#demo-delete-row"
-                     data-search="true"
-                     data-show-refresh="true"
-                     data-show-toggle="true"
-                     data-show-columns="true"
-                     data-sort-name="id"
-                     data-page-list="[5, 10, 20]"
-                     data-page-size="5"
-                     data-pagination="true" data-show-pagination-switch="true" className="table table-bordered table-hover">
+                 data-toolbar="#demo-delete-row"
+                 data-search="true"
+                 data-show-refresh="true"
+                 data-show-toggle="true"
+                 data-show-columns="true"
+                 data-sort-name="id"
+                 data-page-list="[5, 10, 20]"
+                 data-page-size="5"
+                 data-pagination="true" data-show-pagination-switch="true" className="table table-bordered table-hover">
             <thead>
-              <tr>
-                <th data-field="name" data-sortable="true">Name</th>
-                <th data-field="date" data-sortable="true" data-formatter="dateFormatter">Date</th>
-                <th data-field="amount" data-align="center" data-sortable="true" data-sorter="">Type</th>
-                <th data-field="cmd" data-align="center" data-sortable="true" data-sorter="">Command</th>
-                <th data-field="parameter" data-align="center" data-sortable="true" data-sorter="">Parameter</th>
-                <th data-field="host" data-align="center" data-sortable="true" data-sorter="">Host</th>
-                <th data-field="execCount" data-align="center" data-sortable="true" data-sorter="">Msg Count</th>
-                <th data-field="lastTs" data-align="center" data-sortable="true" data-sorter="">Last Activity Time</th>
-                <th data-field="lastMsg" data-align="center" data-sortable="true" data-sorter="">Last Activity Message</th>
-                <th data-field="operation" data-align="center" data-sortable="true" data-sorter="">Operation</th>
-              </tr>
+            <tr>
+              <th data-field="name" data-sortable="true">Name</th>
+              <th data-field="date" data-sortable="true" data-formatter="dateFormatter">Date</th>
+              <th data-field="amount" data-align="center" data-sortable="true" data-sorter="">Type</th>
+              <th data-field="cmd" data-align="center" data-sortable="true" data-sorter="">Command</th>
+              <th data-field="parameter" data-align="center" data-sortable="true" data-sorter="">Parameter</th>
+              <th data-field="host" data-align="center" data-sortable="true" data-sorter="">Host</th>
+              <th data-field="execCount" data-align="center" data-sortable="true" data-sorter="">Msg Count</th>
+              <th data-field="lastTs" data-align="center" data-sortable="true" data-sorter="">Last Activity Time</th>
+              <th data-field="lastMsg" data-align="center" data-sortable="true" data-sorter="">Last Activity Message</th>
+              <th data-field="operation" data-align="center" data-sortable="true" data-sorter="">Operation</th>
+            </tr>
             </thead>
             <tbody>
-              { passiveStatusTable }
+            { passiveStatusTable }
             </tbody>
           </table>
         </div>
