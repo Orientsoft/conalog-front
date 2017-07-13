@@ -52,14 +52,14 @@ class Home extends React.Component {
               <p className="text-center orient-ico "><i data-nav="Parser" onClick={this.nav.bind(this)} className="fa fa-cogs"></i></p>
               <div className="caption">
                 <h3 data-nav="Parser" onClick={this.nav.bind(this)} >Parser</h3>
-                <p> Quickly build parser flows and write parser arammar interactivelv.</p>
+                <p> Quickly build parser flows and write parser arammar interactively.</p>
               </div>
             </div>
             <div className="ant-col-md-6 text-center">
               <p className="text-center orient-ico"><i data-nav="Status" onClick={this.nav.bind(this)} className="fa  fa-paper-plane-o"></i></p>
               <div className="caption">
                 <h3 data-nav="Status" onClick={this.nav.bind(this)}>Status</h3>
-                <p> Watch your collectocs and parser flows in a graphic way. </p>
+                <p> Watch your collectors and parser flows in a graphic way. </p>
               </div>
             </div>
             <div className="ant-col-md-6 text-center">

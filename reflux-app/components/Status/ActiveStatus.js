@@ -66,7 +66,7 @@ class ActiveStatus extends React.Component {
       if (line.status.lastActivity != null) {
         execCount = line.status.lastActivity.execCounter
         lastActivityTs = new Date(parseInt(line.status.lastActivity.ts)).toLocaleString()
-        console.log(JSON.stringify(line))
+        // console.log(JSON.stringify(line))
         switch (line.status.lastActivity.status) {
           case 'Success':
           lastActivityMsg = <td>

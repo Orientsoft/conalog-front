@@ -58,7 +58,7 @@ table.table-bordered tbody th, table.table-bordered tbody td{
     height: 38px;
 }
 .ant-table td {
-  max-width: 300px;
+  max-width: 280px;
   word-wrap:break-word;
 }
 .settingIcon{
@@ -104,7 +104,7 @@ table.table-bordered tbody th, table.table-bordered tbody td{
   margin:20px 10px 10px -32px;
 }
 table.table-bordered tbody td{
-  max-width:300px;
+  max-width:260px;
   word-wrap:break-word;
 }
 .collectorIconEye{
@@ -115,4 +115,41 @@ table.table-bordered tbody td{
   padding-left:15px;
   font-size:15px;
 }
+.ant-table th, .ant-table td {
+  padding:16px 6px;
+}
+.searchSelect{
+  width:90px;
+  z-index:3;
+}
+/*.searchSelect{*/
+  /*border:none;*/
+  /*opacity:3;*/
+/*}*/
+.selectDiv{
+  position:relative;
+  left:-110px;
+  top:27px;
+}
+.agentCollectorSelect{
+  margin-top:-20px;
+}
+
+.ant-search-input-wrapper{
+  margin-bottom:20px;
+}
+
+.timepicker .ant-time-picker-small .ant-time-picker-input{
+  height:32px;
+}
+
+
+.operation{
+  width:90px;
+}
+
+
+
+
+
 
