@@ -4,6 +4,9 @@ config/config.js
 #entry.js
 public/js/app
 
+#nohup.out
+nohup.out
+
 # Logs
 logs
 *.log
