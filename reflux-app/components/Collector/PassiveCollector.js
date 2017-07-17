@@ -479,12 +479,6 @@ class PassiveCollector extends React.Component {
 
       if (idx == -1)
         passiveCollector = <tr key={ line._id }>
-          {/*<td><Checkbox defaultChecked={ false }*/}
-            {/*onChange={this.updatePassiveCollectorChecklist}*/}
-            {/*data-id={ line._id }*/}
-            {/*that={ this }*/}
-            {/*/>*/}
-          {/*</td>*/}
           <td>{ line.name }</td>
           <td>{ date }</td>
           <td>{ line.type }</td>
@@ -503,12 +497,6 @@ class PassiveCollector extends React.Component {
         </tr>
       else
         passiveCollector = <tr key={ line._id }>
-          {/*<td><Checkbox defaultChecked={ true }*/}
-            {/*onChange={this.updatePassiveCollectorChecklist}*/}
-            {/*data-id={ line._id }*/}
-            {/*that={ this }*/}
-            {/*/>*/}
-          {/*</td>*/}
           <td>{ line.name }</td>
           <td>{ date }</td>
           <td>{ line.type }</td>
@@ -725,18 +713,6 @@ class PassiveCollector extends React.Component {
               { passiveCollectorTable }
             </tbody>
           </table>
-          {/*<button id="deleteToTable-1"*/}
-            {/*onClick={this.editPassiveCollector.bind(this)}*/}
-            {/*className="btn btn-primary waves-effect waves-light pull-left m-t-10 m-r-10" >*/}
-            {/*<i className="fa fa-cogs m-r-5"></i>*/}
-            {/*Edit*/}
-          {/*</button>*/}
-          {/*<button id="deleteToTable-1"*/}
-            {/*onClick={this.showDeleteConfirm.bind(this)}*/}
-            {/*className="btn btn-danger waves-effect waves-light pull-left m-t-10 m-r-10" >*/}
-            {/*<i className="fa fa-minus m-r-5"></i>*/}
-            {/*Delete*/}
-          {/*</button>*/}
         </div>
       </div>
     )

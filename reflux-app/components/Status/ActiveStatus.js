@@ -3,6 +3,7 @@ let message = require('antd/lib/message')
 let TimePicker = require('antd/lib/time-picker')
 let Switch = require('antd/lib/switch')
 let Tag = require('antd/lib/tag')
+let Modal = require('antd/lib/modal')
 import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
 import constants from '../../const'
@@ -12,7 +13,10 @@ class ActiveStatus extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      activeStatusList: []
+      activeStatusList: [],
+      activeStatusListAll:[],
+      messageModal:false,
+      messageContent:''
     }
   }
 
@@ -22,8 +26,6 @@ class ActiveStatus extends React.Component {
     }.bind(this))
 
     AppActions.getActiveStatusList()
-
-    // console.log(constants.STATUS_REFRESH_INTERVAL)
 
     // start to get active collector list in loop
     this.loop = setInterval(function() {
@@ -43,6 +45,36 @@ class ActiveStatus extends React.Component {
     console.log(this)
     let id = this['data-id']
     AppActions.setCollectorSwitch({ id: id, switch: switcher, category: 'active'})
+  }
+
+  showAllStdout(index, e){
+    console.log('index:',index)
+    let id = e.target.getAttribute("data-id")
+    let messageContent = this.state.activeStatusListAll[index].status.lastActivity.stdout
+    if(messageContent){
+      this.setState({
+        messageModal:true,
+        messageContent:messageContent
+      })
+    }
+  }
+
+  showAllStderr(index, e){
+    let id = e.target.getAttribute("data-id")
+    let messageContent = this.state.activeStatusListAll[index].status.lastActivity.stderr
+    if(messageContent){
+      this.setState({
+        messageModal:true,
+        messageContent:messageContent
+      })
+    }
+  }
+
+
+  showPartStatus(index, e){
+    this.setState({
+      messageModal:false
+    })
   }
 
   render() {
@@ -69,23 +101,71 @@ class ActiveStatus extends React.Component {
         // console.log(JSON.stringify(line))
         switch (line.status.lastActivity.status) {
           case 'Success':
-          lastActivityMsg = <td>
-            <Tag color="blue">stdout</Tag>
-            { line.status.lastActivity.stdout }
-            <br />
-            <Tag color="green">stderr</Tag>
-            { line.status.lastActivity.stderr }
-          </td>
+            if(line.status.lastActivity.stdout ){
+              lastActivityMsg = <td>
+                <Tag  color="blue">stdout</Tag>
+                <Tag onClick={this.showAllStdout.bind(this, index)} color="blue">+</Tag>
+                { line.status.lastActivity.stdout }
+                <br />
+                <Tag  color="green">stderr</Tag>
+                { line.status.lastActivity.stderr }
+              </td>
+            }
+            if(line.status.lastActivity.stderr){
+              lastActivityMsg = <td>
+                <Tag  color="blue">stdout</Tag>
+                { line.status.lastActivity.stdout }
+                <br />
+                <Tag  color="green">stderr</Tag>
+                <Tag onClick={this.showAllStderr.bind(this, index)} color="green">+</Tag>
+                { line.status.lastActivity.stderr }
+              </td>
+            }
+            if(line.status.lastActivity.stdout  && line.status.lastActivity.stderr){
+              lastActivityMsg = <td>
+                <Tag  color="blue">stdout</Tag>
+                <Tag onClick={this.showAllStdout.bind(this, index)} color="blue">+</Tag>
+                { line.status.lastActivity.stdout }
+                <br />
+                <Tag  color="green">stderr</Tag>
+                <Tag onClick={this.showAllStderr.bind(this, index)} color="green">+</Tag>
+                { line.status.lastActivity.stderr }
+              </td>
+            }
           break
 
           case 'Error':
-          lastActivityMsg = <td>
-            <Tag color="blue">stdout</Tag>
-            { line.status.lastActivity.stdout }
-            <br />
-            <Tag color="red">stderr</Tag>
-            { line.status.lastActivity.stderr }
-          </td>
+            if(line.status.lastActivity.stdout ){
+              lastActivityMsg = <td>
+                <Tag  color="blue">stdout</Tag>
+                <Tag onClick={this.showAllStdout.bind(this, index)} color="blue">+</Tag>
+                { line.status.lastActivity.stdout }
+                <br />
+                <Tag  color="red">stderr</Tag>
+                { line.status.lastActivity.stderr }
+              </td>
+            }
+            if(line.status.lastActivity.stderr){
+              lastActivityMsg = <td>
+                <Tag  color="blue">stdout</Tag>
+                { line.status.lastActivity.stdout }
+                <br />
+                <Tag  color="red">stderr</Tag>
+                <Tag onClick={this.showAllStderr.bind(this, index)} color="red">+</Tag>
+                { line.status.lastActivity.stderr }
+              </td>
+            }
+            if(line.status.lastActivity.stdout  && line.status.lastActivity.stderr){
+              lastActivityMsg = <td>
+                <Tag  color="blue">stdout</Tag>
+                <Tag onClick={this.showAllStdout.bind(this, index)} color="blue">+</Tag>
+                { line.status.lastActivity.stdout }
+                <br />
+                <Tag  color="red">stderr</Tag>
+                <Tag onClick={this.showAllStderr.bind(this, index)} color="red">+</Tag>
+                { line.status.lastActivity.stderr }
+              </td>
+            }
           break
 
           default:
@@ -164,6 +244,16 @@ class ActiveStatus extends React.Component {
 
     return (
       <div>
+        <Modal
+          title = "Last Activity Message"
+          visible = {this.state.messageModal}
+          onOk = {this.showPartStatus.bind(this)}
+          onCancel = {this.showPartStatus.bind(this)}
+          footer = {null}
+          className = 'statusModal'
+        >
+          {this.state.messageContent}
+        </Modal>
         <div className=" p-b-10 p-t-10">
           <table id="demo-custom-toolbar"  data-toggle="table"
                      data-toolbar="#demo-delete-row"
@@ -209,3 +299,5 @@ ActiveStatus.defaultProps = {
 }
 
 export default ActiveStatus
+
+

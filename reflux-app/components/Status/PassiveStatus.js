@@ -1,8 +1,12 @@
+/**
+ * Created by jiangjun on 2017/7/12.
+ */
 import React from 'react'
 let message = require('antd/lib/message')
 let TimePicker = require('antd/lib/time-picker')
 let Switch = require('antd/lib/switch')
 let Tag = require('antd/lib/tag')
+let Modal = require('antd/lib/modal')
 import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
 import constants from '../../const'
@@ -12,7 +16,10 @@ class PassiveStatus extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      passiveStatusList: []
+      passiveStatusList: [],
+      passiveStatusListAll:[],
+      messageModal:false,
+      messageContent:''
     }
   }
 
@@ -43,6 +50,21 @@ class PassiveStatus extends React.Component {
     AppActions.setCollectorSwitch({id: id, switch: switcher, category: 'passive'})
   }
 
+  showAllStatus(index, e){
+    let id = e.target.getAttribute("data-id")
+    this.setState({
+      messageModal:true,
+      messageContent:this.state.passiveStatusListAll[index].status.lastActivity.data
+    })
+
+  }
+
+  showPartStatus(index, e){
+    this.setState({
+      messageModal:false
+    })
+  }
+
   render() {
     // render status list
     let createPassiveStatus = (line, index) => {
@@ -69,11 +91,11 @@ class PassiveStatus extends React.Component {
 
         switch (line.status.lastActivity.status) {
           case 'Success':
-            lastActivityMsg = <td> <Tag color="green"> stdout </Tag> { line.status.lastActivity.data.toString() } </td>
+            lastActivityMsg = <td> <Tag color="green"> stdout </Tag><Tag  onClick={this.showAllStatus.bind(this, index)} color="green"> + </Tag> { line.status.lastActivity.data.toString() } </td>
             break
 
           case 'Error':
-            lastActivityMsg = <td> <Tag color="red"> stderr </Tag> { line.status.lastActivity.data.toString() } </td>
+            lastActivityMsg = <td> <Tag color="red"> stderr </Tag><Tag onClick={this.showAllStatus.bind(this, index)}  color="red"> + </Tag> { line.status.lastActivity.data.toString() } </td>
             break
 
           default:
@@ -133,6 +155,16 @@ class PassiveStatus extends React.Component {
 
     return (
       <div>
+        <Modal
+          title = "Last Activity Message"
+          visible = {this.state.messageModal}
+          onOk = {this.showPartStatus.bind(this)}
+          onCancel = {this.showPartStatus.bind(this)}
+          footer = {null}
+          className = 'statusModal'
+        >
+          {this.state.messageContent}
+        </Modal>
         <div className=" p-b-10 p-t-10">
           <table id="demo-custom-toolbar"  data-toggle="table"
                  data-toolbar="#demo-delete-row"

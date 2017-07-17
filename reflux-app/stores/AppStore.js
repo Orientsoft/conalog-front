@@ -124,6 +124,7 @@ let state = {
   //ParserStatus
   instance:{},
   instanceList:[],
+  instanceListAll:[],
 
   //AgentCollector
   agentCollector:{},
@@ -432,6 +433,9 @@ let AppStore = Reflux.createStore({
             let now = new Date()
             let offset = now.getTimezoneOffset() * 60 * 1000 // convert minute to ms
             trigger += offset
+            triggerDate = new Date(trigger)
+          }else if(collector.type == 'Time'){
+            let trigger = parseInt(collector.trigger)
             triggerDate = new Date(trigger)
           }
           state.activeCollectorTime = triggerDate
@@ -769,6 +773,7 @@ let AppStore = Reflux.createStore({
   },
 
   onSetCollectorSwitch(switcher) {
+    let that = this
     // switch = { id: id, switch: switch, category: '' }
     let data = { id: switcher.id }
     let url = conalogUrl + '/collectors/instances'
@@ -793,6 +798,7 @@ let AppStore = Reflux.createStore({
       if (switcher.category == 'active')
         AppActions.getActiveStatusList()
       else
+        // AppActions.getPassiveStatusList()
         AppActions.getPassiveStatusList()
     }) 
   },
@@ -818,7 +824,19 @@ let AppStore = Reflux.createStore({
 
             return status
           })
-          state.activeStatusList = asList
+          // state.activeStatusList = asList
+          state.activeStatusListAll = _.cloneDeep(asList)
+          state.activeStatusList = asList.map((item) => {
+            if (item.status.runningFlag ) {
+              if(item.status.lastActivity.stdout){
+                item.status.lastActivity.stdout = item.status.lastActivity.stdout.substr(0, 32) + '...'
+              }
+              if(item.status.lastActivity.stderr){
+                item.status.lastActivity.stderr = item.status.lastActivity.stderr.substr(0, 32) + '...'
+              }
+            }
+            return item
+          })
 
           // state.activeStatusList = statusList
 
@@ -838,9 +856,15 @@ let AppStore = Reflux.createStore({
         beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         method: 'GET',
         success: (statusList => {
-          state.passiveStatusList = statusList
+          // state.passiveStatusList = statusList
           state.passiveStatusListAll = _.cloneDeep(statusList)
-          console.log('mmmm',state.passiveStatusListAll)
+
+          state.passiveStatusList = statusList.map((item) => {
+            if (item.status.runningFlag && item.status.lastActivity.data) {
+              item.status.lastActivity.data = item.status.lastActivity.data.substr(0, 32) + '...'
+            }
+            return item
+          })
           this.trigger(state)
           AppActions.getPassiveStatusList.completed()
         })
@@ -1172,8 +1196,15 @@ let AppStore = Reflux.createStore({
         },
         method: 'GET',
         success: data => {
-          console.log('AppStore::onListParserInstance', data)
-          state.instanceList = data;
+          // state.instanceList = data;
+          state.instanceListAll = _.cloneDeep(data);
+
+          state.instanceList = data.map((item) => {
+            if (item.lastActivity.message) {
+              item.lastActivity.message = item.lastActivity.message.substr(0, 32) + '...'
+            }
+            return item
+          })
           this.trigger(state)
         },
         error: (e) => console.log('xhr error:', e)
@@ -1422,21 +1453,15 @@ let AppStore = Reflux.createStore({
         beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
         method: 'GET',
         success: (statusList => {
-          // Issue #1 - offset with timezone
-          // fixed by xd, 2016.07.06
-          let asList = statusList.map(status => {
-            if (status.type == 'Interval') {
-              let trigger = parseInt(status.trigger)
-              let now = new Date()
-              let offset = now.getTimezoneOffset() * 60 * 1000 // convert minute to ms
-              trigger += offset
-              status.trigger = trigger.toString()
+          // state.agentStatusList = statusList
+          state.agentStatusListAll = _.cloneDeep(statusList)
+          state.agentStatusList = statusList.map((item) => {
+            if (item.status.runningFlag && item.status.lastActivity.stdout ) {
+                item.status.lastActivity.stdout = item.status.lastActivity.stdout.substr(0, 32) + '...'
             }
-
-            return status
+            return item
           })
 
-          state.agentStatusList = asList
           this.trigger(state)
         })
       })

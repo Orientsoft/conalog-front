@@ -143,9 +143,19 @@ table.table-bordered tbody td{
   height:32px;
 }
 
-
 .operation{
   width:90px;
+}
+
+.ant-modal-body{
+  padding: 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.ant-modal.statusModal {
+  width: 600px !important;
 }
 
 

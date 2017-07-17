@@ -47,10 +47,6 @@ class Parser extends React.Component {
         msg: 'path can\'t be empty',
         status: false
       },
-      parameter: {
-        msg: 'parameter can\'t be empty',
-        status: false
-      },
       inputChannel:{
         msg: 'inputChannel can\'t be empty',
         status: false
@@ -265,8 +261,8 @@ class Parser extends React.Component {
 
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "Parameter" required >
-        <Input {...getFieldProps('parameter', {})} type = "text" autoComplete = "off" placeholder="parameter is required"/>
+      <FormItem {...formItemLayout} label = "Parameter" >
+        <Input {...getFieldProps('parameter', {})} type = "text" autoComplete = "off"/>
       </FormItem>
 
       <Row>
@@ -442,9 +438,6 @@ Parser = createForm({
     }
     if(fields.hasOwnProperty('path')){
       validates.path.status = !!fields['path'].value
-    }
-    if(fields.hasOwnProperty('parameter')){
-      validates.parameter.status = !!fields['parameter'].value
     }
     if(fields.hasOwnProperty('inputChannel')){
       validates.inputChannel.status = !!fields['inputChannel'].value

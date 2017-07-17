@@ -4,22 +4,32 @@ import refluxConnect from 'reflux-connect'
 import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
 import constants from '../../const'
-// import gear from "../../../public/img/gear.png"
+
 
 let Table = require('antd/lib/table')
 let Button = require('antd/lib/button')
 let Modal = require('antd/lib/modal')
 let Form = require('antd/lib/form')
 let Icon = require('antd/lib/icon')
+let Tag = require('antd/lib/tag')
 const confirm = Modal.confirm
 
 
 class ParserStatus extends React.Component{
   constructor (props) {
     super(props)
+    this.state = {
+      instanceListAll:[],
+      messageModal:false,
+      messageContent:''
+    }
   }
 
   componentDidMount() {
+    this.unsubscribe = AppStore.listen(function(state) {
+      this.setState(state)
+    }.bind(this))
+
     AppActions.listParser();
     AppActions.listInstance();
 
@@ -83,6 +93,25 @@ class ParserStatus extends React.Component{
   }
 
   onInstanceStopCancel() {}
+
+  showAllStatus(e){
+    let id = e.target.dataset.id
+    let instanceListAll = this.state.instanceListAll
+    for(let i = 0; i<instanceListAll.length;i++){
+      if(id == instanceListAll[i].id){
+        this.setState({
+          messageModal:true,
+          messageContent:instanceListAll[i].lastActivity.message
+        })
+      }
+    }
+  }
+
+  showPartStatus(e){
+    this.setState({
+      messageModal:false
+    })
+  }
 
   render () {
     let antdTableColumns = [
@@ -220,7 +249,25 @@ class ParserStatus extends React.Component{
       },
       {
         title: "Last Activity Message",
-        dataIndex: 'lastActivity.message'
+        render: (text, record) => {
+          if (record.lastActivity.message) {
+            return(
+              <span>
+                <Tag color="green"><a href="#">stdout</a></Tag>
+                <Tag color="green"><a href="#" data-id={record.id} onClick={this.showAllStatus.bind(this)}> + </a></Tag>
+                <span>{record.lastActivity.message}</span>
+              </span>
+            )
+          }else{
+            return (
+              <span>
+                <Tag color="green"><a href="#">stdout</a></Tag>
+                <span>{record.lastActivity.message}</span>
+              </span>
+            )
+          }
+
+        }
       },
       {
         title: 'Operation',
@@ -248,6 +295,16 @@ class ParserStatus extends React.Component{
 
     return (
       <div className = "container">
+        <Modal
+          title = "Last Activity Message"
+          visible = {this.state.messageModal}
+          onOk = {this.showPartStatus.bind(this)}
+          onCancel = {this.showPartStatus.bind(this)}
+          footer = {null}
+          className = 'statusModal'
+        >
+          {this.state.messageContent}
+        </Modal>
         <div className = "row clbody tableParsserStatus">
           <div className = "ant-col-sm-24 p-t-10">
             { antdTable }
