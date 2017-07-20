@@ -162,18 +162,62 @@ class ActiveCollector extends React.Component {
       message.error('Empty trigger, please select trigger.')
       return
     }
-    // console.log('saveActiveCollector', this.state.activeCollectorTime)
-    // there might be some fields not set during update
-    // we'd better read parameters from refs now
 
-    this.setState({
-      activeCollectorAdd: this.state.activeCollectorAdd
-    }, () => {
-      // ok, save
-      console.log('time:',this.state.activeCollectorAdd.trigger)
-      AppActions.saveActiveCollector(this.state.activeCollectorAdd)
-      this.clearActiveCollector()
-    })
+    //check activeCollectorAdd (name,param,command,desc can not be empty)
+    var checkName = false;
+    var validates = {
+      name: {
+        msg: 'name  can\'t be empty',
+        status: false
+      },
+      command: {
+        msg: 'command  can\'t be empty',
+        status: false
+      },
+      param: {
+        msg: 'parameter can\'t be empty',
+        status: false
+      },
+      desc: {
+        msg: 'description can\'t be empty',
+        status: false
+      }
+    }
+    if(this.state.activeCollectorAdd.name !== ''){
+      validates.name.status = true
+    }
+    if(this.state.activeCollectorAdd.cmd !== ''){
+      validates.command.status = true
+    }
+    if(this.state.activeCollectorAdd.param !== ''){
+      validates.param.status = true
+    }
+    if(this.state.activeCollectorAdd.desc !== ''){
+      validates.desc.status = true
+    }
+    var result = Object.keys(validates).filter(field => validates[field].status === false)
+    let reg= /^[A-Za-z]+$/
+    if(reg.test(this.state.activeCollectorAdd.name.substring(0,1))){
+      checkName = true
+    }
+    if(!result.length && checkName){
+      this.setState({
+        activeCollectorAdd: this.state.activeCollectorAdd
+      }, () => {
+        // ok, save
+        AppActions.saveActiveCollector(this.state.activeCollectorAdd)
+        this.clearActiveCollector()
+      })
+    }
+    if(this.state.activeCollectorAdd.name && !checkName){
+      message.error('Name of collector should begin with a letter!')
+    }
+    if(result.length){
+      var tip = ''
+      result.forEach(field => tip += validates[field].msg + ' \n ')
+      message.error(tip)
+    }
+
   }
 
   clearActiveCollector() {
@@ -419,23 +463,28 @@ class ActiveCollector extends React.Component {
     cmdInput = <div className="ant-col-md-4">
       <div className="form-group">
         <label>Command</label>
-        <input type="text" placeholder="Command" className="form-control"
-          data-field="cmd"
-          ref="cmdInput"
-          value={this.state.activeCollectorAdd.cmd}
-          onChange={this.addActiveCollector.bind(this)} />
+        <Tooltip placement="topLeft" title = {this.state.activeCollectorAdd.cmd} overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
+          <input type="text" placeholder="Command" className="form-control"
+            data-field="cmd"
+            ref="cmdInput"
+            value={this.state.activeCollectorAdd.cmd}
+            onChange={this.addActiveCollector.bind(this)} />
+        </Tooltip>
       </div>
     </div>
+
 
     // param
     paramInput = <div className="ant-col-md-4">
       <div className="form-group">
         <label>Parameter</label>
-        <input type="text" placeholder="Parameter" className="form-control"
-          data-field="param"
-          ref="paramInput"
-          value={this.state.activeCollectorAdd.param}
-          onChange={this.addActiveCollector.bind(this)} />
+        <Tooltip placement="topLeft" title = {this.state.activeCollectorAdd.param} overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
+          <input type="text" placeholder="Parameter" className="form-control"
+            data-field="param"
+            ref="paramInput"
+            value={this.state.activeCollectorAdd.param}
+            onChange={this.addActiveCollector.bind(this)} />
+        </Tooltip>
       </div>
     </div>
 

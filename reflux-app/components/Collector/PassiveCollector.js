@@ -125,14 +125,64 @@ class PassiveCollector extends React.Component {
       return
     }
 
-    // AppActions.savePassiveCollector(this.state.passiveCollector)
-    this.setState({
-      passiveCollectorAdd: this.state.passiveCollectorAdd
-    }, () => {
-      // ok, save
-      AppActions.savePassiveCollector(this.state.passiveCollectorAdd)
-      this.clearPassiveCollector()
-    })
+    //check passiveCollectorAdd (name,param,command,desc can not be empty)
+    var checkName = false;
+    var validates = {
+      name: {
+        msg: 'name  can\'t be empty',
+        status: false
+      },
+      command: {
+        msg: 'command  can\'t be empty',
+        status: false
+      },
+      param: {
+        msg: 'parameter can\'t be empty',
+        status: false
+      },
+      desc: {
+        msg: 'description can\'t be empty',
+        status: false
+      }
+    }
+
+    if(this.state.passiveCollectorAdd.name !== ''){
+      validates.name.status = true
+    }
+    if(this.state.passiveCollectorAdd.cmd !== ''){
+      validates.command.status = true
+    }
+    if(this.state.passiveCollectorAdd.param !== ''){
+      validates.param.status = true
+    }
+    if(this.state.passiveCollectorAdd.desc !== ''){
+      validates.desc.status = true
+    }
+
+    var result = Object.keys(validates).filter(field => validates[field].status === false)
+    let reg= /^[A-Za-z]+$/
+    if(reg.test(this.state.passiveCollectorAdd.name.substring(0,1))){
+      checkName = true
+    }
+
+    if(!result.length && checkName){
+      this.setState({
+        passiveCollectorAdd: this.state.passiveCollectorAdd
+      }, () => {
+        // ok, save
+        AppActions.savePassiveCollector(this.state.passiveCollectorAdd)
+        this.clearPassiveCollector()
+      })
+    }
+
+    if(this.state.passiveCollectorAdd.name && !checkName){
+      message.error('Name of collector should begin with a letter!')
+    }
+    if(result.length){
+      var tip = ''
+      result.forEach(field => tip += validates[field].msg + ' \n ')
+      message.error(tip)
+    }
 
   }
 
@@ -395,12 +445,14 @@ class PassiveCollector extends React.Component {
     cmdInput = <div className="ant-col-md-5">
       <div className="form-group">
         <label>Command</label>
-        <input type="text" placeholder="Command" className="form-control"
-          disabled={(this.state.passiveCollectorAdd.type == "LongScript") ? false : true}
-          data-field="cmd"
-          ref="cmdInput"
-          value={(this.state.passiveCollectorAdd.type == "LongScript") ? this.state.passiveCollectorAdd.cmd : ""}
-          onChange={this.addPassiveCollector.bind(this)} />
+        <Tooltip placement="topLeft" title = {this.state.passiveCollectorAdd.cmd} overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
+          <input type="text" placeholder="Command" className="form-control"
+            disabled={(this.state.passiveCollectorAdd.type == "LongScript") ? false : true}
+            data-field="cmd"
+            ref="cmdInput"
+            value={(this.state.passiveCollectorAdd.type == "LongScript") ? this.state.passiveCollectorAdd.cmd : ""}
+            onChange={this.addPassiveCollector.bind(this)} />
+        </Tooltip>
       </div>
     </div>
 

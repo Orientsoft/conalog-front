@@ -21,6 +21,7 @@ const FormItem = Form.Item;
 const Option = Select.Option;
 const InputGroup = Input.Group;
 let validates
+let checkName
 let existSameName
 
 class AgentCollector extends React.Component {
@@ -49,6 +50,7 @@ class AgentCollector extends React.Component {
   }
 
   onItemAdd() {
+    checkName = false;
     existSameName = true;
     validates = {
       name: {
@@ -71,7 +73,7 @@ class AgentCollector extends React.Component {
   onAddOk() {
 
     var result = Object.keys(validates).filter(field => validates[field].status === false)
-    if (!result.length && existSameName) {
+    if (!result.length && existSameName && checkName) {
       AppActions.saveAgentCollector.triggerAsync()
         .then(() => {
           AppActions.clearCurrentAgentCollector()
@@ -89,6 +91,9 @@ class AgentCollector extends React.Component {
       var tip = 'Validate error: \n'
       result.forEach(field => tip += validates[field].msg + '\n')
       alert(tip)
+    }
+    if(validates.name.status && !checkName){
+      alert('Name of collector should begin with a letter!')
     }
   }
 
@@ -117,15 +122,15 @@ class AgentCollector extends React.Component {
   }
 
   onEditOk() {
-      AppActions.saveAgentCollector.triggerAsync()
-        .then(() => {
-          AppActions.clearCurrentAgentCollector()
-          return AppActions.listAgentCollector()
-        })
-        .catch(err => {
-          console.log(err)
-        })
-      AppActions.setAgentCollectorEditModalVisible(false)
+    AppActions.saveAgentCollector.triggerAsync()
+      .then(() => {
+        AppActions.clearCurrentAgentCollector()
+        return AppActions.listAgentCollector()
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    AppActions.setAgentCollectorEditModalVisible(false)
   }
 
   onEditCancel() {
@@ -302,7 +307,7 @@ class AgentCollector extends React.Component {
     })
 
 
-  // add agentCollector
+    // add agentCollector
     let antdFormAdd = <Form horizonal form = {this.props.form}>
 
 
@@ -345,14 +350,14 @@ class AgentCollector extends React.Component {
         </Col>
       </Row>
 
-       <FormItem {...formItemLayout} label = "Description" required help = "description is required">
+      <FormItem {...formItemLayout} label = "Description" required help = "description is required">
         <Input {...getFieldProps('desc', {})} type = "textarea" rows = "3" autoComplete = "off" />
       </FormItem>
 
     </Form>
 
 
-  //edit agentCollector
+    //edit agentCollector
     let antdFormEdit = <Form horizonal form = {this.props.form} className = "editAgentCollector">
 
       <FormItem {...formItemLayout} label = "ID">
@@ -479,15 +484,25 @@ AgentCollector = createForm({
       stateObj[fields[field].name] = fields[field].value
     }
 
-  //name of AgentCollector can not be the same !
+    //name of AgentCollector can not be the same !
     if (fields.hasOwnProperty('name')) {
       existSameName = props.appStore.agentCollectorList.every (AgentCollector => {
         return AgentCollector.name !== fields['name'].value
       })
     }
 
+    //check the first character of name
+    if (fields.hasOwnProperty('name')){
+      if(fields['name'].value){
+        let reg= /^[A-Za-z]+$/
+        if(reg.test(fields['name'].value.substring(0,1))){
+          checkName = true
+        }
+      }
+    }
 
-  //param  des and name can not be blank
+
+    //param  des and name can not be blank
     if(fields.hasOwnProperty('name')){
       validates.name.status = !!fields['name'].value
     }
