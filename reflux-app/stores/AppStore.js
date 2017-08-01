@@ -120,6 +120,9 @@ let state = {
   parserLoadingFlag:false,
   parserAddModalVisible: false,
   parserEditModalVisible: false,
+  parserScriptsList:[],
+  allCollectorList:[],
+  parserscript:'',
 
   //ParserStatus
   instance:{},
@@ -1182,6 +1185,53 @@ let AppStore = Reflux.createStore({
   onSetParserEditModalVisible(visible) {
     state.parserEditModalVisible = visible
     this.trigger(state)
+  },
+
+  onListParserScripts(){
+    $.ajax(conalogUrl + '/parsers/scripts',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => {
+          xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId)
+        },
+        method: 'GET',
+        success: data => {
+          console.log('AppStore::onListParserScripts', data)
+          state.parserScriptsList = data;
+          this.trigger(state)
+        }
+      })
+      .fail(err => {
+        message.error('onListParserScripts Error: ' + JSON.stringify(err), 5)
+      })
+  },
+
+  onGetAllCollector(){
+    $.ajax(conalogUrl + '/collectors',
+      {
+        crossDomain: true,
+        xhrFields: { withCredentials: true },
+        beforeSend: xhr => { xhr.setRequestHeader(constants.ACCESS_TOKEN_NAME, state.sessionId); },
+        method: 'GET',
+        dataType: 'json',
+        success: (collectors) => {
+          let collectorList  = []
+          collectors.map((item) => {
+            if(item.channel == 'Redis PubSub'){
+              collectorList.push(item)
+            }
+          })
+          console.log('collectorList:',collectorList)
+          state.allCollectorList = collectorList
+          this.trigger(state)
+        }
+      },
+    ) // $.ajax
+      .fail(err => {
+        console.log('onGetAllCollectorList error:', err)
+        message.error('onGetAllCollectorList Error: ' + JSON.stringify(err), 5)
+      })
   },
 
 

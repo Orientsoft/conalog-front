@@ -157,6 +157,21 @@ table.table-bordered tbody td{
 .ant-modal.statusModal {
   width: 600px !important;
 }
+.ant-input {
+  height:32px;
+}
+.ant-dropdown-menu-submenu-title{
+  min-width:100px;
+}
+.ant-modal.antdFormEdit{
+  top: 40px;
+  position: relative;
+}
+.ant-modal.antdFormAdd{
+  top: 50px;
+  position: relative;
+}
+
 
 
 

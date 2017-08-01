@@ -3,7 +3,9 @@ import refluxConnect from 'reflux-connect'
 import AppActions from '../actions/AppActions'
 import AppStore from '../stores/AppStore'
 import _ from 'lodash'
-import { Row, Col } from 'antd';
+import { Row, Col, Cascader } from 'antd';
+import classNames from 'classnames'
+
 
 let Table = require('antd/lib/table')
 let Input = require('antd/lib/input')
@@ -13,14 +15,19 @@ let Form = require('antd/lib/form')
 let Select = require('antd/lib/select')
 let Popover= require('antd/lib/popover')
 let Icon = require('antd/lib/icon')
+let Menu = require('antd/lib/menu')
+let Dropdown = require('antd/lib/dropdown')
 let existSameName;
 let validates;
+let parser = '';
+let channel = '';
 
 const confirm = Modal.confirm;
 const createForm = Form.create;
 const FormItem = Form.Item;
 const Option = Select.Option;
 const InputGroup = Input.Group;
+const SubMenu = Menu.SubMenu;
 
 class Parser extends React.Component {
   constructor(props) {
@@ -29,6 +36,8 @@ class Parser extends React.Component {
 
   componentDidMount() {
     AppActions.listParser();
+    AppActions.listParserScripts();
+    AppActions.getAllCollector();
   }
 
   componentWillUnmount() {
@@ -37,6 +46,8 @@ class Parser extends React.Component {
   }
 
   onItemAdd() {
+    parser = ''
+    channel = ''
     existSameName = true;
     validates = {
       name: {
@@ -142,6 +153,30 @@ class Parser extends React.Component {
     AppActions.clearCurrentParser()
   }
 
+  selectParser(e){
+    parser = e.key
+    console.log("value:",parser)
+    if(parser){
+      validates.path.status = !!parser
+      AppActions.updateCurrentParser({
+        path: parser
+      })
+      e.selectedKeys.length = 0
+    }
+  }
+
+  selectInputChannel(e){
+    channel = e.key
+    console.log(channel)
+    if(channel){
+      validates.inputChannel.status = !!channel
+      AppActions.updateCurrentParser({
+        inputChannel: channel
+      })
+      e.selectedKeys.length = 0
+    }
+  }
+
 
   render() {
 
@@ -232,9 +267,9 @@ class Parser extends React.Component {
     ]
 
     let antdTable = <Table rowKey = {line => line.id}
-      columns = {antdTableColumns}
-      dataSource = {this.props.appStore.parserList}
-      loading = {this.props.appStore.parserLoadingFlag}
+                           columns = {antdTableColumns}
+                           dataSource = {this.props.appStore.parserList}
+                           loading = {this.props.appStore.parserLoadingFlag}
     />
 
     const { getFieldProps } = this.props.form
@@ -247,6 +282,119 @@ class Parser extends React.Component {
       labelCol: {span: 11},
       wrapperCol: {span: 13}
     }
+    const formItemLayoutSelect2 = {
+      labelCol: {span: 4},
+      wrapperCol: {span: 20}
+    }
+
+
+    //path option
+    let createParserOptions = () => {
+      return this.props.appStore.parserScriptsList.map( (parser,index) => {
+        return <Menu.Item key={parser}>{parser}</Menu.Item>
+      })
+    }
+    let parserOptions = createParserOptions()
+    let pathMenu = <Menu onSelect={this.selectParser.bind(this)}>
+      {parserOptions}
+    </Menu>
+
+    // inputChannel option
+    let allCollectorList = this.props.appStore.allCollectorList
+    let activeCollector = []
+    let passiveCollector = []
+    let agentCollector = []
+    allCollectorList.map( (collector,index) =>{
+      if(collector.category == "agent"){
+        agentCollector.push(collector)
+      } else if(collector.category == "active"){
+        activeCollector.push(collector)
+      }else{
+        passiveCollector.push(collector)
+      }
+    })
+
+    let createAgentOptions = () => {
+      return agentCollector.map( (collector,index) => {
+        return <Menu.Item key={"agc_"+collector.name}>{collector.name}</Menu.Item>
+      })
+    }
+    let agentOptions = createAgentOptions()
+
+    let interval = []
+    let time = []
+    let oneshot = []
+    activeCollector.map( (collector,index) => {
+      if(collector.type == "Interval"){
+        interval.push(collector)
+      }else if(collector.type == "Time"){
+        time.push(collector)
+      }else{
+        oneshot.push(collector)
+      }
+    })
+
+    let createIntervalOptions = () => {
+      return interval.map( (collector,index) => {
+        return <Menu.Item key={"ac_"+collector.name}>{collector.name}</Menu.Item>
+      })
+    }
+    let intervalOptions = createIntervalOptions()
+
+    let createTimeOptions = () => {
+      return time.map( (collector,index) => {
+        return <Menu.Item key={"ac_"+collector.name}>{collector.name}</Menu.Item>
+      })
+    }
+    let timeOptions = createTimeOptions()
+
+    let createOneshotOptions = () => {
+      return oneshot.map( (collector,index) => {
+        return <Menu.Item key={"ac_"+collector.name}>{collector.name}</Menu.Item>
+      })
+    }
+    let oneshotOptions = createOneshotOptions()
+
+
+    let fileTail = []
+    let longScript = []
+    passiveCollector.map( (collector,index) => {
+      if(collector.type == "FileTail"){
+        fileTail.push(collector)
+      }else {
+        longScript.push(collector)
+      }
+    })
+
+    let createFileTailOptions = () => {
+      return fileTail.map( (collector,index) => {
+        return <Menu.Item key={"pc_"+collector.name}>{collector.name}</Menu.Item>
+      })
+    }
+    let fileTailOptions = createFileTailOptions()
+
+    let createLongScriptOptions = () => {
+      return longScript.map( (collector,index) => {
+        return <Menu.Item key={"pc_"+collector.name}>{collector.name}</Menu.Item>
+      })
+    }
+    let longScriptOptions = createLongScriptOptions()
+
+    const InputChannelmenu = (
+      <Menu onSelect={this.selectInputChannel.bind(this)}>
+        <SubMenu title="Active">
+          <SubMenu title="Interval">{intervalOptions}</SubMenu>
+          <SubMenu title="Time">{timeOptions}</SubMenu>
+          <SubMenu title="OneShot">{oneshotOptions}</SubMenu>
+        </SubMenu>
+        <SubMenu title="Passive">
+          <SubMenu title="LongScript">{fileTailOptions}</SubMenu>
+          <SubMenu title="FileTail">{longScriptOptions}</SubMenu>
+        </SubMenu>
+        <SubMenu title="Agent">{agentOptions}</SubMenu>
+      </Menu>
+    );
+
 
 
 // add parser
@@ -257,22 +405,27 @@ class Parser extends React.Component {
       </FormItem>
 
       <FormItem {...formItemLayout} label = "Path" required >
-        <Input {...getFieldProps('path', {})}  type = "text" autoComplete = "off"  placeholder="path is required"/>
-
+        <Row>
+          <Col span="2">
+            <Dropdown overlay={pathMenu} trigger={['click']}>
+              <Button>
+                <Icon type="down" />
+              </Button>
+            </Dropdown>
+          </Col>
+          <Col span="20" offset = "2">
+            <Input {...getFieldProps('path', {})}   type = "text" autoComplete = "off"  placeholder="path is required" />
+          </Col>
+        </Row>
       </FormItem>
+
 
       <FormItem {...formItemLayout} label = "Parameter" >
         <Input {...getFieldProps('parameter', {})} type = "text" autoComplete = "off"/>
       </FormItem>
 
       <Row>
-        <Col span = "11" offset = "2" >
-          <FormItem {...formItemLayoutSelect} label = "InputChannel" className="selectType" required >
-            <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" placeholder="inputChannel is required" />
-          </FormItem>
-        </Col>
-
-        <Col span = "11">
+        <Col span = "11"  offset = "1">
           <FormItem {...formItemLayoutSelect} label = "InputType" required >
             <Select {...getFieldProps('inputType', {})}>
               <Option value = "RedisChannel" > RedisChannel </Option>
@@ -280,16 +433,7 @@ class Parser extends React.Component {
             </Select>
           </FormItem>
         </Col>
-      </Row>
-
-      <Row>
-        <Col span = "11" offset = "2" >
-          <FormItem {...formItemLayoutSelect} label = "OutputChannel" className="selectType" required>
-            <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" placeholder="outputChannel is required"/>
-          </FormItem>
-        </Col>
-
-        <Col span = "11">
+        <Col span = "11"  offset = "1">
           <FormItem {...formItemLayoutSelect} label = "OutputType" required >
             <Select {...getFieldProps('outputType', {})}>
               <Option value = "RedisChannel" > RedisChannel </Option>
@@ -298,6 +442,25 @@ class Parser extends React.Component {
           </FormItem>
         </Col>
       </Row>
+
+      <FormItem {...formItemLayout} label = "InputChannel"  required>
+        <Row>
+          <Col span="2">
+            <Dropdown overlay={InputChannelmenu} trigger={['click']} >
+              <Button>
+                <Icon type="down" />
+              </Button>
+            </Dropdown>
+          </Col>
+          <Col span="20" offset = "2">
+            <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" placeholder="inputChannel is required" />
+          </Col>
+        </Row>
+      </FormItem>
+
+      <FormItem {...formItemLayout} label = "outputChannel"  required>
+        <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" placeholder="outputChannel is required" />
+      </FormItem>
 
       <FormItem {...formItemLayout} label = "Remark" required >
         <Input {...getFieldProps('remark', {})} type = "textarea" rows="3" autoComplete = "off" placeholder="remark is required"/>
@@ -318,7 +481,19 @@ class Parser extends React.Component {
       </FormItem>
 
       <FormItem {...formItemLayout} label = "Path">
-        <Input {...getFieldProps('path', {})} type = "text" autoComplete = "off" />
+        {/*<Input {...getFieldProps('path', {})} type = "text" autoComplete = "off" />*/}
+        <Row>
+          <Col span="2">
+            <Dropdown overlay={pathMenu} trigger={['click']}>
+              <Button>
+                <Icon type="down" />
+              </Button>
+            </Dropdown>
+          </Col>
+          <Col span="20" offset = "2">
+            <Input {...getFieldProps('path', {})}   type = "text" autoComplete = "off" />
+          </Col>
+        </Row>
       </FormItem>
 
       <FormItem {...formItemLayout} label = "Parameter">
@@ -326,31 +501,16 @@ class Parser extends React.Component {
       </FormItem>
 
       <Row>
-        <Col span = "11" offset = "2" >
-          <FormItem {...formItemLayoutSelect} label = "InputChannel" className = "selectType">
-            <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" />
-          </FormItem>
-        </Col>
-
-        <Col span = "11">
-          <FormItem {...formItemLayoutSelect} label = "InputType" >
+        <Col span = "11"  offset = "1">
+          <FormItem {...formItemLayoutSelect} label = "InputType"  >
             <Select {...getFieldProps('inputType', {})}>
               <Option value = "RedisChannel" > RedisChannel </Option>
               <Option value = "NanomsgQueue" > NanomsgQueue </Option>
             </Select>
           </FormItem>
         </Col>
-      </Row>
-
-      <Row>
-        <Col span = "11" offset = "2" >
-          <FormItem {...formItemLayoutSelect} label = "OutputChannel" className = "selectType">
-            <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" />
-          </FormItem>
-        </Col>
-
-        <Col span = "11">
-          <FormItem {...formItemLayoutSelect} label = "OutputType">
+        <Col span = "11"  offset = "1">
+          <FormItem {...formItemLayoutSelect} label = "OutputType" >
             <Select {...getFieldProps('outputType', {})}>
               <Option value = "RedisChannel" > RedisChannel </Option>
               <Option value = "NanomsgQueue" > NanomsgQueue </Option>
@@ -358,6 +518,59 @@ class Parser extends React.Component {
           </FormItem>
         </Col>
       </Row>
+
+      <FormItem {...formItemLayout} label = "InputChannel">
+        <Row>
+          <Col span="2">
+            <Dropdown overlay={InputChannelmenu} trigger={['click']} >
+              <Button>
+                <Icon type="down" />
+              </Button>
+            </Dropdown>
+          </Col>
+          <Col span="20" offset = "2">
+            <Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off"  />
+          </Col>
+        </Row>
+      </FormItem>
+
+      <FormItem {...formItemLayout} label = "outputChannel" >
+        <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off"  />
+      </FormItem>
+
+      {/*// <Row>*/}
+        {/*<Col span = "11" offset = "2" >*/}
+          {/*<FormItem {...formItemLayoutSelect} label = "InputChannel" className = "selectType">*/}
+            {/*<Input {...getFieldProps('inputChannel', {})} type = "text" autoComplete = "off" />*/}
+          {/*</FormItem>*/}
+        {/*</Col>*/}
+
+        {/*<Col span = "11">*/}
+          {/*<FormItem {...formItemLayoutSelect} label = "InputType" >*/}
+            {/*<Select {...getFieldProps('inputType', {})}>*/}
+              {/*<Option value = "RedisChannel" > RedisChannel </Option>*/}
+              {/*<Option value = "NanomsgQueue" > NanomsgQueue </Option>*/}
+            {/*</Select>*/}
+          {/*</FormItem>*/}
+        {/*</Col>*/}
+      {/*</Row>*/}
+
+      {/*<Row>*/}
+        {/*<Col span = "11" offset = "2" >*/}
+          {/*<FormItem {...formItemLayoutSelect} label = "OutputChannel" className = "selectType">*/}
+            {/*<Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" />*/}
+          {/*</FormItem>*/}
+        {/*</Col>*/}
+
+        {/*<Col span = "11">*/}
+          {/*<FormItem {...formItemLayoutSelect} label = "OutputType">*/}
+            {/*<Select {...getFieldProps('outputType', {})}>*/}
+              {/*<Option value = "RedisChannel" > RedisChannel </Option>*/}
+              {/*<Option value = "NanomsgQueue" > NanomsgQueue </Option>*/}
+            {/*</Select>*/}
+          {/*</FormItem>*/}
+        {/*</Col>*/}
+      {/*</Row>*/}
 
       <FormItem {...formItemLayout} label = "Remark">
         <Input {...getFieldProps('remark', {})} type = "textarea" rows = "3" autoComplete = "off" />
@@ -374,6 +587,7 @@ class Parser extends React.Component {
           visible = {this.props.appStore.parserAddModalVisible}
           onOk = {this.onAddOk}
           onCancel = {this.onAddCancel}
+          className = "antdFormAdd"
         >
           {antdFormAdd}
         </Modal>
@@ -383,6 +597,7 @@ class Parser extends React.Component {
           visible = {this.props.appStore.parserEditModalVisible}
           onOk = {this.onEditOk}
           onCancel = {this.onEditCancel}
+          className = "antdFormEdit"
         >
           {antdFormEdit}
         </Modal>
@@ -424,11 +639,10 @@ Parser = createForm({
       stateObj[fields[field].name] = fields[field].value
     }
 
-
 //name of parser can not be the same !
     if (fields.hasOwnProperty('name')) {
       existSameName = props.appStore.parserList.every (parser => {
-      return parser.name !== fields['name'].value
+        return parser.name !== fields['name'].value
       })
     }
 
@@ -436,9 +650,11 @@ Parser = createForm({
     if(fields.hasOwnProperty('name')){
       validates.name.status = !!fields['name'].value
     }
+
     if(fields.hasOwnProperty('path')){
       validates.path.status = !!fields['path'].value
     }
+
     if(fields.hasOwnProperty('inputChannel')){
       validates.inputChannel.status = !!fields['inputChannel'].value
     }

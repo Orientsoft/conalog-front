@@ -83,6 +83,8 @@ let AppActions = Reflux.createActions({
   'clearCurrentParser': {sync: true},
   'setParserAddModalVisible': {sync: true},
   'setParserEditModalVisible': {sync: true},
+  'listParserScripts':{asyncResult: true},
+  'getAllCollector':{asyncResult: true},
 
   //ParserStatus
   'listInstance':{asyncResult: true},
