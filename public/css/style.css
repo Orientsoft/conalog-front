@@ -171,6 +171,10 @@ table.table-bordered tbody td{
   top: 50px;
   position: relative;
 }
+.addActiveCollector{
+  margin-top:5px;
+  padding:5px 0px 20px 10px;
+}
 
 
 

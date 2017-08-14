@@ -82,6 +82,7 @@ let state = {
   // Active Collector
   activeCollectorUpdated: false,
   activeCollector: {},
+  activeCollectorAdd:{},
   activeCollectorList: [],
   activeCollectorChecklist: [],
   activeCollectorTime: null,
@@ -379,7 +380,7 @@ let AppStore = Reflux.createStore({
     })
   },
 
-  onSaveActiveCollector: async function(activeCollector) {
+  onSaveActiveCollector:async function(activeCollector) {
     // Issue #1 - offset with timezone
     // fixed by xd, 2016.07.06
     if (activeCollector.type == 'Interval') {

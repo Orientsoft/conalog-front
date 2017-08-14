@@ -42,6 +42,7 @@ class PassiveCollector extends React.Component {
       searchContent:'',
       passiveCollectorListAll:[],
       passiveCollectorEditModal: false,
+      passiveCollectorAddModal:false,
       passiveCollectorDeleteModal: false,
     }
   }
@@ -70,7 +71,6 @@ class PassiveCollector extends React.Component {
     if (_.isFunction(this.unsubscribe))
       this.unsubscribe();
   }
-
 
   showEditConfirm() {
     let that = this
@@ -101,9 +101,52 @@ class PassiveCollector extends React.Component {
     })
   }
 
+  onItemAdd(){
+    this.setState({
+      passiveCollectorAddModal:true
+    })
+  }
+
+  addPassiveCollectorType(e){
+    this.setState({
+      passiveCollectorAdd: Object.assign(this.state.passiveCollectorAdd, {
+        "type":e})
+    })
+  }
+
+  addPassiveCollectorHost(e){
+    this.setState({
+      passiveCollectorAdd: Object.assign(this.state.passiveCollectorAdd, {
+        "host":e})
+    })
+  }
+
+  addPassiveCollectorEncoding(e){
+    this.setState({
+      passiveCollectorAdd: Object.assign(this.state.passiveCollectorAdd, {
+        "encoding":e})
+    })
+  }
+
+  addPassiveCollectorChannel(e){
+    this.setState({
+      passiveCollectorAdd: Object.assign(this.state.passiveCollectorAdd, {
+        "channel":e})
+    })
+  }
+
+  addPassiveCollector(e) {
+    console.log(e.target.dataset.field,e.target.value)
+
+    this.setState({
+      passiveCollectorAdd: Object.assign(this.state.passiveCollectorAdd, {
+        [e.target.dataset.field]: e.target.value
+      })
+    })
+  }
+
   savePassiveCollector(e) {
-    e.preventDefault()
-    AppActions.setPassiveCollectorFlag(true)
+    // AppActions.setPassiveCollectorFlag(true)
 
     // check name
     let checkResults = this.state.passiveCollectorList.map(collector => {
@@ -149,7 +192,10 @@ class PassiveCollector extends React.Component {
     if(this.state.passiveCollectorAdd.name !== ''){
       validates.name.status = true
     }
-    if(this.state.passiveCollectorAdd.cmd !== ''){
+    if(this.state.passiveCollectorAdd.type =="LongScript" && this.state.passiveCollectorAdd.cmd !== ''){
+      validates.command.status = true
+    }
+    if(this.state.passiveCollectorAdd.type =="FileTail"){
       validates.command.status = true
     }
     if(this.state.passiveCollectorAdd.param !== ''){
@@ -187,6 +233,9 @@ class PassiveCollector extends React.Component {
   }
 
   clearPassiveCollector() {
+    this.setState({
+      passiveCollectorAddModal:false
+    })
     var that = this
     that.setState({
       passiveCollectorAdd: {
@@ -199,16 +248,6 @@ class PassiveCollector extends React.Component {
         channel:'Redis PubSub',
         desc:''
       }},() => {console.log('clear:'+ this.state.passiveCollectorAdd)})
-  }
-
-  addPassiveCollector(e) {
-    console.log(e.target.dataset.field,e.target.value)
-
-    this.setState({
-      passiveCollectorAdd: Object.assign(this.state.passiveCollectorAdd, {
-        [e.target.dataset.field]: e.target.value
-      })
-    })
   }
 
   updatePassiveCollector(e) {
@@ -252,7 +291,6 @@ class PassiveCollector extends React.Component {
 
     AppActions.setPassiveCollectorChecklist(checklist)
   }
-
 
   handleSelect (e) {
     this.setState({
@@ -370,56 +408,6 @@ class PassiveCollector extends React.Component {
 
 
   render() {
-    let inputLine
-    let nameInput
-    let typeInput
-    let cmdInput
-    let paramInput
-    let hostInput
-    let encodingInput
-    let channelInput
-    let descInput
-
-    nameInput = <div className="ant-col-md-5">
-      <Tooltip title="Output Redis channel defaults to pc_[COLLECTOR_NAME]">
-        <div className="form-group">
-          <label>Name</label>
-          <input type="text" placeholder="Name" className="form-control"
-            data-field="name"
-            ref="nameInput"
-            value={this.state.passiveCollectorAdd.name}
-            onChange={this.addPassiveCollector.bind(this)} />
-        </div>
-      </Tooltip>
-    </div>
-
-    typeInput = <div className="ant-col-md-4">
-      <div className="form-group">
-        <label>Type</label>
-        <select className="form-control"
-          data-field="type"
-          ref="typeInput"
-          value={this.state.passiveCollectorAdd.type}
-          onChange={this.addPassiveCollector.bind(this)}>
-          <option>LongScript</option>
-          <option>FileTail</option>
-          { /* <option>NetCap</option> */ }
-        </select>
-      </div>
-    </div>
-
-    paramInput = <div className="ant-col-md-5">
-      <Tooltip title="For FILE_TAIL - Absolute file path, for NET_CAP - Listening port">
-        <div className="form-group">
-          <label>Parameter</label>
-          <input type="text" placeholder="Parameter" className="form-control"
-            data-field="param"
-            ref="paramInput"
-            value={this.state.passiveCollectorAdd.param}
-            onChange={this.addPassiveCollector.bind(this)} />
-        </div>
-      </Tooltip>
-    </div>
 
     let createHostOptions = () => {
         // console.log('createHostOptions', this.state)
@@ -428,99 +416,6 @@ class PassiveCollector extends React.Component {
         })
     }
     let hostOptions = createHostOptions()
-
-    // host
-    hostInput = <div className="ant-col-md-4">
-      <div className="form-group">
-        <label>Host</label>
-        <select className="form-control"
-          data-field="host"
-          ref="hostInput"
-          onChange={this.addPassiveCollector.bind(this)}>
-          {hostOptions}
-        </select>
-      </div>
-    </div>
-
-    cmdInput = <div className="ant-col-md-5">
-      <div className="form-group">
-        <label>Command</label>
-        <Tooltip placement="topLeft" title = {this.state.passiveCollectorAdd.cmd} overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
-          <input type="text" placeholder="Command" className="form-control"
-            disabled={(this.state.passiveCollectorAdd.type == "LongScript") ? false : true}
-            data-field="cmd"
-            ref="cmdInput"
-            value={(this.state.passiveCollectorAdd.type == "LongScript") ? this.state.passiveCollectorAdd.cmd : ""}
-            onChange={this.addPassiveCollector.bind(this)} />
-        </Tooltip>
-      </div>
-    </div>
-
-    // encoding
-    encodingInput = <div className="ant-col-md-4">
-      <div className="form-group">
-        <label>Encoding</label>
-        <select className="form-control"
-          data-field="encoding"
-          ref="encodingInput"
-          onChange={this.addPassiveCollector.bind(this)}>
-          <option key="ASCII">ASCII</option>
-          <option key="GB2312">GB2312</option>
-          <option key="GBK">GBK</option>
-          <option key="GB18030">GB18030</option>
-          <option key="Big5">Big5</option>
-          <option key="Big5-HKSCS">Big5-HKSCS</option>
-          <option key="Shift_JIS">Shift_JIS</option>
-          <option key="EUC-JP">EUC-JP</option>
-          <option key="UTF-8">UTF-8</option>
-          <option key="UTF-16LE">UTF-16LE</option>
-          <option key="UTF-16BE">UTF-16BE</option>
-          <option key="binary">binary</option>
-          <option key="base64">base64</option>
-          <option key="hex">hex</option>
-        </select>
-      </div>
-    </div>
-
-    // channel
-    channelInput = <div className="ant-col-md-4">
-      <div className="form-group">
-        <label>Channel</label>
-        <select className="form-control"
-          data-field="channel"
-          ref="channelInput"
-          onChange={this.addPassiveCollector.bind(this)}>
-          <option key="Redis PubSub">Redis PubSub</option>
-          <option key="Nanomsg Queue">Nanomsg Queue</option>
-        </select>
-      </div>
-    </div>
-
-    // desc
-    descInput = <div className="ant-col-md-24">
-      <div className="form-group">
-        <label>Description</label>
-        <textarea
-          placeholder="Collector Usage & Source & Destination"
-          className="form-control"
-          data-field="desc"
-          ref="descInput"
-          value={this.state.passiveCollectorAdd.desc}
-          onChange={this.addPassiveCollector.bind(this)}>
-        </textarea>
-      </div>
-    </div>
-
-    inputLine = <div className="row clhead">
-        { nameInput }
-        { typeInput }
-        { cmdInput }
-        { paramInput }
-        { hostInput }
-        { encodingInput }
-        { channelInput }
-        { descInput }
-      </div>
 
     let createPassiveCollector = (line, index) => {
       let date = new Date(line.ts)
@@ -571,7 +466,6 @@ class PassiveCollector extends React.Component {
 
     let passiveCollectorTable = this.state.passiveCollectorList.map(createPassiveCollector.bind(this))
 
-
     const formItemLayout = {
       labelCol: {span: 6},
       wrapperCol: {span: 18}
@@ -580,6 +474,121 @@ class PassiveCollector extends React.Component {
       labelCol: {span: 9},
       wrapperCol: {span: 15}
     }
+    const buttonClass = classNames({
+      'ant-search-btn': true,
+      // 'ant-search-btn-noempty': !!this.state.historyEventIdFilter.trim()
+    })
+    const searchClass = classNames({
+      'ant-search-input': true,
+      // 'ant-search-input-focus': this.state.historyEventIdFilterFocus
+    })
+
+    //add passiveCollector
+    let antdFormAdd = <Form horizonal >
+
+      <FormItem {...formItemLayout} label = "Name" required>
+        <Tooltip title="Output Redis channel defaults to pc_[COLLECTOR_NAME]">
+          <Input  type = "text" autoComplete = "off"
+                  data-field="name"
+                  ref="nameInput"
+                  value={this.state.passiveCollectorAdd.name}
+                  onChange={this.addPassiveCollector.bind(this)}
+          />
+        </Tooltip>
+      </FormItem>
+
+      <Row>
+        <Col span = "11" offset = "2" >
+          <FormItem {...formItemLayoutSelect} label = "Type"  required>
+            <Select data-field="type"
+                    ref="typeInput"
+                    value={this.state.passiveCollectorAdd.type}
+                    onChange={this.addPassiveCollectorType.bind(this)}>
+              <Option value="LongScript">LongScript</Option>
+              <Option value="FileTail">FileTail</Option>
+            </Select>
+          </FormItem>
+        </Col>
+        <Col span = "11">
+          <FormItem {...formItemLayoutSelect} label = "Host" required>
+            <Select data-field="host"
+                    ref="hostInput"
+                    value={this.state.passiveCollectorAdd.host}
+                    onChange={this.addPassiveCollectorHost.bind(this)}>
+              {hostOptions}
+            </Select>
+          </FormItem>
+        </Col>
+      </Row>
+
+      <FormItem {...formItemLayout} label = "Command" required>
+        <Input  type = "text" autoComplete = "off"
+                data-field="cmd"
+                ref="cmdInput"
+                disabled={(this.state.passiveCollectorAdd.type == "LongScript") ? false : true}
+                value={(this.state.passiveCollectorAdd.type == "LongScript") ? this.state.passiveCollectorAdd.cmd : ""}
+                onChange={this.addPassiveCollector.bind(this)}
+        />
+      </FormItem>
+
+      <FormItem {...formItemLayout} label = "Parameter" required>
+        <Input  type = "text" autoComplete = "off"
+                data-field="param"
+                ref="paramInput"
+                value={this.state.passiveCollectorAdd.param}
+                onChange={this.addPassiveCollector.bind(this)}
+        />
+      </FormItem>
+
+      <Row>
+        <Col span = "11" offset = "2" >
+          <FormItem {...formItemLayoutSelect} label = "Encoding" className = "selectEncoding" required>
+            <Select
+              data-field="encoding"
+              ref="encodingInput"
+              value={this.state.passiveCollectorAdd.encoding}
+              onChange={this.addPassiveCollectorEncoding.bind(this)}>
+              <Option key="UTF-8" value="UTF-8">UTF-8</Option>
+              <Option key="ASCII" value="ASCII">ASCII</Option>
+              <Option key="GB2312" value="GB2312">GB2312</Option>
+              <Option key="GBK" value="GBK">GBK</Option>
+              <Option key="GB18030" value="GB18030">GB18030</Option>
+              <Option key="Big5" value="Big5">Big5</Option>
+              <Option key="Big5-HKSCS" value="Big5-HKSCS">Big5-HKSCS</Option>
+              <Option key="Shift_JIS" value="Shift_JIS">Shift_JIS</Option>
+              <Option key="EUC-JP" value="EUC-JP">EUC-JP</Option>
+              <Option key="UTF-16LE" value="UTF-16LE">UTF-16LE</Option>
+              <Option key="UTF-16BE" value="UTF-16BE">UTF-16BE</Option>
+              <Option key="binary" value="binary">binary</Option>
+              <Option key="base64" value="base64">base64</Option>
+              <Option key="hex" value="hex">hex</Option>
+            </Select>
+          </FormItem>
+        </Col>
+        <Col span = "11">
+          <FormItem {...formItemLayoutSelect} label = "Channel" required>
+            <Select
+              data-field="channel"
+              ref="channelInput"
+              value={this.state.passiveCollectorAdd.channel}
+              onChange={this.addPassiveCollectorChannel.bind(this)}>
+              <Option key="Redis PubSub" value = "Redis PubSub" > Redis PubSub </Option>
+              <Option key="Nanomsg Queue" value = "Nanomsg Queue" > Nanomsg Queue </Option>
+            </Select>
+          </FormItem>
+        </Col>
+      </Row>
+
+      <FormItem {...formItemLayout} label = "Description" required>
+        <Input  type = "textarea" rows = "3" autoComplete = "off"
+                data-field="desc"
+                ref="descInput"
+                value={this.state.passiveCollectorAdd.desc}
+                onChange={this.addPassiveCollector.bind(this)}/>
+      </FormItem>
+
+
+    </Form>
     //edit passiveCollector
     let antdFormEdit = <Form horizonal className = "editPassiveCollector">
 
@@ -688,28 +697,22 @@ class PassiveCollector extends React.Component {
 
     </Form>
 
-    const buttonClass = classNames({
-      'ant-search-btn': true,
-      // 'ant-search-btn-noempty': !!this.state.historyEventIdFilter.trim()
-    })
-    const searchClass = classNames({
-      'ant-search-input': true,
-      // 'ant-search-input-focus': this.state.historyEventIdFilterFocus
-    })
-
     return (
       <div>
-        { inputLine }
-        <div className="row">
-          <div className="ant-col-md-24">
-            <div className="form-group text-right m-t-20">
-              <button className="btn btn-primary waves-effect waves-light" type="submit"
-                onClick={this.savePassiveCollector.bind(this)}> Save </button>
-              <button type="reset" className="btn btn-default waves-effect waves-light m-l-10"
-                onClick={this.clearPassiveCollector.bind(this)}> clear </button>
-            </div>
+        <div className = "row clbody addActiveCollector">
+          <div className = "ant-col-sm24 p-t-10 ">
+            <Button type = "primary" icon = "plus-circle-o" onClick = {this.onItemAdd.bind(this)}/>
           </div>
         </div>
+
+        <Modal
+          title = "Add PassiveCollector"
+          visible = {this.state.passiveCollectorAddModal}
+          onOk = {this.savePassiveCollector.bind(this)}
+          onCancel = {this.clearPassiveCollector.bind(this)}
+        >
+          {antdFormAdd}
+        </Modal>
 
         <div className="ant-col-sm-4 p-t-10 p-b-10 pull-right">
           <div className="ant-search-input-wrapper">

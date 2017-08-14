@@ -29,18 +29,11 @@ class ActiveCollector extends React.Component {
     this.state = {
       activeCollectorFlag: false,
       activeCollector: {},
-      activeCollectorAdd: {
-        name:'',
-        type:'Interval',
-        cmd:'',
-        param:'',
-        encoding:'UTF-8',
-        channel:'Redis PubSub',
-        desc:''
-      },
+      activeCollectorAdd: {},
       activeCollectorList: [],
       activeCollectorChecklist: [],
       activeCollectorEditModal: false,
+      activeCollectorAddModal:false,
       activeCollectorDeleteModal: false,
       activeCollectorTime: new Date('2017-01-01 00:00:10'),
       activeCollectorAddTime: new Date('2017-01-01 00:00:10'),
@@ -64,7 +57,14 @@ class ActiveCollector extends React.Component {
       this.setState({
         activeCollectorAdd: Object.assign(this.state.activeCollectorAdd, {
           host: cert ? cert.host  : '',
-          trigger:this.state.activeCollectorAddTime.getTime()
+          trigger:this.state.activeCollectorAddTime.getTime(),
+          name:'',
+          type:'Interval',
+          cmd:'',
+          param:'',
+          encoding:'UTF-8',
+          channel:'Redis PubSub',
+          desc:''
         })
       })
     })
@@ -112,12 +112,39 @@ class ActiveCollector extends React.Component {
   }
 
   addActiveCollector(e) {
-    console.log(e.target.dataset.field,e.target.value)
-
+    // console.log(e.target.dataset.field,e.target.value)
     this.setState({
       activeCollectorAdd: Object.assign(this.state.activeCollectorAdd, {
         [e.target.dataset.field]: e.target.value
       })
+    })
+  }
+
+  addActiveCollectorType (e){
+    this.setState({
+      activeCollectorAdd: Object.assign(this.state.activeCollectorAdd, {
+        "type":e})
+    })
+  }
+
+  addActiveCollectorEncoding (e){
+    this.setState({
+      activeCollectorAdd: Object.assign(this.state.activeCollectorAdd, {
+        "encoding":e})
+    })
+  }
+
+  addActiveCollectorHost (e){
+    this.setState({
+      activeCollectorAdd: Object.assign(this.state.activeCollectorAdd, {
+        "host":e})
+    })
+  }
+
+  addActiveCollectorChannel (e){
+    this.setState({
+      activeCollectorAdd: Object.assign(this.state.activeCollectorAdd, {
+        "channel":e})
     })
   }
 
@@ -130,11 +157,31 @@ class ActiveCollector extends React.Component {
     })
   }
 
+  onItemAdd(){
+
+    this.setState({
+      activeCollectorAdd: {
+        name:'',
+        type:'Interval',
+        cmd:'',
+        trigger:new Date('2017-01-01 00:00:10').getTime(),
+        host:this.state.certList[0].host,
+        param:'',
+        encoding:'UTF-8',
+        channel:'Redis PubSub',
+        desc:''
+      },
+      activeCollectorAddTime: new Date('2017-01-01 00:00:10')
+    }, () => {
+      this.refs.descInput = ''
+    })
+    this.setState({
+      activeCollectorAddModal:true
+    })
+  }
+
   saveActiveCollector(e) {
-
-    e.preventDefault()
-
-    AppActions.setActiveCollectorFlag(true)
+    // AppActions.setActiveCollectorFlag(true)
 
     // check name
     let checkResults = this.state.activeCollectorList.map(collector => {
@@ -221,6 +268,9 @@ class ActiveCollector extends React.Component {
   }
 
   clearActiveCollector() {
+    this.setState({
+      activeCollectorAddModal:false
+    })
     var that = this;
     that.setState({
       activeCollectorAdd: {
@@ -248,7 +298,6 @@ class ActiveCollector extends React.Component {
   updateActiveCollector(e) {
     // AppActions.setActiveCollector(_.set(this.state.activeCollector, e.target.dataset.field, e.target.value))
     // e.preventDefault()
-    console.log(e.target.dataset.field)
     AppActions.setActiveCollector(e.target.dataset.field, e.target.value)
   }
 
@@ -404,165 +453,13 @@ class ActiveCollector extends React.Component {
 
 
   render() {
-    // console.log('ActiveCollector::activeCollector', this.state.activeCollector)
-    let nameInput
-    let typeInput
-    let triggerInput
-    let cmdInput
-    let paramInput
-    let hostInput
-    let encodingInput
-    let channelInput
-    let descInput
-
-    // name
-    nameInput = <div className="ant-col-md-4">
-      <Tooltip title="Output Redis channel defaults to ac_[COLLECTOR_NAME]">
-        <div className="form-group">
-          <label>Name</label>
-          <input type="text" placeholder="Name" className="form-control"
-            data-field="name"
-            ref="nameInput"
-            value={this.state.activeCollectorAdd.name}
-            onChange={this.addActiveCollector.bind(this)} />
-        </div>
-      </Tooltip>
-    </div>
-
-    // type
-    typeInput = <div className="ant-col-md-4">
-      <div className="form-group">
-        <label>Type</label>
-        <select className="form-control"
-          data-field="type"
-          ref="typeInput"
-          value={this.state.activeCollectorAdd.type}
-          onChange={this.addActiveCollector.bind(this)}>
-          <option value="Interval">Interval</option>
-          <option value="Time">Time</option>
-          <option value="OneShot">OneShot</option>
-        </select>
-      </div>
-    </div>
-
-    triggerInput = <div className="ant-col-md-4">
-      <div className="form-group">
-        <label>Trigger</label><br />
-        <TimePicker
-          className="setTimepicker"
-          disabled={(this.state.activeCollectorAdd.type == 'OneShot') ? true : false}
-          value={this.state.activeCollectorAddTime}
-          onChange={this.addTime.bind(this)}
-          format="HH:mm:ss"
-          ref="triggerInput"
-          size="large" />
-      </div>
-    </div>
-
-    // cmd
-    cmdInput = <div className="ant-col-md-4">
-      <div className="form-group">
-        <label>Command</label>
-        <Tooltip placement="topLeft" title = {this.state.activeCollectorAdd.cmd} overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
-          <input type="text" placeholder="Command" className="form-control"
-            data-field="cmd"
-            ref="cmdInput"
-            value={this.state.activeCollectorAdd.cmd}
-            onChange={this.addActiveCollector.bind(this)} />
-        </Tooltip>
-      </div>
-    </div>
-
-
-    // param
-    paramInput = <div className="ant-col-md-4">
-      <div className="form-group">
-        <label>Parameter</label>
-        <Tooltip placement="topLeft" title = {this.state.activeCollectorAdd.param} overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
-          <input type="text" placeholder="Parameter" className="form-control"
-            data-field="param"
-            ref="paramInput"
-            value={this.state.activeCollectorAdd.param}
-            onChange={this.addActiveCollector.bind(this)} />
-        </Tooltip>
-      </div>
-    </div>
-
     let createHostOptions = () => {
         // console.log('createHostOptions', this.state)
         return this.state.certList.map(cert => {
-          return <option key={cert._id.toString()} value={cert.host}>{cert.host + ':' + cert.port}</option>
+          return <Option key={cert._id.toString()} value={cert.host}>{cert.host + ':' + cert.port}</Option>
         })
     }
     let hostOptions = createHostOptions()
-
-    // host
-    hostInput = <div className="ant-col-md-4">
-      <div className="form-group">
-        <label>Host</label>
-        <select className="form-control"
-          data-field="host"
-          ref="hostInput"
-          onChange={this.addActiveCollector.bind(this)}>
-          {hostOptions}
-        </select>
-      </div>
-    </div>
-
-    // encoding
-    encodingInput = <div className="ant-col-md-4">
-      <div className="form-group">
-        <label>Encoding</label>
-        <select className="form-control"
-          data-field="encoding"
-          ref="encodingInput"
-          onChange={this.addActiveCollector.bind(this)}>
-          <option key="ASCII">ASCII</option>
-          <option key="GB2312">GB2312</option>
-          <option key="GBK">GBK</option>
-          <option key="GB18030">GB18030</option>
-          <option key="Big5">Big5</option>
-          <option key="Big5-HKSCS">Big5-HKSCS</option>
-          <option key="Shift_JIS">Shift_JIS</option>
-          <option key="EUC-JP">EUC-JP</option>
-          <option key="UTF-8">UTF-8</option>
-          <option key="UTF-16LE">UTF-16LE</option>
-          <option key="UTF-16BE">UTF-16BE</option>
-          <option key="binary">binary</option>
-          <option key="base64">base64</option>
-          <option key="hex">hex</option>
-        </select>
-      </div>
-    </div>
-
-    // channel
-    channelInput = <div className="ant-col-md-4">
-      <div className="form-group">
-        <label>Channel</label>
-        <select className="form-control"
-          data-field="channel"
-          ref="channelInput"
-          onChange={this.addActiveCollector.bind(this)}>
-          <option key="Redis PubSub">Redis PubSub</option>
-          <option key="Nanomsg Queue">Nanomsg Queue</option>
-        </select>
-      </div>
-    </div>
-
-    // desc
-    descInput = <div className="ant-col-md-24">
-      <div className="form-group">
-        <label>Description</label>
-        <textarea
-          placeholder="Collector Usage & Source & Destination"
-          className="form-control"
-          data-field="desc"
-          ref="descInput"
-          value={this.state.activeCollectorAdd.desc}
-          onChange={this.addActiveCollector.bind(this)}>
-        </textarea>
-      </div>
-    </div>
 
     let createActiveCollector = (line, index) => {
       let date = new Date(line.ts)
@@ -628,7 +525,6 @@ class ActiveCollector extends React.Component {
 
     let activeCollectorTable = this.state.activeCollectorList.map(createActiveCollector.bind(this))
 
-
     const formItemLayout = {
       labelCol: {span: 6},
       wrapperCol: {span: 18}
@@ -637,6 +533,135 @@ class ActiveCollector extends React.Component {
       labelCol: {span: 9},
       wrapperCol: {span: 15}
     }
+    const buttonClass = classNames({
+      'ant-search-btn': true,
+    })
+    const searchClass = classNames({
+      'ant-search-input': true,
+    })
+    //add activeCollector
+    let antdFormAdd = <Form horizonal className = "addActiveCollector">
+
+      <Row>
+        <Col span = "11" offset = "2">
+          <FormItem {...formItemLayoutSelect} label = "Name" required>
+            <Tooltip title="Output Redis channel defaults to ac_[COLLECTOR_NAME]">
+              <Input  type = "text" rows = "3" autoComplete = "off"
+                      data-field="name"
+                      ref="nameInput"
+                      value={this.state.activeCollectorAdd.name}
+                      onChange={this.addActiveCollector.bind(this)}/>
+            </Tooltip>
+          </FormItem>
+        </Col>
+        <Col span = "11">
+          <FormItem {...formItemLayoutSelect} label = "Host" className = "selectEncoding" required>
+            <Select data-field="host"
+                    ref="hostInput"
+                    value={this.state.activeCollectorAdd.host}
+                    onChange={this.addActiveCollectorHost.bind(this)}>
+              {hostOptions}
+            </Select>
+          </FormItem>
+        </Col>
+      </Row>
+
+
+
+      <Row>
+        <Col span = "11" offset = "2" >
+          <FormItem {...formItemLayoutSelect} label = "Type" className = "selectEncoding" required>
+            <Select data-field="type"
+                    ref="typeInput"
+                    value={this.state.activeCollectorAdd.type}
+                    onChange={this.addActiveCollectorType.bind(this)}>
+              <Option key="interval" value="Interval">Interval</Option>
+              <Option key="time" value="Time">Time</Option>
+              <Option key="oneshot" value="OneShot">OneShot</Option>
+            </Select>
+          </FormItem>
+        </Col>
+        <Col span = "11">
+          <FormItem {...formItemLayoutSelect} label = "Trigger" className ='timepicker' required>
+            <TimePicker
+              disabled={(this.state.activeCollectorAdd.type == 'OneShot') ? true : false}
+              value={this.state.activeCollectorAddTime}
+              onChange={this.addTime.bind(this)}
+              format="HH:mm:ss"
+              ref="triggerInput"
+              size="small"/>
+          </FormItem>
+        </Col>
+      </Row>
+
+      <FormItem {...formItemLayout} label = "Command" required>
+        <Input  type = "text" autoComplete = "off"
+                data-field="cmd"
+                ref="cmdInput"
+                value={this.state.activeCollectorAdd.cmd}
+                onChange={this.addActiveCollector.bind(this)}
+        />
+      </FormItem>
+
+      <FormItem {...formItemLayout} label = "Parameter" required>
+        <Input  type = "text" autoComplete = "off"
+                data-field="param"
+                ref="paramInput"
+                value={this.state.activeCollectorAdd.param}
+                onChange={this.addActiveCollector.bind(this)}
+        />
+      </FormItem>
+
+      <Row>
+        <Col span = "11" offset = "2" >
+          <FormItem {...formItemLayoutSelect} label = "Encoding" className = "selectEncoding">
+            <Select
+              data-field="encoding"
+              ref="encodingInput"
+              value={this.state.activeCollectorAdd.encoding}
+              onChange={this.addActiveCollectorEncoding.bind(this)}>
+              <Option key="UTF-8" value="UTF-8">UTF-8</Option>
+              <Option key="ASCII" value="ASCII">ASCII</Option>
+              <Option key="GB2312" value="GB2312">GB2312</Option>
+              <Option key="GBK" value="GBK">GBK</Option>
+              <Option key="GB18030" value="GB18030">GB18030</Option>
+              <Option key="Big5" value="Big5">Big5</Option>
+              <Option key="Big5-HKSCS" value="Big5-HKSCS">Big5-HKSCS</Option>
+              <Option key="Shift_JIS" value="Shift_JIS">Shift_JIS</Option>
+              <Option key="EUC-JP" value="EUC-JP">EUC-JP</Option>
+              <Option key="UTF-16LE" value="UTF-16LE">UTF-16LE</Option>
+              <Option key="UTF-16BE" value="UTF-16BE">UTF-16BE</Option>
+              <Option key="binary" value="binary">binary</Option>
+              <Option key="base64" value="base64">base64</Option>
+              <Option key="hex" value="hex">hex</Option>
+            </Select>
+          </FormItem>
+        </Col>
+        <Col span = "11">
+          <FormItem {...formItemLayoutSelect} label = "Channel" required>
+            <Select
+              data-field="channel"
+              ref="channelInput"
+              value={this.state.activeCollectorAdd.channel}
+              onChange={this.addActiveCollectorChannel.bind(this)}>
+              <Option key="Redis PubSub" value = "Redis PubSub" > Redis PubSub </Option>
+              <Option key="Nanomsg Queue" value = "Nanomsg Queue" > Nanomsg Queue </Option>
+            </Select>
+          </FormItem>
+        </Col>
+      </Row>
+
+      <FormItem {...formItemLayout} label = "Description" required>
+        <Input  type = "textarea" rows = "3" autoComplete = "off"
+                data-field="desc"
+                ref="descInput"
+                value={this.state.activeCollectorAdd.desc}
+                onChange={this.addActiveCollector.bind(this)}/>
+      </FormItem>
+
+
+    </Form>
+
     //edit activeCollector
     let antdFormEdit = <Form horizonal className = "editActiveCollector">
 
@@ -760,37 +785,22 @@ class ActiveCollector extends React.Component {
 
     </Form>
 
-
-
-    const buttonClass = classNames({
-      'ant-search-btn': true,
-    })
-    const searchClass = classNames({
-      'ant-search-input': true,
-    })
-
-
     return (
       <div>
-        <div className="row clhead">
-          { nameInput }
-          { typeInput }
-          { triggerInput }
-          { cmdInput }
-          { paramInput }
-          { hostInput }
-          { encodingInput }
-          { channelInput }
-          { descInput }
-          <div className="ant-col-md-24">
-            <div className="form-group text-right m-t-20">
-              <button className="btn btn-primary waves-effect waves-light" type="submit"
-                onClick={this.saveActiveCollector.bind(this)}> Save </button>
-              <button type="reset" className="btn btn-default waves-effect waves-light m-l-10"
-                onClick={this.clearActiveCollector.bind(this)}> clear </button>
-            </div>
+        <div className = "row clbody addActiveCollector">
+          <div className = "ant-col-sm24 p-t-10 ">
+            <Button type = "primary" icon = "plus-circle-o" onClick = {this.onItemAdd.bind(this)}/>
           </div>
         </div>
+
+        <Modal
+          title = "Add ActiveCollector"
+          visible = {this.state.activeCollectorAddModal}
+          onOk = {this.saveActiveCollector.bind(this)}
+          onCancel = {this.clearActiveCollector.bind(this)}
+        >
+          {antdFormAdd}
+        </Modal>
 
         <div className="ant-col-sm-4 p-t-10 p-b-10 pull-right">
           <div className="ant-search-input-wrapper">
@@ -808,8 +818,6 @@ class ActiveCollector extends React.Component {
             </InputGroup>
           </div>
         </div>
-
-
 
         <div className=" p-b-10 p-t-60">
           <Modal
