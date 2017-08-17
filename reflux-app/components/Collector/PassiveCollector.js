@@ -714,7 +714,8 @@ class PassiveCollector extends React.Component {
           {antdFormAdd}
         </Modal>
 
-        <div className="ant-col-sm-4 p-t-10 p-b-10 pull-right">
+        <div className="row clbody">
+        <div className="ant-col-sm-4 p-t-10 p-b-10 pull-right CollectorSelect">
           <div className="ant-search-input-wrapper">
             <div className="selectDiv">
               <Select className="searchSelect" defaultValue="name" onChange={this.handleSelect.bind(this)}>
@@ -768,6 +769,7 @@ class PassiveCollector extends React.Component {
               { passiveCollectorTable }
             </tbody>
           </table>
+        </div>
         </div>
       </div>
     )

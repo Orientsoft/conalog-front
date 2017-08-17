@@ -437,7 +437,7 @@ class AgentCollector extends React.Component {
 
 
         <div className="row clbody tableAgentCollector">
-          <div className="ant-col-sm-4 p-t-10 p-b-10 pull-right agentCollectorSelect">
+          <div className="ant-col-sm-4 p-t-10 p-b-10 pull-right CollectorSelect">
             <div className="ant-search-input-wrapper ">
               <div className="selectDiv">
                 <Select className="searchSelect" defaultValue="name" onChange={this.handleSelect.bind(this)}>
