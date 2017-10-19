@@ -388,8 +388,8 @@ class Parser extends React.Component {
           <SubMenu title="OneShot">{oneshotOptions}</SubMenu>
         </SubMenu>
         <SubMenu title="Passive">
-          <SubMenu title="LongScript">{fileTailOptions}</SubMenu>
-          <SubMenu title="FileTail">{longScriptOptions}</SubMenu>
+          <SubMenu title="LongScript">{longScriptOptions}</SubMenu>
+          <SubMenu title="FileTail">{fileTailOptions}</SubMenu>
         </SubMenu>
         <SubMenu title="Agent">{agentOptions}</SubMenu>
       </Menu>

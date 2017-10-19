@@ -614,7 +614,7 @@ class ActiveCollector extends React.Component {
 
       <Row>
         <Col span = "11" offset = "2" >
-          <FormItem {...formItemLayoutSelect} label = "Encoding" className = "selectEncoding">
+          <FormItem {...formItemLayoutSelect} label = "Encoding" className = "selectEncoding" required>
             <Select
               data-field="encoding"
               ref="encodingInput"
@@ -801,8 +801,8 @@ class ActiveCollector extends React.Component {
         >
           {antdFormAdd}
         </Modal>
-
-        <div className="ant-col-sm-4 p-t-10 p-b-10 pull-right">
+        <div className="row clbody">
+        <div className="ant-col-sm-4 p-t-10 p-b-10 pull-right CollectorSelect">
           <div className="ant-search-input-wrapper">
             <div className="selectDiv">
               <Select className="searchSelect" defaultValue="name" onChange={this.handleSelect.bind(this)}>
@@ -858,6 +858,7 @@ class ActiveCollector extends React.Component {
             </tbody>
           </table>
         </div>
+      </div>
       </div>
     )
   }
