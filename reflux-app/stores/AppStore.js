@@ -5,7 +5,10 @@ Reflux.use(RefluxPromise(Promise))
 
 import AppActions from '../actions/AppActions'
 import constants from '../const'
-import config from '../../config/config.js'
+
+import Config from '../../config/config.js'
+let config = Config.parseArgs()
+
 import $ from 'jquery'
 // import Crypto from 'crypto'
 import Crypto from 'crypto-js'

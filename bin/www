@@ -8,7 +8,8 @@ var app = require('../app');
 var debug = require('debug')('conalog-front:server');
 var http = require('http');
 // var Red = require('conalog-node-red');
-var config = require('../config/config.js');
+var Config = require('../config/config.js');
+var config = Config.parseArgs()
 
 /**
  * Get port from environment and store in Express.
