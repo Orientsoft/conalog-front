@@ -1,4 +1,5 @@
 import React from 'react'
+import { FormattedMessage } from 'react-intl';
 let Table = require('antd/lib/table')
 let Input = require('antd/lib/input')
 let Button = require('antd/lib/button')
@@ -137,6 +138,16 @@ class History extends React.Component {
   }
 
   render() {
+    let a = <FormattedMessage id = 'home'/>
+    let level = a._owner._context.intl.messages.level
+    let date = a._owner._context.intl.messages.date
+    let module = a._owner._context.intl.messages.module
+    let source = a._owner._context.intl.messages.source
+    let eventId = a._owner._context.intl.messages.eventId
+    let type = a._owner._context.intl.messages.historyType
+    let des = a._owner._context.intl.messages.des
+
+
     // ant design table
     let antdTableColumns = [
       {
@@ -144,7 +155,7 @@ class History extends React.Component {
         dataIndex: '_id'
       },
       {
-        title: 'Level',
+        title: level,
         dataIndex: 'level',
         filters: [
           { text: 'debug', value: 'debug' },
@@ -155,7 +166,7 @@ class History extends React.Component {
         filterMultiple: true
       },
       {
-        title: 'Date',
+        title: date,
         dataIndex: 'ts',
         sorter: true,
         render: (ts) => {
@@ -165,19 +176,19 @@ class History extends React.Component {
 
       },
       {
-        title: 'Module',
+        title: module,
         dataIndex: 'module'
       },
       {
-        title: 'Source',
+        title: source,
         dataIndex: 'source'
       },
       {
-        title: 'EventID',
+        title: eventId,
         dataIndex: 'eventId'
       },
       {
-        title: 'Type',
+        title: type,
         dataIndex: 'type'
       }
     ]
@@ -187,7 +198,7 @@ class History extends React.Component {
       pagination={this.state.historyPager}
       loading={this.state.historyLoadingFlag}
       onChange={this.handleHistoryTableChange.bind(this)}
-      expandedRowRender={record => <p><b>Description</b> - {record.desc}</p>}
+      expandedRowRender={record => <p><b>{des}</b> - {record.desc}</p>}
       />
 
     const buttonClass = classNames({
@@ -205,10 +216,10 @@ class History extends React.Component {
           <div className="ant-col-sm-4 p-t-10 p-b-10 pull-right">
             <div className="ant-search-input-wrapper">
               <InputGroup className={searchClass}>
-                <Input placeholder="EventID" data-name="eventid" defaultValue={this.state.historyEventIdFilter} onChange={this.handleFilterChange.bind(this)}
+                <Input placeholder={eventId} data-name="eventid" defaultValue={this.state.historyEventIdFilter} onChange={this.handleFilterChange.bind(this)}
                   onFocus={this.handleFilterBlur.bind(this)} onBlur={this.handleFilterBlur.bind(this)} onPressEnter={this.handleSearch.bind(this)} />
                 <div className="ant-input-group-wrap">
-                  <Button icon="search" data-name="eventid" className={buttonClass} onClick={this.handleSearch.bind(this)} />
+                  <Button icon="anticon icon-search1"  data-name="eventid" className={buttonClass} onClick={this.handleSearch.bind(this)} />
                 </div>
               </InputGroup>
             </div>

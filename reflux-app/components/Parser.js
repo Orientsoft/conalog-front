@@ -5,7 +5,7 @@ import AppStore from '../stores/AppStore'
 import _ from 'lodash'
 import { Row, Col, Cascader } from 'antd';
 import classNames from 'classnames'
-
+import { FormattedMessage } from 'react-intl';
 
 let Table = require('antd/lib/table')
 let Input = require('antd/lib/input')
@@ -14,12 +14,13 @@ let Modal = require('antd/lib/modal')
 let Form = require('antd/lib/form')
 let Select = require('antd/lib/select')
 let Popover= require('antd/lib/popover')
-let Icon = require('antd/lib/icon')
+// let Icon = require('antd/lib/icon')
 let Menu = require('antd/lib/menu')
 let Dropdown = require('antd/lib/dropdown')
 let existSameName;
 let validates;
 let parser = '';
+let cert = '';
 let channel = '';
 
 const confirm = Modal.confirm;
@@ -32,9 +33,19 @@ const SubMenu = Menu.SubMenu;
 class Parser extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      delete:"",
+      delmsg:"",
+      certList:[]
+    }
   }
 
   componentDidMount() {
+    this.unsubscribe = AppStore.listen(function(state) {
+      this.setState(state);
+    }.bind(this));
+
+    AppActions.listCert().then( () => { console.log("componentDidMount",this.state.certList)})
     AppActions.listParser();
     AppActions.listParserScripts();
     AppActions.getAllCollector();
@@ -56,6 +67,10 @@ class Parser extends React.Component {
       },
       path:{
         msg: 'path can\'t be empty',
+        status: false
+      },
+      host:{
+        msg: 'host can\'t be empty',
         status: false
       },
       inputChannel:{
@@ -104,7 +119,11 @@ class Parser extends React.Component {
   }
 
   onItemEdit(e) {
-    let name = e.target.dataset.name
+    var t = e.target
+    if (t.tagName.toLowerCase() == 'span') {
+      t = t.parentElement
+    }
+    let name = t.dataset.name
     AppActions.setParserEditModalVisible(true)
     AppActions.getParser(name)
   }
@@ -127,11 +146,15 @@ class Parser extends React.Component {
   }
 
   onItemDelete(e) {
-    let name = e.target.dataset.name
-    let id = e.target.dataset.id
+    var t = e.target
+    if (t.tagName.toLowerCase() == 'span') {
+      t = t.parentElement
+    }
+    let name = t.dataset.name
+    let id = t.dataset.id
     confirm({
-      title: 'Confirm Delete',
-      content: 'Are you sure to delete ' +  name  +' ('+  id  + ' ) ?',
+      title: this.state.delete,
+      content: this.state.delmsg +  name  +' ('+  id  + ' ) ?',
       onOk: this.onDeleteOk,
       onCancel: this.onDeleteCancel
     })
@@ -165,6 +188,18 @@ class Parser extends React.Component {
     }
   }
 
+  selectcert(e){
+    cert = e.key
+    console.log("value:",cert)
+    if(cert){
+      validates.host.status = !!cert
+      AppActions.updateCurrentParser({
+        host: cert
+      })
+      e.selectedKeys.length = 0
+    }
+  }
+
   selectInputChannel(e){
     channel = e.key
     console.log(channel)
@@ -179,6 +214,27 @@ class Parser extends React.Component {
 
 
   render() {
+    let a = <FormattedMessage id = 'home'/>
+    let name = a._owner._context.intl.messages.name
+    let date = a._owner._context.intl.messages.date
+    let path = a._owner._context.intl.messages.path
+    let type = a._owner._context.intl.messages.types
+    let inputType = a._owner._context.intl.messages.inputType
+    let outputType = a._owner._context.intl.messages.outputType
+    let operation = a._owner._context.intl.messages.operation
+    let parameter = a._owner._context.intl.messages.para
+    let host = a._owner._context.intl.messages.host
+    let inputChannel = a._owner._context.intl.messages.inputChannel
+    let channel = a._owner._context.intl.messages.channel
+    let outputChannel = a._owner._context.intl.messages.outputChannel
+    let add = a._owner._context.intl.messages.adding
+    let edit = a._owner._context.intl.messages.edit
+    let remark = a._owner._context.intl.messages.remark
+    this.state.delete = a._owner._context.intl.messages.comfirmDel
+    this.state.delmsg = a._owner._context.intl.messages.delMessage
+    this.state.start = a._owner._context.intl.messages.comfirmStart
+    this.state.startmsg1 = a._owner._context.intl.messages.startMsg1
+    this.state.startmsg2 = a._owner._context.intl.messages.startMsg2
 
     let antdTableColumns = [
       {
@@ -194,7 +250,7 @@ class Parser extends React.Component {
         }
       },
       {
-        title: 'Name',
+        title: name,
         dataIndex: 'name',
         sorter: (a, b) => {
           var sa = a.name.split('').reduce((s, v) => s += v.charCodeAt(), 0)
@@ -206,7 +262,7 @@ class Parser extends React.Component {
         }
       },
       {
-        title: 'Date',
+        title: date,
         sorter: (a, b) => a.ts - b.ts,
         dataIndex: 'ts',
         render: (ts) => {
@@ -215,7 +271,7 @@ class Parser extends React.Component {
         }
       },
       {
-        title: 'Path',
+        title: path,
         dataIndex: 'path',
         sorter: (a, b) => {
           var sa = a.path.split('').reduce((s, v) => s += v.charCodeAt(), 0)
@@ -227,40 +283,40 @@ class Parser extends React.Component {
         }
       },
       {
-        title: 'Parameter',
+        title: parameter,
         dataIndex: 'parameter'
       },
       {
-        title: 'InputType',
+        title: inputType,
         dataIndex: 'input.type'
       },
       {
-        title: 'InputChannel',
+        title: inputChannel,
         dataIndex: 'input.channel'
       },
       {
-        title: 'OutputType',
+        title: outputType,
         dataIndex: 'output.type'
       },
       {
-        title: 'OutputChannel',
+        title: outputChannel,
         dataIndex: 'output.channel'
       },
       {
-        title: 'Remark',
+        title: remark,
         render: (text, record) => (
-          <Popover content = {record.remark} title = "Remark" overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
-            <Icon className="parserIconEye"  type = "eye"></Icon>
+          <Popover content = {record.remark} title = {remark} overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
+            <i className="parserIconEye  anticon icon-eye"  ></i>
           </Popover>
         )
       },
       {
-        title: 'Operation',
+        title: operation,
         render: (text, record) => (
           <span>
-            <a href="#" onClick={this.onItemEdit.bind(this)} data-name={record.name} >Edit</a>
+            <a href="#" onClick={this.onItemEdit.bind(this)} data-name={record.name} ><FormattedMessage id="edit"/></a>
             <span className="ant-divider"></span>
-            <a href="#" onClick={this.onItemDelete.bind(this)} data-name={record.name} data-id={record.id} >Delete</a>
+            <a href="#" onClick={this.onItemDelete.bind(this)} data-name={record.name} data-id={record.id} ><FormattedMessage id="del"/></a>
           </span>
         )
       }
@@ -279,8 +335,8 @@ class Parser extends React.Component {
       wrapperCol: {span: 18}
     }
     const formItemLayoutSelect = {
-      labelCol: {span: 11},
-      wrapperCol: {span: 13}
+      labelCol: {span: 12},
+      wrapperCol: {span: 12}
     }
     const formItemLayoutSelect2 = {
       labelCol: {span: 4},
@@ -295,8 +351,19 @@ class Parser extends React.Component {
       })
     }
     let parserOptions = createParserOptions()
-    let pathMenu = <Menu onSelect={this.selectParser.bind(this)}>
+    let pathMenu = <Menu onSelect={this.selectParser.bind(this)} style = {{overflow: 'scroll',height:'300px'}}>
       {parserOptions}
+    </Menu>
+
+    // host option
+    let createHostOptions = () => {
+      return this.props.appStore.certList.map( (item,index) => {
+        return <Menu.Item key={item.user+"@"+item.host+":"+item.port}>{item.user+"@"+item.host+":"+item.port}</Menu.Item>
+      })
+    }
+    let hostOptions = createHostOptions()
+    let hostMenu = <Menu onSelect={this.selectcert.bind(this)} style = {{overflow: 'scroll',height:'300px'}}>
+      {hostOptions}
     </Menu>
 
     // inputChannel option
@@ -381,10 +448,10 @@ class Parser extends React.Component {
     let longScriptOptions = createLongScriptOptions()
 
     const InputChannelmenu = (
-      <Menu onSelect={this.selectInputChannel.bind(this)}>
+      <Menu onSelect={this.selectInputChannel.bind(this)} style={{height:"200px",overflowY:"scroll"}}>
         <SubMenu title="Active">
           <SubMenu title="Interval">{intervalOptions}</SubMenu>
-          <SubMenu title="Time">{timeOptions}</SubMenu>
+          <SubMenu title="Time" >{timeOptions}</SubMenu>
           <SubMenu title="OneShot">{oneshotOptions}</SubMenu>
         </SubMenu>
         <SubMenu title="Passive">
@@ -400,16 +467,31 @@ class Parser extends React.Component {
 // add parser
     let antdFormAdd = <Form horizonal form = {this.props.form}>
 
-      <FormItem {...formItemLayout} label = "Name" required >
+      <FormItem {...formItemLayout} label = {name} required >
         <Input {...getFieldProps('name', {})} type = "text" autoComplete = "off" placeholder="name is required"/>
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "Path" required >
+      <FormItem {...formItemLayout} label = {host}  required >
+        <Row>
+          <Col span="2">
+            <Dropdown overlay={hostMenu} trigger={['click']}>
+              <Button>
+                <i className="anticon icon-down" />
+              </Button>
+            </Dropdown>
+          </Col>
+          <Col span="20" offset = "2">
+            <Input {...getFieldProps('host', {})}   type = "text" autoComplete = "off"  placeholder="host is required" />
+          </Col>
+        </Row>
+      </FormItem>
+
+      <FormItem {...formItemLayout} label = {path} required >
         <Row>
           <Col span="2">
             <Dropdown overlay={pathMenu} trigger={['click']}>
               <Button>
-                <Icon type="down" />
+                <i className="anticon icon-down"/>
               </Button>
             </Dropdown>
           </Col>
@@ -420,35 +502,35 @@ class Parser extends React.Component {
       </FormItem>
 
 
-      <FormItem {...formItemLayout} label = "Parameter" >
+      <FormItem {...formItemLayout} label = {parameter} >
         <Input {...getFieldProps('parameter', {})} type = "text" autoComplete = "off"/>
       </FormItem>
 
       <Row>
-        <Col span = "11"  offset = "1">
-          <FormItem {...formItemLayoutSelect} label = "InputType" required >
+        <Col span = "12"  >
+          <FormItem {...formItemLayoutSelect} label = {inputType} required >
             <Select {...getFieldProps('inputType', {})}>
               <Option value = "RedisChannel" > RedisChannel </Option>
-              <Option value = "NanomsgQueue" > NanomsgQueue </Option>
+              <Option value = "Nsq Queue" > Nsq Queue </Option>
             </Select>
           </FormItem>
         </Col>
-        <Col span = "11"  offset = "1">
-          <FormItem {...formItemLayoutSelect} label = "OutputType" required >
+        <Col span = "12"  >
+          <FormItem {...formItemLayoutSelect} label = {outputType} required >
             <Select {...getFieldProps('outputType', {})}>
               <Option value = "RedisChannel" > RedisChannel </Option>
-              <Option value = "NanomsgQueue" > NanomsgQueue </Option>
+              <Option value = "Nsq Queue" > Nsq Queue </Option>
             </Select>
           </FormItem>
         </Col>
       </Row>
 
-      <FormItem {...formItemLayout} label = "InputChannel"  required>
+      <FormItem {...formItemLayout} label = {inputChannel}  required>
         <Row>
           <Col span="2">
-            <Dropdown overlay={InputChannelmenu} trigger={['click']} >
+            <Dropdown overlay={InputChannelmenu} trigger={['click']}>
               <Button>
-                <Icon type="down" />
+                <i className="anticon icon-down" />
               </Button>
             </Dropdown>
           </Col>
@@ -458,11 +540,11 @@ class Parser extends React.Component {
         </Row>
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "outputChannel"  required>
+      <FormItem {...formItemLayout} label = {outputChannel}  required>
         <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off" placeholder="outputChannel is required" />
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "Remark" required >
+      <FormItem {...formItemLayout} label = {remark} required >
         <Input {...getFieldProps('remark', {})} type = "textarea" rows="3" autoComplete = "off" placeholder="remark is required"/>
       </FormItem>
 
@@ -476,17 +558,31 @@ class Parser extends React.Component {
         <span {...getFieldProps('id', {})}>{this.props.appStore.parser.id}</span>
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "Name">
+      <FormItem {...formItemLayout} label = {name}>
         <span {...getFieldProps('name', {})}>{this.props.appStore.parser.name}</span>
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "Path">
-        {/*<Input {...getFieldProps('path', {})} type = "text" autoComplete = "off" />*/}
+      <FormItem {...formItemLayout} label = {host}   >
+        <Row>
+          <Col span="2">
+            <Dropdown overlay={hostMenu} trigger={['click']}>
+              <Button>
+                <i className="anticon icon-down" />
+              </Button>
+            </Dropdown>
+          </Col>
+          <Col span="20" offset = "2">
+            <Input {...getFieldProps('host', {})}   type = "text" autoComplete = "off"   />
+          </Col>
+        </Row>
+      </FormItem>
+
+      <FormItem {...formItemLayout} label = {path}>
         <Row>
           <Col span="2">
             <Dropdown overlay={pathMenu} trigger={['click']}>
               <Button>
-                <Icon type="down" />
+                <i className="anticon icon-down" />
               </Button>
             </Dropdown>
           </Col>
@@ -496,35 +592,35 @@ class Parser extends React.Component {
         </Row>
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "Parameter">
+      <FormItem {...formItemLayout} label = {parameter}>
         <Input {...getFieldProps('parameter', {})} type = "text" autoComplete = "off" />
       </FormItem>
 
       <Row>
-        <Col span = "11"  offset = "1">
-          <FormItem {...formItemLayoutSelect} label = "InputType"  >
+        <Col span = "12"  >
+          <FormItem {...formItemLayoutSelect} label = {inputType}  >
             <Select {...getFieldProps('inputType', {})}>
               <Option value = "RedisChannel" > RedisChannel </Option>
-              <Option value = "NanomsgQueue" > NanomsgQueue </Option>
+              <Option value = "Nsq Queue" > Nsq Queue </Option>
             </Select>
           </FormItem>
         </Col>
-        <Col span = "11"  offset = "1">
-          <FormItem {...formItemLayoutSelect} label = "OutputType" >
+        <Col span = "12"  >
+          <FormItem {...formItemLayoutSelect} label = {outputType} >
             <Select {...getFieldProps('outputType', {})}>
               <Option value = "RedisChannel" > RedisChannel </Option>
-              <Option value = "NanomsgQueue" > NanomsgQueue </Option>
+              <Option value = "Nsq Queue" > Nsq Queue </Option>
             </Select>
           </FormItem>
         </Col>
       </Row>
 
-      <FormItem {...formItemLayout} label = "InputChannel">
+      <FormItem {...formItemLayout} label = {inputChannel}>
         <Row>
           <Col span="2">
             <Dropdown overlay={InputChannelmenu} trigger={['click']} >
               <Button>
-                <Icon type="down" />
+                <i className="anticon icon-down"/>
               </Button>
             </Dropdown>
           </Col>
@@ -534,7 +630,7 @@ class Parser extends React.Component {
         </Row>
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "outputChannel" >
+      <FormItem {...formItemLayout} label = {outputChannel} >
         <Input {...getFieldProps('outputChannel', {})} type = "text" autoComplete = "off"  />
       </FormItem>
 
@@ -549,7 +645,7 @@ class Parser extends React.Component {
           {/*<FormItem {...formItemLayoutSelect} label = "InputType" >*/}
             {/*<Select {...getFieldProps('inputType', {})}>*/}
               {/*<Option value = "RedisChannel" > RedisChannel </Option>*/}
-              {/*<Option value = "NanomsgQueue" > NanomsgQueue </Option>*/}
+              {/*<Option value = "Nsq Queue" > Nsq Queue </Option>*/}
             {/*</Select>*/}
           {/*</FormItem>*/}
         {/*</Col>*/}
@@ -566,13 +662,13 @@ class Parser extends React.Component {
           {/*<FormItem {...formItemLayoutSelect} label = "OutputType">*/}
             {/*<Select {...getFieldProps('outputType', {})}>*/}
               {/*<Option value = "RedisChannel" > RedisChannel </Option>*/}
-              {/*<Option value = "NanomsgQueue" > NanomsgQueue </Option>*/}
+              {/*<Option value = "Nsq Queue" > Nsq Queue </Option>*/}
             {/*</Select>*/}
           {/*</FormItem>*/}
         {/*</Col>*/}
       {/*</Row>*/}
 
-      <FormItem {...formItemLayout} label = "Remark">
+      <FormItem {...formItemLayout} label = {remark}>
         <Input {...getFieldProps('remark', {})} type = "textarea" rows = "3" autoComplete = "off" />
       </FormItem>
 
@@ -583,7 +679,7 @@ class Parser extends React.Component {
     return (
       <div className = "container">
         <Modal
-          title = "Add Parser"
+          title = {add}
           visible = {this.props.appStore.parserAddModalVisible}
           onOk = {this.onAddOk}
           onCancel = {this.onAddCancel}
@@ -593,7 +689,7 @@ class Parser extends React.Component {
         </Modal>
 
         <Modal
-          title = "Edit Parser"
+          title ={edit}
           visible = {this.props.appStore.parserEditModalVisible}
           onOk = {this.onEditOk}
           onCancel = {this.onEditCancel}
@@ -604,7 +700,7 @@ class Parser extends React.Component {
 
         <div className = "row clbody">
           <div className = "ant-col-sm24 p-t-10">
-            <Button type = "primary" icon = "plus-circle-o" onClick = {this.onItemAdd}/>
+            <Button type = "primary" icon = "anticon icon-pluscircleo" onClick = {this.onItemAdd}/>
           </div>
         </div>
 
@@ -651,6 +747,10 @@ Parser = createForm({
       validates.name.status = !!fields['name'].value
     }
 
+    if(fields.hasOwnProperty('host')){
+      validates.host.status = !!fields['host'].value
+    }
+
     if(fields.hasOwnProperty('path')){
       validates.path.status = !!fields['path'].value
     }
@@ -688,7 +788,8 @@ Parser = createForm({
       outputType: {name: 'outputType', value: props.appStore.parser.outputType},
       outputChannel: {name: 'outputChannel', value: props.appStore.parser.outputChannel},
       parameter: {name: 'parameter', value: props.appStore.parser.parameter},
-      remark: {name: 'remark', value: props.appStore.parser.remark}
+      remark: {name: 'remark', value: props.appStore.parser.remark},
+      host: {name: 'host', value: props.appStore.parser.host},
     }
   }
 })(Parser)

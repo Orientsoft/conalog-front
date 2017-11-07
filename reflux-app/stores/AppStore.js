@@ -143,6 +143,10 @@ let state = {
 
   //AgentStatus
   agentStatusList: [],
+
+  // change language
+  language:"english",
+
 }
 
 let AppStore = Reflux.createStore({
@@ -1127,6 +1131,7 @@ let AppStore = Reflux.createStore({
       remark: state.parser.remark,
       input: {type: state.parser.inputType, channel: state.parser.inputChannel},
       output: {type: state.parser.outputType, channel: state.parser.outputChannel},
+      host:state.parser.host,
       ts: Date.now()
     }
     if (state.parser.id !== undefined) {
@@ -1523,6 +1528,17 @@ let AppStore = Reflux.createStore({
         message.error('onGetAgentStatusList Error: ' + err.toString(), 5)
       })
   },
+
+  //change language
+  onChangeLanguage(e){
+    if(e == "chinese"){
+      state.language = "chinese"
+    }else{
+      state.language = "english"
+    }
+    console.log(state.language)
+    this.trigger(state)
+  }
 
 
 

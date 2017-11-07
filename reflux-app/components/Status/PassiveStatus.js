@@ -1,7 +1,5 @@
-/**
- * Created by jiangjun on 2017/7/12.
- */
 import React from 'react'
+import { FormattedMessage } from 'react-intl';
 let message = require('antd/lib/message')
 let TimePicker = require('antd/lib/time-picker')
 let Switch = require('antd/lib/switch')
@@ -178,16 +176,16 @@ class PassiveStatus extends React.Component {
                  data-pagination="true" data-show-pagination-switch="true" className="table table-bordered table-hover">
             <thead>
             <tr>
-              <th data-field="name" data-sortable="true">Name</th>
-              <th data-field="date" data-sortable="true" data-formatter="dateFormatter">Date</th>
-              <th data-field="amount" data-align="center" data-sortable="true" data-sorter="">Type</th>
-              <th data-field="cmd" data-align="center" data-sortable="true" data-sorter="">Command</th>
-              <th data-field="parameter" data-align="center" data-sortable="true" data-sorter="">Parameter</th>
-              <th data-field="host" data-align="center" data-sortable="true" data-sorter="">Host</th>
-              <th data-field="execCount" data-align="center" data-sortable="true" data-sorter="">Msg Count</th>
-              <th data-field="lastTs" data-align="center" data-sortable="true" data-sorter="">Last Activity Time</th>
-              <th data-field="lastMsg" data-align="center" data-sortable="true" data-sorter="">Last Activity Message</th>
-              <th data-field="operation" data-align="center" data-sortable="true" data-sorter="">Operation</th>
+              <th data-field="name" data-sortable="true"><FormattedMessage id="name"/></th>
+              <th data-field="date" data-sortable="true" data-formatter="dateFormatter"><FormattedMessage id="date"/></th>
+              <th data-field="amount" data-align="center" data-sortable="true" data-sorter=""><FormattedMessage id="types"/></th>
+              <th data-field="cmd" data-align="center" data-sortable="true" data-sorter=""><FormattedMessage id="command"/></th>
+              <th data-field="parameter" data-align="center" data-sortable="true" data-sorter=""><FormattedMessage id="para"/></th>
+              <th data-field="host" data-align="center" data-sortable="true" data-sorter=""><FormattedMessage id="host"/></th>
+              <th data-field="execCount" data-align="center" data-sortable="true" data-sorter=""><FormattedMessage id="execCount"/></th>
+              <th data-field="lastTs" data-align="center" data-sortable="true" data-sorter=""><FormattedMessage id="lastActivityTime"/></th>
+              <th data-field="lastMsg" data-align="center" data-sortable="true" data-sorter=""><FormattedMessage id="lastActivityMessage"/></th>
+              <th data-field="operation" data-align="center" data-sortable="true" data-sorter=""><FormattedMessage id="operation"/></th>
             </tr>
             </thead>
             <tbody>

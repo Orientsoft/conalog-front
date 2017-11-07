@@ -5,6 +5,7 @@ import AppStore from '../../stores/AppStore'
 import _ from 'lodash'
 import { Row, Col } from 'antd';
 import classNames from 'classnames';
+import { FormattedMessage } from 'react-intl';
 
 let Table = require('antd/lib/table')
 let Input = require('antd/lib/input')
@@ -32,7 +33,9 @@ class AgentCollector extends React.Component {
       searchContent:'',
       agentCollector:{},
       agentCollectorList:[],
-      agentCollectorListAll:[]
+      agentCollectorListAll:[],
+      delete:"",
+      delmsg:""
     }
   }
 
@@ -103,6 +106,11 @@ class AgentCollector extends React.Component {
   }
 
   onItemEdit(e) {
+    var t = e.target
+    if (t.tagName.toLowerCase() == 'span') {
+      t = t.parentElement
+    }
+
     validates = {
       param: {
         msg: 'parameter can\'t be empty',
@@ -113,7 +121,7 @@ class AgentCollector extends React.Component {
         status: false
       }
     }
-    let name = e.target.dataset.name
+    let name = t.dataset.name
     AppActions.setAgentCollectorEditModalVisible(true)
     AppActions.getAgentCollector(name, (ac) => {
       validates.param.status = !!ac.param
@@ -139,11 +147,15 @@ class AgentCollector extends React.Component {
   }
 
   onItemDelete(e) {
-    let name = e.target.dataset.name
-    let id = e.target.dataset._id
+    var t = e.target
+    if (t.tagName.toLowerCase() == 'span') {
+      t = t.parentElement
+    }
+    let name = t.dataset.name
+    let id = t.dataset._id
     confirm({
-      title: 'Confirm Delete',
-      content: 'Are you sure to delete ' +  name  +' ('+  id  + ' ) ?',
+      title: this.state.delete,
+      content: this.state.delmsg +  name  +' ('+  id  + ' ) ?',
       onOk: this.onDeleteOk,
       onCancel: this.onDeleteCancel
     })
@@ -206,6 +218,23 @@ class AgentCollector extends React.Component {
 
 
   render() {
+    let a = <FormattedMessage id = 'home'/>
+    let name = a._owner._context.intl.messages.name
+    let date = a._owner._context.intl.messages.date
+    let category = a._owner._context.intl.messages.category
+    let type = a._owner._context.intl.messages.types
+    let host = a._owner._context.intl.messages.host
+    let command = a._owner._context.intl.messages.command
+    let operation = a._owner._context.intl.messages.operation
+    let parameter = a._owner._context.intl.messages.para
+    let encod = a._owner._context.intl.messages.encod
+    let channel = a._owner._context.intl.messages.channel
+    let description = a._owner._context.intl.messages.des
+    let add = a._owner._context.intl.messages.adding
+    let edit = a._owner._context.intl.messages.edit
+    this.state.delete = a._owner._context.intl.messages.comfirmDel
+    this.state.delmsg = a._owner._context.intl.messages.delMessage
+
 
     let antdTableColumns = [
       {
@@ -222,7 +251,7 @@ class AgentCollector extends React.Component {
         }
       },
       {
-        title: 'Name',
+        title: name,
         key:"Name",
         dataIndex: 'name',
         sorter: (a, b) => {
@@ -235,7 +264,7 @@ class AgentCollector extends React.Component {
         }
       },
       {
-        title: 'Date',
+        title: date,
         key:"Date",
         sorter: (a, b) => a.ts - b.ts,
         dataIndex: 'ts',
@@ -245,37 +274,37 @@ class AgentCollector extends React.Component {
         }
       },
       {
-        title: 'Category',
+        title: category,
         dataIndex: 'category',
       },
       {
-        title: 'Parameter',
+        title: parameter,
         dataIndex: 'param',
         className:"parameterWidth"
       },
       {
-        title: 'Encoding',
+        title: encod,
         dataIndex: 'encoding'
       },
       {
-        title: 'Channel',
+        title: channel,
         dataIndex: 'channel'
       },
       {
-        title: 'Description',
+        title: description,
         render: (text, record) => (
           <Popover content = {record.desc} title = "Description" overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
-            <Icon  className="collectorIconEye" type = "eye"></Icon>
+            <i  className="anticon icon-eye  collectorIconEye " ></i>
           </Popover>
         )
       },
       {
-        title: 'Operation',
+        title: operation,
         render: (text, record) => (
           <span>
-            <a href="#" onClick={this.onItemEdit.bind(this)} data-name={record.name} >Edit</a>
+            <a href="#" onClick={this.onItemEdit.bind(this)} data-name={record.name} ><FormattedMessage id="edit"/></a>
             <span className="ant-divider"></span>
-            <a href="#" onClick={this.onItemDelete.bind(this)} data-name={record.name} data-_id={record._id} >Delete</a>
+            <a href="#" onClick={this.onItemDelete.bind(this)} data-name={record.name} data-_id={record._id} ><FormattedMessage id="del"/></a>
           </span>
         )
       }
@@ -311,17 +340,17 @@ class AgentCollector extends React.Component {
     let antdFormAdd = <Form horizonal form = {this.props.form}>
 
 
-      <FormItem {...formItemLayout} label = "Name" required help = "name is required">
+      <FormItem {...formItemLayout} label = {name} required >
         <Input {...getFieldProps('name', {})} type = "text" autoComplete = "off" />
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "Parameter"  required help = "parameter is required">
+      <FormItem {...formItemLayout} label = {parameter}  required  >
         <Input {...getFieldProps('param', {})} type = "text" autoComplete = "off" />
       </FormItem>
 
       <Row>
         <Col span = "11" offset = "2" >
-          <FormItem {...formItemLayoutSelect} label = "Encoding" className = "selectEncoding" required>
+          <FormItem {...formItemLayoutSelect} label = {encod} className = "selectEncoding" required>
             <Select {...getFieldProps('encoding',{})}>
               <Option value="UTF-8" key="UTF-8">UTF-8</Option>
               <Option key="ASCII">ASCII</Option>
@@ -341,16 +370,16 @@ class AgentCollector extends React.Component {
           </FormItem>
         </Col>
         <Col span = "11">
-          <FormItem {...formItemLayoutSelect} label = "Channel" required>
+          <FormItem {...formItemLayoutSelect} label = {channel} required>
             <Select {...getFieldProps('channel', {})}>
               <Option key = "Redis PubSub" > Redis PubSub </Option>
-              <Option key = "Nanomsg Queue" > Nanomsg Queue </Option>
+              <Option key = "Nsq Queue" > Nsq Queue </Option>
             </Select>
           </FormItem>
         </Col>
       </Row>
 
-      <FormItem {...formItemLayout} label = "Description" required help = "description is required">
+      <FormItem {...formItemLayout} label = {description} required >
         <Input {...getFieldProps('desc', {})} type = "textarea" rows = "3" autoComplete = "off" />
       </FormItem>
 
@@ -364,17 +393,17 @@ class AgentCollector extends React.Component {
         <span {...getFieldProps('_id', {})}>{this.props.appStore.agentCollector._id}</span>
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "Name">
+      <FormItem {...formItemLayout} label = {name}>
         <span {...getFieldProps('name', {})}>{this.props.appStore.agentCollector.name}</span>
       </FormItem>
 
-      <FormItem {...formItemLayout} label = "Parameter" required help = "parameter is required">
+      <FormItem {...formItemLayout} label = {parameter} required >
         <Input {...getFieldProps('param', {})} type = "text" autoComplete = "off" />
       </FormItem>
 
       <Row>
         <Col span = "11" offset = "2" >
-          <FormItem {...formItemLayoutSelect} label = "Encoding" className = "selectEncoding">
+          <FormItem {...formItemLayoutSelect} label = {encod} className = "selectEncoding">
             <Select {...getFieldProps('encoding', {})}>
               <Option key="UTF-8" value="UTF-8">UTF-8</Option>
               <Option key="ASCII">ASCII</Option>
@@ -394,16 +423,16 @@ class AgentCollector extends React.Component {
           </FormItem>
         </Col>
         <Col span = "11">
-          <FormItem {...formItemLayoutSelect} label = "Channel">
+          <FormItem {...formItemLayoutSelect} label = {channel}>
             <Select {...getFieldProps('channel', {})}>
               <Option value = "Redis PubSub" > Redis PubSub </Option>
-              <Option value = "Nanomsg Queue" > Nanomsg Queue </Option>
+              <Option value = "Nsq Queue" > Nsq Queue </Option>
             </Select>
           </FormItem>
         </Col>
       </Row>
 
-      <FormItem {...formItemLayout} label = "Description" required help = "description is required">
+      <FormItem {...formItemLayout} label = {description} required >
         <Input {...getFieldProps('desc', {})} type = "textarea" rows = "3" autoComplete = "off" />
       </FormItem>
 
@@ -412,7 +441,7 @@ class AgentCollector extends React.Component {
     return (
       <div className = "container">
         <Modal
-          title = "Add AgentCollector"
+          title = {add}
           visible = {this.props.appStore.agentCollectorAddModalVisible}
           onOk = {this.onAddOk.bind(this)}
           onCancel = {this.onAddCancel}
@@ -421,7 +450,7 @@ class AgentCollector extends React.Component {
         </Modal>
 
         <Modal
-          title = "Edit AgentCollector"
+          title = {edit}
           visible = {this.props.appStore.agentCollectorEditModalVisible}
           onOk = {this.onEditOk.bind(this)}
           onCancel = {this.onEditCancel}
@@ -431,7 +460,7 @@ class AgentCollector extends React.Component {
 
         <div className = "row clbody addAgentCollector">
           <div className = "ant-col-sm24 p-t-10 addAgentCollector">
-            <Button type = "primary" icon = "plus-circle-o" onClick = {this.onItemAdd}/>
+            <Button type = "primary" icon="anticon icon-pluscircleo" onClick = {this.onItemAdd}/>
           </div>
         </div>
 
@@ -440,15 +469,15 @@ class AgentCollector extends React.Component {
           <div className="ant-col-sm-4 p-t-10 p-b-10 pull-right CollectorSelect">
             <div className="ant-search-input-wrapper ">
               <div className="selectDiv">
-                <Select className="searchSelect" defaultValue="name" onChange={this.handleSelect.bind(this)}>
-                  <Option value="name" selected> Name </Option>
-                  <Option value="parameter"> Parameter </Option>
+                <Select className="searchSelect" placeholder={name} onChange={this.handleSelect.bind(this)}>
+                  <Option value="name" selected> {name} </Option>
+                  <Option value="parameter"> {parameter} </Option>
                 </Select>
               </div>
               <InputGroup className={searchClass}>
                 <Input  data-name="name" onChange={this.handleFilterChange.bind(this)} onPressEnter={this.handleSearch.bind(this)} />
                 <div className="ant-input-group-wrap">
-                  <Button icon="search" data-name="name" className={buttonClass}
+                  <Button icon="anticon icon-search1" data-name="name" className={buttonClass}
                           onClick={this.handleSearch.bind(this)}/>
                 </div>
               </InputGroup>

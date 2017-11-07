@@ -1,5 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
+import { FormattedMessage } from 'react-intl';
 
 import AppActions from '../actions/AppActions'
 import AppStore from '../stores/AppStore'
@@ -28,7 +29,11 @@ class Collector extends React.Component {
   }
 
   onTabClick(e) {
-    AppActions.changeCollectorType(e.target.dataset.type)
+    var t = e.target
+    if (t.tagName.toLowerCase() == 'span') {
+      t = t.parentElement
+    }
+    AppActions.changeCollectorType(t.dataset.type)
     e.preventDefault()
   }
 
@@ -48,7 +53,9 @@ class Collector extends React.Component {
                   onClick={ this.onTabClick }
                   data-type="Active"
                   aria-controls="home"
-                  aria-expanded="true">Active</a>
+                  aria-expanded="true">
+                  <FormattedMessage id="active"></FormattedMessage>
+                </a>
               </li>
               <li role="presentation"
                 className= { this.props.collectorType === 'Passive' ? "active text-center" : "text-center"}
@@ -60,7 +67,9 @@ class Collector extends React.Component {
                   onClick={ this.onTabClick }
                   data-type="Passive"
                   aria-controls="profile"
-                  aria-expanded="false">Passive</a>
+                  aria-expanded="false">
+                  <FormattedMessage id="passive"></FormattedMessage>
+                </a>
               </li>
               <li role="presentation"
                   className= { this.props.collectorType === 'Agent' ? "active text-center" : "text-center"}
@@ -72,7 +81,9 @@ class Collector extends React.Component {
                    onClick={ this.onTabClick }
                    data-type="Agent"
                    aria-controls="agent"
-                   aria-expanded="false">Agent</a>
+                   aria-expanded="false">
+                  <FormattedMessage id="agent"></FormattedMessage>
+                </a>
               </li>
             </ul>
             <div id="myTabContent" className="tab-content p-20">

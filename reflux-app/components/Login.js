@@ -3,6 +3,7 @@ import _ from 'lodash'
 
 import AppActions from '../actions/AppActions'
 import AppStore from '../stores/AppStore'
+import { FormattedMessage } from 'react-intl';
 
 class Login extends React.Component {
   constructor(props) {
@@ -42,6 +43,10 @@ class Login extends React.Component {
   }
 
   render() {
+    let a = <FormattedMessage id = 'home'/>
+    let user = a._owner._context.intl.messages.user
+    let password = a._owner._context.intl.messages.password
+
     return (
       <div>
         <div className="account-pages"></div>
@@ -49,42 +54,42 @@ class Login extends React.Component {
         <div className="wrapper-page">
           <div className=" card-box">
             <div className="panel-heading">
-              <h3 className="text-center"> Sign In to <strong className="text-custom">Conalog</strong> </h3>
+              <h3 className="text-center"> <FormattedMessage id="signin"/> <strong className="text-custom">Conalog</strong> </h3>
             </div>
             <div className="panel-body">
               <form className="form-horizontal m-t-20" action="#">
                 <div className="form-group ">
                   <div className="ant-col-xs-24">
-                    <input className="form-control" type="text" required="" placeholder="Username" onChange={this.updateUser.bind(this)}/>
+                    <input className="form-control" type="text" required="" placeholder={user} onChange={this.updateUser.bind(this)}/>
                   </div>
                 </div>
                 <div className="form-group">
                   <div className="ant-col-xs-24">
-                    <input className="form-control" type="password" required="" placeholder="Password" onChange={this.updatePass.bind(this)}/>
+                    <input className="form-control" type="password" required="" placeholder={password} onChange={this.updatePass.bind(this)}/>
                   </div>
                 </div>
                 <div className="form-group ">
                   <div className="ant-col-xs-24">
                     <div className="checkbox checkbox-primary">
                       <input id="checkbox-signup" type="checkbox" />
-                      <label htmlFor="checkbox-signup"> Remember me </label>
+                      <label htmlFor="checkbox-signup"> <FormattedMessage id="remember"/> </label>
                     </div>
                   </div>
                 </div>
                 <div className="form-group text-center m-t-40">
                   <div className="ant-col-xs-24">
-                    <button className="btn btn-pink btn-block text-uppercase waves-effect waves-light" type="submit" onClick={this.login.bind(this)}>Log In</button>
+                    <button className="btn btn-pink btn-block text-uppercase waves-effect waves-light" type="submit" onClick={this.login.bind(this)}><FormattedMessage id="login"/></button>
                   </div>
                 </div>
                 <div className="form-group m-t-30 m-b-0">
-                  <div className="ant-col-sm-24"> <a href="page-recoverpw.html"  className="text-dark"><i className="fa fa-lock m-r-5"></i> Forgot your password?</a> </div>
+                  <div className="ant-col-sm-24"> <a href="page-recoverpw.html"  className="text-dark"><i className="fa fa-lock m-r-5"></i> <FormattedMessage id="forget"/> </a> </div>
                 </div>
               </form>
             </div>
           </div>
           <div className="row">
             <div className="ant-col-sm-24 text-center">
-              <p>Don't have an account? <a href="page-register.html"  className="text-primary m-l-5"><b>Sign Up</b></a></p>
+              <p> <FormattedMessage id="account"/>  <a href="page-register.html"  className="text-primary m-l-5"><b><FormattedMessage id="signup"/></b></a></p>
             </div>
           </div>
         </div>
