@@ -1,11 +1,17 @@
 import React from 'react'
 import refluxConnect from 'reflux-connect'
+import { FormattedMessage } from 'react-intl';
+
+
+// import '../../public/css/index.css';
+// import { Icon,Modal,Button } from 'antd';
+
 let Table = require('antd/lib/table')
 let Input = require('antd/lib/input')
 let Button = require('antd/lib/button')
 let Modal = require('antd/lib/modal')
 let Form = require('antd/lib/form')
-let Icon = require('antd/lib/icon')
+// let Icon = require('antd/lib/icon')
 import classNames from 'classnames'
 import _ from 'lodash'
 
@@ -19,22 +25,28 @@ const FormItem = Form.Item;
 class Cert extends React.Component {
   constructor(props) {
     super(props)
+    this.state = {
+      delete:"",
+      delmsg:"",
+      certList:[]
+    }
   }
 
   componentDidMount() {
-    /*
+
     this.unsubscribe = AppStore.listen(function(state) {
       this.setState(state);
     }.bind(this));
-    */
-    AppActions.listCert()
+
+    AppActions.listCert().then( () => { console.log("aa",this.state.certList)})
+
   }
 
   componentWillUnmount() {
-    /*
+
     if (_.isFunction(this.unsubscribe))
       this.unsubscribe();
-    */
+
   }
 
   onItemAdd(e) {
@@ -62,7 +74,11 @@ class Cert extends React.Component {
   }
 
   onItemEdit(e) {
-    let host = e.target.dataset.host
+    var t = e.target
+    if (t.tagName.toLowerCase() == 'span') {
+      t = t.parentElement
+    }
+    let host = t.dataset.host
 
     AppActions.setCertEditModalVisible(true)
     AppActions.getCert(host)
@@ -86,14 +102,18 @@ class Cert extends React.Component {
   }
 
   onItemDelete(e) {
-    let host = e.target.dataset.host
-    let id = e.target.dataset.id
+    var t = e.target
+    if (t.tagName.toLowerCase() == 'span') {
+      t = t.parentElement
+    }
+    let host = t.dataset.host
+    let id = t.dataset.id
 
     AppActions.getCert(host)
     
     confirm({
-      title: 'Confirm Delete',
-      content: 'Are you sure to delete cert of ' + host + '?',
+      title: this.state.delete,
+      content: this.state.delmsg + host + '?',
       onOk: this.onDeleteOk,
       onCancel: this.onDeleteCancel
     })  
@@ -124,22 +144,28 @@ class Cert extends React.Component {
     AppActions.toggleCertPass(e.target.dataset._id,showPassword)
   }
   render() {
+    let a = <FormattedMessage id = 'home'/>
+    let password = a._owner._context.intl.messages.password
+    let date = a._owner._context.intl.messages.date
+    let host = a._owner._context.intl.messages.host
+    let port = a._owner._context.intl.messages.port
+    let username = a._owner._context.intl.messages.user
+    let operation = a._owner._context.intl.messages.operation
+    let edit = a._owner._context.intl.messages.edit
+    let del = a._owner._context.intl.messages.del
+    let add = a._owner._context.intl.messages.adding
+    this.state.delete = a._owner._context.intl.messages.comfirmDel
+    this.state.delmsg = a._owner._context.intl.messages.delCert
+
     // ant design table
     let antdTableColumns = [
       {
         title: 'ID',
         dataIndex: '_id'
       },
+
       {
-        title:'Password',
-        render:(text,record)=>(
-	        <span>
-            <span>{record.originPass}</span>
-          </span>
-	)
-      },
-      {
-        title: 'Date',
+        title: date,
         dataIndex: 'ts',
         render: (ts) => {
            let d = new Date(parseInt(ts)).toLocaleString()
@@ -147,26 +173,35 @@ class Cert extends React.Component {
         }
       },
       {
-        title: 'Host',
+        title: host,
         dataIndex: 'host',
       },
       {
-        title: 'Port',
+        title: port,
         dataIndex: 'port'
       },
       {
-        title: 'Username',
+        title: username,
         dataIndex: 'user'
       },
       {
-        title: 'Operation',
+        title:password,
+        render:(text,record)=>(
+          <span>
+            <span>{record.originPass}</span>
+          </span>
+        )
+      },
+      {
+        title: operation,
         render: (text, record) => (
           <span>
-            <a onClick={this.onItemEdit.bind(this)} data-id={record._id} data-host={record.host} href="#">Edit</a>
+            <a onClick={this.onItemEdit.bind(this)} data-id={record._id} data-host={record.host} href="#"><FormattedMessage id="edit"/></a>
             <span className="ant-divider"></span>
-            <a onClick={this.onItemDelete.bind(this)} data-id={record._id} data-host={record.host} href="#">Delete</a>
-	    <span className="ant-divider"></span>
-	    <a><Icon data-_id={record._id} type="eye" onMouseOver={this.onShowPass.bind(this)} onMouseLeave={this.onHidePass.bind(this)} ></Icon></a>
+            <a onClick={this.onItemDelete.bind(this)} data-id={record._id} data-host={record.host} href="#"><FormattedMessage id="del"/></a>
+	          <span className="ant-divider"></span>
+	         {/*<a><Icon data-_id={record._id}  type="eye"  onMouseOver={this.onShowPass.bind(this)} onMouseLeave={this.onHidePass.bind(this)} ></Icon></a>*/}
+            <a><i data-_id={record._id}  className="anticon icon-eye"  onMouseOver={this.onShowPass.bind(this)} onMouseLeave={this.onHidePass.bind(this)} ></i></a>
           </span>
         )
       }
@@ -188,25 +223,25 @@ class Cert extends React.Component {
     let antdForm = <Form horizontal form={this.props.form}>
       <FormItem
         {...formItemLayout}
-        label="Host"
+        label={host}
       >
         <Input {...getFieldProps('host', {})} type="text" autoComplete="off" />
       </FormItem>
       <FormItem
         {...formItemLayout}
-        label="Port"
+        label={port}
       >
         <Input {...getFieldProps('port', {})} type="text" autoComplete="off" />
       </FormItem>
       <FormItem
         {...formItemLayout}
-        label="User"
+        label={username}
       >
         <Input {...getFieldProps('user', {})} type="text" autoComplete="off" />
       </FormItem>
       <FormItem
         {...formItemLayout}
-        label="Password"
+        label={password}
       >
         <Input {...getFieldProps('pass', {})} type="password" autoComplete="off" />
       </FormItem>
@@ -217,7 +252,7 @@ class Cert extends React.Component {
     return (
       <div className="container">
 
-        <Modal title="Add Cert"
+        <Modal title= {add}
           visible={this.props.appStore.certAddModalVisible}
           onOk={this.onAddOk}
           onCancel={this.onAddCancel}
@@ -225,7 +260,7 @@ class Cert extends React.Component {
           {antdForm}
         </Modal>
 
-        <Modal title="Edit Cert"
+        <Modal title= {edit}
           visible={this.props.appStore.certEditModalVisible}
           onOk={this.onEditOk}
           onCancel={this.onEditCancel}
@@ -235,7 +270,7 @@ class Cert extends React.Component {
 
         <div className="row clbody">
           <div className="ant-col-sm24 p-t-10">
-            <Button type="primary" icon="plus-circle-o" onClick={this.onItemAdd} />
+            <Button type="primary" icon="anticon icon-pluscircleo"  onClick={this.onItemAdd} ></Button>
           </div>
         </div>
 

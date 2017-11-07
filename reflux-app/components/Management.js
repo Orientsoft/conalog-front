@@ -3,6 +3,7 @@ import _ from 'lodash'
 
 import AppActions from '../actions/AppActions'
 import AppStore from '../stores/AppStore'
+import { FormattedMessage } from 'react-intl';
 
 class Login extends React.Component {
   constructor(props) {
@@ -39,6 +40,11 @@ class Login extends React.Component {
   }
 
   render() {
+    let a = <FormattedMessage id = 'home'/>
+    let oldPass = a._owner._context.intl.messages.oldPass
+    let newPass = a._owner._context.intl.messages.newPass
+    let repeatNewPass = a._owner._context.intl.messages.repeatNewPassword
+
     return (
       <div>
         <div className="account-pages"></div>
@@ -46,7 +52,7 @@ class Login extends React.Component {
         <div className="wrapper-page">
           <div className=" card-box">
             <div className="panel-heading">
-              <h3 className="text-center"> Manage <strong className="text-custom">Conalog</strong> </h3>
+              <h3 className="text-center"> <FormattedMessage id="manage"/> <strong className="text-custom">Conalog</strong> </h3>
             </div>
             <div className="panel-body">
               <div className=""></div>
@@ -56,7 +62,7 @@ class Login extends React.Component {
                     <input className="form-control"
                       type="password"
                       required=""
-                      placeholder="Old Password"
+                      placeholder={oldPass}
                       ref="old"
                       />
                   </div>
@@ -67,7 +73,7 @@ class Login extends React.Component {
                       className="form-control"
                       type="password"
                       required=""
-                      placeholder="New Password"
+                      placeholder={newPass}
                       ref="new"
                       />
                   </div>
@@ -78,13 +84,13 @@ class Login extends React.Component {
                       className="form-control"
                       type="password"
                       required=""
-                      placeholder="Repeat New Password"
+                      placeholder={repeatNewPass}
                       ref="repeat"/>
                   </div>
                 </div>
                 <div className="form-group text-center m-t-40">
                   <div className="ant-col-xs-24">
-                    <button className="btn btn-pink btn-block text-uppercase waves-effect waves-light" type="submit" onClick={this.changeManagementPassword.bind(this)}>Change Password</button>
+                    <button className="btn btn-pink btn-block text-uppercase waves-effect waves-light" type="submit" onClick={this.changeManagementPassword.bind(this)}> <FormattedMessage id="changePass"/></button>
                   </div>
                 </div>
               </form>

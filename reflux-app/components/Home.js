@@ -1,5 +1,7 @@
 import React from 'react'
 import _ from 'lodash'
+import { FormattedMessage } from 'react-intl';
+
 
 import AppActions from '../actions/AppActions'
 import AppStore from '../stores/AppStore'
@@ -44,29 +46,29 @@ class Home extends React.Component {
             <div className="ant-col-md-6 text-center">
               <p className="text-center orient-ico"><i data-nav="Collector" onClick={this.nav.bind(this)} className="fa fa-modx"></i></p>
               <div className="caption">
-                <h3 data-nav="Collector" onClick={this.nav.bind(this)}>Collector</h3>
-                <p> Setup collectors Both active and passive supported </p>
+                <h3 data-nav="Collector" ><FormattedMessage id="collector"/></h3>
+                <p> <FormattedMessage id="collectorMsg"/></p>
               </div>
             </div>
             <div className="ant-col-md-6 text-center">
               <p className="text-center orient-ico "><i data-nav="Parser" onClick={this.nav.bind(this)} className="fa fa-cogs"></i></p>
               <div className="caption">
-                <h3 data-nav="Parser" onClick={this.nav.bind(this)} >Parser</h3>
-                <p> Quickly build parser flows and write parser arammar interactively.</p>
+                <h3 data-nav="Parser"  ><FormattedMessage id="parser"/></h3>
+                <p><FormattedMessage id="parserMsg"/></p>
               </div>
             </div>
             <div className="ant-col-md-6 text-center">
               <p className="text-center orient-ico"><i data-nav="Status" onClick={this.nav.bind(this)} className="fa  fa-paper-plane-o"></i></p>
               <div className="caption">
-                <h3 data-nav="Status" onClick={this.nav.bind(this)}>Status</h3>
-                <p> Watch your collectors and parser flows in a graphic way. </p>
+                <h3 data-nav="Status" ><FormattedMessage id="status"/></h3>
+                <p><FormattedMessage id="statusMsg"/></p>
               </div>
             </div>
             <div className="ant-col-md-6 text-center">
               <p className="text-center orient-ico"><i data-nav="History" onClick={this.nav.bind(this)} className="fa fa-history"></i></p>
               <div className="caption">
-                <h3 data-nav="History" onClick={this.nav.bind(this)}>History</h3>
-                <p> Check log history to identify where the problem sits </p>
+                <h3 data-nav="History" ><FormattedMessage id="history"/></h3>
+                <p><FormattedMessage id="historyMsg"/></p>
               </div>
             </div>
           </div>

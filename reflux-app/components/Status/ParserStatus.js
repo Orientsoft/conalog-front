@@ -4,6 +4,7 @@ import refluxConnect from 'reflux-connect'
 import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
 import constants from '../../const'
+import { FormattedMessage } from 'react-intl';
 
 
 let Table = require('antd/lib/table')
@@ -21,7 +22,12 @@ class ParserStatus extends React.Component{
     this.state = {
       instanceListAll:[],
       messageModal:false,
-      messageContent:''
+      messageContent:'',
+      start:"",
+      startmsg1:"",
+      startmsg2:"",
+      delete:"",
+      delmsg:"",
     }
   }
 
@@ -47,11 +53,15 @@ class ParserStatus extends React.Component{
   }
 
   onInstanceStart(e) {
-    let name = e.target.dataset.name
-    let id = e.target.dataset.id
+    var t = e.target
+    if (t.tagName.toLowerCase() == 'span') {
+      t = t.parentElement
+    }
+    let name = t.dataset.name
+    let id = t.dataset.id
     confirm({
-      title: 'Confirm Start',
-      content: 'Are you sure to start an instance of ' + name +' ?',
+      title: this.state.start,
+      content: this.state.startmsg1 + name + this.state.startmsg2 +  ' ?',
       onOk: this.onStartOk,
       onCancel: this.onStartCancel
     })
@@ -71,11 +81,15 @@ class ParserStatus extends React.Component{
   onStartCancel() {}
 
   onInstanceStop(e) {
-    let id = e.target.dataset.id
+    var t = e.target
+    if (t.tagName.toLowerCase() == 'span') {
+      t = t.parentElement
+    }
+    let id = t.dataset.id
     console.log("id-->",id)
     confirm({
-      title: 'Confirm Stop',
-      content: 'Are you sure to stop instance ' + id +' ?',
+      title: this.state.delete,
+      content: this.state.delmsg + id +' ?',
       onOk: this.onInstanceStopOk,
       onCancel: this.onInstanceStopCancel
     })
@@ -114,6 +128,28 @@ class ParserStatus extends React.Component{
   }
 
   render () {
+    let a = <FormattedMessage id = 'home'/>
+    let name = a._owner._context.intl.messages.name
+    let date = a._owner._context.intl.messages.date
+    let path = a._owner._context.intl.messages.path
+    let type = a._owner._context.intl.messages.types
+    let inputType = a._owner._context.intl.messages.inputType
+    let outputType = a._owner._context.intl.messages.outputType
+    let operation = a._owner._context.intl.messages.operation
+    let parameter = a._owner._context.intl.messages.para
+    let inputChannel = a._owner._context.intl.messages.inputChannel
+    let channel = a._owner._context.intl.messages.channel
+    let outputChannel = a._owner._context.intl.messages.outputChannel
+    let lastActivityTime = a._owner._context.intl.messages.lastActivityTime
+    let lastActivityMessage = a._owner._context.intl.messages.lastActivityMessage
+    let execCount = a._owner._context.intl.messages.execCount
+    let instance =  a._owner._context.intl.messages.instance
+    this.state.delete = a._owner._context.intl.messages.comfirmDel
+    this.state.delmsg = a._owner._context.intl.messages.delInstance
+    this.state.start = a._owner._context.intl.messages.comfirmStart
+    this.state.startmsg1 = a._owner._context.intl.messages.startMsg1
+    this.state.startmsg2 = a._owner._context.intl.messages.startMsg2
+
     let antdTableColumns = [
       {
         title: "ID",
@@ -128,7 +164,7 @@ class ParserStatus extends React.Component{
         }
       },
       {
-        title: 'Name',
+        title: name,
         dataIndex: 'name',
         sorter: (a, b) => {
           var sa = a.name.split('').reduce((s, v) => s += v.charCodeAt(), 0)
@@ -140,7 +176,7 @@ class ParserStatus extends React.Component{
         }
       },
       {
-        title: 'Date',
+        title: date,
         dataIndex: 'ts',
         render: (ts) => {
           let d = new Date(parseInt(ts)).toLocaleString()
@@ -149,7 +185,7 @@ class ParserStatus extends React.Component{
         sorter: (a, b) => a.ts - b.ts
       },
       {
-        title: 'Path',
+        title: path,
         dataIndex: 'path',
         sorter: (a, b) => {
           var sa = a.path.split('').reduce((s, v) => s += v.charCodeAt(), 0)
@@ -161,27 +197,27 @@ class ParserStatus extends React.Component{
         }
       },
       {
-        title: 'Parameter',
+        title: parameter,
         dataIndex: 'parameter'
       },
       {
-        title: 'InputType',
+        title: inputType,
         dataIndex: 'input.type'
       },
       {
-        title: 'InputChannel',
+        title: inputChannel,
         dataIndex: 'input.channel'
       },
       {
-        title: 'OutputType',
+        title: outputType,
         dataIndex: 'output.type'
       },
       {
-        title: 'OutputChannel',
+        title: outputChannel,
         dataIndex: 'output.channel'
       },
       {
-        title: 'Instance',
+        title: instance,
         render: (text, record) => {
           let parserInstance = [];
           let parserInstances = this.props.appStore.instanceList;
@@ -191,7 +227,7 @@ class ParserStatus extends React.Component{
             anim = 'settingIcon'
           }
           return (<span>
-                    <Icon className = { anim } type = "setting" style = {{fontSize:20}}></Icon>
+                    <i className = 'anticon icon-setting' id={anim}  style = {{fontSize:20}}></i>
                     <span className = "ant-divider"></span>
                     <span> {parserInstance.length} </span>
                   </span>)
@@ -199,10 +235,10 @@ class ParserStatus extends React.Component{
         }
       },
       {
-        title: 'Operation',
+        title: operation,
         render: (text, record) => (
           <span>
-            <a href = "#"  onClick = {this.onInstanceStart.bind(this) } data-name = {record.name } data-id = {record.id }>Start</a>
+            <a href = "#"  onClick = {this.onInstanceStart.bind(this) } data-name = {record.name } data-id = {record.id }><FormattedMessage id="start"/></a>
           </span>
         )
       }
@@ -234,7 +270,7 @@ class ParserStatus extends React.Component{
         }
       },
       {
-        title: "Date",
+        title: lastActivityTime,
         sorter: (a, b) => a.ts - b.ts,
         dataIndex: 'lastActivity.ts',
         render: (ts) => {
@@ -243,12 +279,12 @@ class ParserStatus extends React.Component{
         },
       },
       {
-        title: "Last Activity Count",
+        title: execCount,
         dataIndex: 'lastActivity.count',
         sorter: (a, b) => a.lastActivity.count - b.lastActivity.count
       },
       {
-        title: "Last Activity Message",
+        title: lastActivityMessage,
         render: (text, record) => {
           if (record.lastActivity.message) {
             return(
@@ -270,10 +306,10 @@ class ParserStatus extends React.Component{
         }
       },
       {
-        title: 'Operation',
+        title: operation,
         render: (text, record) => (
           <span>
-            <a href = "#" onClick = {this.onInstanceStop.bind(this)} data-id = {record.id} >Stop</a>
+            <a href = "#" onClick = {this.onInstanceStop.bind(this)} data-id = {record.id} ><FormattedMessage id="stop"/></a>
           </span>
         )
       }
@@ -283,6 +319,7 @@ class ParserStatus extends React.Component{
       columns = { antdTableColumns }
       dataSource = { this.props.appStore.parserList }
       expandedRowRender = { record => {
+        console.log("record id",record.id)
         let parserInstance = [];
         let parserInstances = this.props.appStore.instanceList;
         parserInstance = parserInstances.filter(p => p.parserId == record.id)

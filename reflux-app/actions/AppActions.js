@@ -108,6 +108,8 @@ let AppActions = Reflux.createActions({
 
   //agentStatus
   'getAgentStatusList': {asyncResult: true},
+  //change language
+  "changeLanguage":{asyncResult: true}
 })
 
 export default AppActions

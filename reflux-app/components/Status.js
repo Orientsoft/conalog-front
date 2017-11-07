@@ -8,6 +8,7 @@ import ActiveStatus from './Status/ActiveStatus'
 import PassiveStatus from './Status/PassiveStatus'
 import ParserStatus from './Status/ParserStatus'
 import AgentStatus from './Status/AgentStatus'
+import { FormattedMessage } from 'react-intl';
 
 
 class Status extends React.Component {
@@ -30,8 +31,12 @@ class Status extends React.Component {
   }
 
   onTabClick(e) {
+    var t = e.target
+    if (t.tagName.toLowerCase() == 'span') {
+      t = t.parentElement
+    }
     e.preventDefault()
-    AppActions.changeStatusType(e.target.dataset.type)
+    AppActions.changeStatusType(t.dataset.type)
   }
 
   render() {
@@ -50,7 +55,9 @@ class Status extends React.Component {
                   onClick={ this.onTabClick }
                   data-type="Active"
                   aria-controls="home"
-                  aria-expanded="true">Active</a>
+                  aria-expanded="true">
+                  <FormattedMessage id="active"></FormattedMessage>
+                </a>
               </li>
               <li role="presentation"
                 className= { this.props.statusType === 'Passive' ? "active text-center" : "text-center"}
@@ -62,7 +69,9 @@ class Status extends React.Component {
                   onClick={ this.onTabClick }
                   data-type="Passive"
                   aria-controls="profile"
-                  aria-expanded="false">Passive</a>
+                  aria-expanded="false">
+                  <FormattedMessage id="passive"></FormattedMessage>
+                </a>
               </li>
               <li role="presentation"
                   className= { this.props.statusType === 'Agent' ? "active text-center" : "text-center"}
@@ -74,7 +83,9 @@ class Status extends React.Component {
                    onClick={ this.onTabClick }
                    data-type="Agent"
                    aria-controls="agent"
-                   aria-expanded="false">Agent</a>
+                   aria-expanded="false">
+                  <FormattedMessage id="agent"></FormattedMessage>
+                </a>
               </li>
               <li role="presentation"
                   className= { this.props.statusType === 'Parser' ? "active text-center" : "text-center"}
@@ -86,7 +97,9 @@ class Status extends React.Component {
                    onClick={ this.onTabClick }
                    data-type="Parser"
                    aria-controls="parser"
-                   aria-expanded="false">Parser</a>
+                   aria-expanded="false">
+                  <FormattedMessage id="parser"></FormattedMessage>
+                </a>
               </li>
             </ul>
             <div id="myTabContent" className="tab-content p-t-10">

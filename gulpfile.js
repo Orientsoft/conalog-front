@@ -8,6 +8,7 @@ var gulp = require('gulp'),
   browserify = require('browserify'),
   babelify = require('babelify'),
   watchify = require('watchify'),
+	less = require('gulp-less'),
   path = require('path'),
   fs = require('fs-extra'),
   exec = require('child_process').exec;
@@ -51,26 +52,8 @@ gulp.task('watch', function() {
   build();
 });
 
-gulp.task('compile', function() {
-  var bundler = browserify({
-    entries: ['./reflux-app/entry.js'],
-    transform: [babelify],
-    debug: false,
-    cache: {},
-    packageCache: {}
-  });
-
-  gUtil.log('Compiling ./reflux-app/entry.js to ./public/js/app/');
-
-  function build() {
-    bundler.bundle()
-      .on('error', printErrorStack)
-      .pipe(source('./reflux-app/entry.js'))
-      .pipe(rename({dirname: ''}))
-      .pipe(gulp.dest('./public/js/app/'));
-  }
-
-  build();
+gulp.task('less', function() {
+  gulp.src('./public/css/index.less').pipe(less()).pipe(gulp.dest('./public/css'))
 })
 
 gulp.task('install', function() {
@@ -107,5 +90,26 @@ gulp.task('install', function() {
     .pipe(gulp.dest('./public/vendor/antd/'))
 });
 
-gulp.task('go', ['compile'], function() {
+gulp.task('go', ['less'], function() {
+  var bundler = browserify({
+    entries: ['./reflux-app/entry.js'],
+    transform: [babelify],
+    debug: false,
+    cache: {},
+    packageCache: {}
+  });
+
+  gUtil.log('Compiling ./reflux-app/entry.js to ./public/js/app/');
+
+
+
+  function build() {
+    bundler.bundle()
+      .on('error', printErrorStack)
+      .pipe(source('./reflux-app/entry.js'))
+      .pipe(rename({dirname: ''}))
+      .pipe(gulp.dest('./public/js/app/'));
+  }
+
+  build()
 })
