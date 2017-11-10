@@ -1,8 +1,9 @@
 import React from 'react'
 import { FormattedMessage } from 'react-intl';
-let Table = require('antd/lib/table')
-let Input = require('antd/lib/input')
-let Button = require('antd/lib/button')
+import { Icon,Button,Table,Input, } from 'antd';
+// let Table = require('antd/lib/table')
+// let Input = require('antd/lib/input')
+// let Button = require('antd/lib/button')
 import classNames from 'classnames'
 import _ from 'lodash'
 
@@ -219,7 +220,7 @@ class History extends React.Component {
                 <Input placeholder={eventId} data-name="eventid" defaultValue={this.state.historyEventIdFilter} onChange={this.handleFilterChange.bind(this)}
                   onFocus={this.handleFilterBlur.bind(this)} onBlur={this.handleFilterBlur.bind(this)} onPressEnter={this.handleSearch.bind(this)} />
                 <div className="ant-input-group-wrap">
-                  <Button icon="anticon icon-search1"  data-name="eventid" className={buttonClass} onClick={this.handleSearch.bind(this)} />
+                  <Button icon="anticon anticon-search"  data-name="eventid" className={buttonClass} onClick={this.handleSearch.bind(this)} />
                 </div>
               </InputGroup>
             </div>

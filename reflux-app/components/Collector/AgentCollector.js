@@ -294,7 +294,7 @@ class AgentCollector extends React.Component {
         title: description,
         render: (text, record) => (
           <Popover content = {record.desc} title = "Description" overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
-            <i  className="anticon icon-eye  collectorIconEye " ></i>
+            <i  className="anticon anticon-eye  collectorIconEye " ></i>
           </Popover>
         )
       },
@@ -460,7 +460,7 @@ class AgentCollector extends React.Component {
 
         <div className = "row clbody addAgentCollector">
           <div className = "ant-col-sm24 p-t-10 addAgentCollector">
-            <Button type = "primary" icon="anticon icon-pluscircleo" onClick = {this.onItemAdd}/>
+            <Button type = "primary" icon="anticon anticon-plus" onClick = {this.onItemAdd}/>
           </div>
         </div>
 
@@ -477,7 +477,7 @@ class AgentCollector extends React.Component {
               <InputGroup className={searchClass}>
                 <Input  data-name="name" onChange={this.handleFilterChange.bind(this)} onPressEnter={this.handleSearch.bind(this)} />
                 <div className="ant-input-group-wrap">
-                  <Button icon="anticon icon-search1" data-name="name" className={buttonClass}
+                  <Button icon="anticon anticon-search" data-name="name" className={buttonClass}
                           onClick={this.handleSearch.bind(this)}/>
                 </div>
               </InputGroup>

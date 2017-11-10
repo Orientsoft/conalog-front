@@ -1,5 +1,6 @@
 import React from 'react'
 import { FormattedMessage } from 'react-intl';
+
 let message = require('antd/lib/message')
 let TimePicker = require('antd/lib/time-picker')
 let Checkbox = require('antd/lib/checkbox')
@@ -496,8 +497,8 @@ class ActiveCollector extends React.Component {
 
     let createHostOptions = () => {
         // console.log('createHostOptions', this.state)
-        return this.state.certList.map(cert => {
-          return <Option key={cert._id.toString()} value={cert.host}>{cert.host + ':' + cert.port}</Option>
+        return this.state.certList.map(item => {
+          return <Option  key={item._id.toString()} value={item._id.toString()}>{item.user+"@"+item.host+":"+item.port}</Option>
         })
     }
     let hostOptions = createHostOptions()
@@ -583,29 +584,24 @@ class ActiveCollector extends React.Component {
     //add activeCollector
     let antdFormAdd = <Form horizonal className = "addActiveCollector">
 
-      <Row>
-        <Col span = "11" offset = "2">
-          <FormItem {...formItemLayoutSelect} label = {name} required>
-            <Tooltip title="Output Redis channel defaults to ac_[COLLECTOR_NAME]">
-              <Input  type = "text" rows = "3" autoComplete = "off"
-                      data-field="name"
-                      ref="nameInput"
-                      value={this.state.activeCollectorAdd.name}
-                      onChange={this.addActiveCollector.bind(this)}/>
-            </Tooltip>
-          </FormItem>
-        </Col>
-        <Col span = "11">
-          <FormItem {...formItemLayoutSelect} label = {host} className = "selectEncoding" required>
-            <Select data-field="host"
-                    ref="hostInput"
-                    value={this.state.activeCollectorAdd.host}
-                    onChange={this.addActiveCollectorHost.bind(this)}>
-              {hostOptions}
-            </Select>
-          </FormItem>
-        </Col>
-      </Row>
+      <FormItem {...formItemLayout} label = {name} required>
+        <Tooltip title="Output Redis channel defaults to ac_[COLLECTOR_NAME]">
+          <Input  type = "text" rows = "3" autoComplete = "off"
+                  data-field="name"
+                  ref="nameInput"
+                  value={this.state.activeCollectorAdd.name}
+                  onChange={this.addActiveCollector.bind(this)}/>
+        </Tooltip>
+      </FormItem>
+
+      <FormItem {...formItemLayout} label = {host} className = "selectEncoding" required>
+        <Select data-field="host"
+                ref="hostInput"
+                value={this.state.activeCollectorAdd.host}
+                onChange={this.addActiveCollectorHost.bind(this)}>
+          {hostOptions}
+        </Select>
+      </FormItem>
 
       <Row>
         <Col span = "11" offset = "2" >
@@ -705,12 +701,6 @@ class ActiveCollector extends React.Component {
     let antdFormEdit = <Form horizonal className = "editActiveCollector">
 
       <FormItem {...formItemLayout} label = {name} >
-        {/*<Input  type = "text" autoComplete = "off"*/}
-                {/*data-field="name"*/}
-                {/*ref="nameInput"*/}
-                {/*value={this.state.activeCollector.name}*/}
-                {/*onChange={this.updateActiveCollector.bind(this)}*/}
-        {/*/>*/}
         <span>
           {this.state.activeCollector.name}
         </span>
@@ -742,28 +732,23 @@ class ActiveCollector extends React.Component {
         </Col>
       </Row>
 
-      <Row>
-        <Col span = "11" offset = "2" >
-          <FormItem {...formItemLayoutSelect} label = {command} >
-            <Input  type = "text" autoComplete = "off"
-                    data-field="cmd"
-                    ref="cmdInput"
-                    value={this.state.activeCollector.cmd}
-                    onChange={this.updateActiveCollector.bind(this)}
-            />
-          </FormItem>
-        </Col>
-        <Col span = "11">
-          <FormItem {...formItemLayoutSelect} label = {host} className = "selectEncoding">
-            <Select data-field="host"
-                    ref="hostInput"
-                    value={this.state.activeCollector.host}
-                    onChange={this.updateActiveCollectorHost.bind(this)}>
-              {hostOptions}
-            </Select>
-          </FormItem>
-        </Col>
-      </Row>
+      <FormItem {...formItemLayout} label = {host} className = "selectEncoding">
+        <Select data-field="host"
+                ref="hostInput"
+                value={this.state.activeCollector.host}
+                onChange={this.updateActiveCollectorHost.bind(this)}>
+          {hostOptions}
+        </Select>
+      </FormItem>
+
+      <FormItem {...formItemLayout} label = {command} >
+        <Input  type = "text" autoComplete = "off"
+                data-field="cmd"
+                ref="cmdInput"
+                value={this.state.activeCollector.cmd}
+                onChange={this.updateActiveCollector.bind(this)}
+        />
+      </FormItem>
 
       <FormItem {...formItemLayout} label = {parameter} >
         <Input  type = "text" autoComplete = "off"
@@ -828,7 +813,7 @@ class ActiveCollector extends React.Component {
       <div>
         <div className = "row clbody addActiveCollector">
           <div className = "ant-col-sm24 p-t-10 ">
-            <Button type = "primary" icon="anticon icon-pluscircleo" onClick = {this.onItemAdd.bind(this)}/>
+            <Button type = "primary" icon="anticon anticon-plus" onClick = {this.onItemAdd.bind(this)}/>
           </div>
         </div>
 
@@ -837,6 +822,7 @@ class ActiveCollector extends React.Component {
           visible = {this.state.activeCollectorAddModal}
           onOk = {this.saveActiveCollector.bind(this)}
           onCancel = {this.clearActiveCollector.bind(this)}
+          className = "antdFormAdd"
         >
           {antdFormAdd}
         </Modal>
@@ -852,7 +838,7 @@ class ActiveCollector extends React.Component {
             <InputGroup className={searchClass}>
               <Input  data-name="name" onChange={this.handleFilterChange.bind(this)} onPressEnter={this.handleSearch.bind(this)}/>
               <div className="ant-input-group-wrap">
-                <Button icon="anticon icon-search1" data-name="name" className={buttonClass} onClick={this.handleSearch.bind(this)} />
+                <Button icon="anticon anticon-search" data-name="name" className={buttonClass} onClick={this.handleSearch.bind(this)} />
               </div>
             </InputGroup>
           </div>
@@ -864,6 +850,7 @@ class ActiveCollector extends React.Component {
             visible = {this.state.activeCollectorEditModal}
             onOk = {this.onEditOk.bind(this)}
             onCancel = {this.onEditCancel.bind(this)}
+            className = "antdFormEdit"
           >
             {antdFormEdit}
           </Modal>

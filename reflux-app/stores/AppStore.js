@@ -1259,6 +1259,7 @@ let AppStore = Reflux.createStore({
           state.instanceListAll = _.cloneDeep(data);
 
           state.instanceList = data.map((item) => {
+            console.log("item",item)
             if (item.lastActivity.message) {
               item.lastActivity.message = item.lastActivity.message.substr(0, 32) + '...'
             }

@@ -1,10 +1,12 @@
 import React from 'react'
 import { FormattedMessage } from 'react-intl';
-let message = require('antd/lib/message')
-let TimePicker = require('antd/lib/time-picker')
-let Switch = require('antd/lib/switch')
-let Tag = require('antd/lib/tag')
-let Modal = require('antd/lib/modal')
+import { Icon,Tag,Switch,TimePicker,message,Modal } from 'antd';
+
+// let message = require('antd/lib/message')
+// let TimePicker = require('antd/lib/time-picker')
+// let Switch = require('antd/lib/switch')
+// let Tag = require('antd/lib/tag')
+// let Modal = require('antd/lib/modal')
 import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
 import constants from '../../const'
