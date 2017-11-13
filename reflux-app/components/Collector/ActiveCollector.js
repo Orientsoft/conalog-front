@@ -73,7 +73,6 @@ class ActiveCollector extends React.Component {
           desc:''
         })
       })
-        console.log("host",this.state.activeCollectorAdd.host)
     })
   }
 
