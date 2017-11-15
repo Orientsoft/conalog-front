@@ -180,6 +180,15 @@ table.table-bordered tbody td{
 	height:150px;
 }*/
 
+/*ul :has(> .hello){*/
+  /*overflow-y:scroll;*/
+  /*height:150px;*/
+/*}*/
+.inputchannel  ul {
+  height: 150px;
+  overflow: scroll;
+}
+
 
 
 

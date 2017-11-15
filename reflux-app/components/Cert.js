@@ -2,16 +2,12 @@ import React from 'react'
 import refluxConnect from 'reflux-connect'
 import { FormattedMessage } from 'react-intl';
 
-
-// import '../../public/css/index.css';
-// import { Icon,Modal,Button } from 'antd';
-
 let Table = require('antd/lib/table')
 let Input = require('antd/lib/input')
 let Button = require('antd/lib/button')
 let Modal = require('antd/lib/modal')
 let Form = require('antd/lib/form')
-// let Icon = require('antd/lib/icon')
+let Icon = require('antd/lib/icon')
 import classNames from 'classnames'
 import _ from 'lodash'
 
@@ -21,6 +17,10 @@ import AppStore from '../stores/AppStore'
 const confirm = Modal.confirm
 const createForm = Form.create;
 const FormItem = Form.Item;
+let validates
+let host
+let port
+let user
 
 class Cert extends React.Component {
   constructor(props) {
@@ -28,7 +28,7 @@ class Cert extends React.Component {
     this.state = {
       delete:"",
       delmsg:"",
-      certList:[]
+      certList:[],
     }
   }
 
@@ -50,22 +50,38 @@ class Cert extends React.Component {
   }
 
   onItemAdd(e) {
-    console.log('onItemAdd')
+    validates = {
+      host:{status:true},
+      port:{status:true},
+      name:{status:true},
+    }
 
     AppActions.clearCurrentCert()
     AppActions.setCertAddModalVisible(true)
   }
 
   onAddOk() {
-    AppActions.saveCurrentCert.triggerAsync()
-      .then(() => {
-        AppActions.clearCurrentCert()
-        return AppActions.listCert()
+    this.state.certList.every( cert =>{
+      validates.host.status = validates.port.status = validates.name.status = this.state.certList.every(cert => {
+        return cert.user !== user || cert.port !== port || cert.host !== host
       })
-      .catch(err => {
-        // do nothing
-      })
-    AppActions.setCertAddModalVisible(false)
+    })
+    var result = Object.keys(validates).filter(field => validates[field].status === false)
+    console.log(result)
+    if(result.length == 3){
+      alert('The user of  '+host+' is existed!'  )
+    }else{
+      AppActions.saveCurrentCert.triggerAsync()
+        .then(() => {
+          AppActions.clearCurrentCert()
+          return AppActions.listCert()
+        })
+        .catch(err => {
+          // do nothing
+        })
+      AppActions.setCertAddModalVisible(false)
+    }
+
   }
 
   onAddCancel() {
@@ -201,7 +217,7 @@ class Cert extends React.Component {
             <a onClick={this.onItemDelete.bind(this)} data-id={record._id} data-host={record.host} href="#"><FormattedMessage id="del"/></a>
 	          <span className="ant-divider"></span>
 	         {/*<a><Icon data-_id={record._id}  type="eye"  onMouseOver={this.onShowPass.bind(this)} onMouseLeave={this.onHidePass.bind(this)} ></Icon></a>*/}
-            <a><i data-_id={record._id}  className="anticon icon-eye"  onMouseOver={this.onShowPass.bind(this)} onMouseLeave={this.onHidePass.bind(this)} ></i></a>
+            <a><i data-_id={record._id}  className="anticon anticon-eye"  onMouseOver={this.onShowPass.bind(this)} onMouseLeave={this.onHidePass.bind(this)} ></i></a>
           </span>
         )
       }
@@ -254,7 +270,7 @@ class Cert extends React.Component {
 
         <Modal title= {add}
           visible={this.props.appStore.certAddModalVisible}
-          onOk={this.onAddOk}
+          onOk={() => this.onAddOk()}
           onCancel={this.onAddCancel}
         >
           {antdForm}
@@ -270,7 +286,7 @@ class Cert extends React.Component {
 
         <div className="row clbody">
           <div className="ant-col-sm24 p-t-10">
-            <Button type="primary" icon="anticon icon-pluscircleo"  onClick={this.onItemAdd} ></Button>
+            <Button type="primary" icon="anticon anticon-plus"  onClick={this.onItemAdd} ></Button>
           </div>
         </div>
 
@@ -303,7 +319,18 @@ Cert = createForm({
       stateObj[fields[field].name] = fields[field].value
     }
 
+    if(fields.hasOwnProperty('host')){
+      host = fields['host'].value
+    }
+    if(fields.hasOwnProperty('user')){
+      user = fields['user'].value
+    }
+    if(fields.hasOwnProperty('port')){
+      port = fields['port'].value
+    }
+
     AppActions.updateCurrentCert(stateObj)
+
   },
   mapPropsToFields: (props) => {
     console.log('mapPropsToFields', props)

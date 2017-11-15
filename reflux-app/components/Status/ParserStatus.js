@@ -5,14 +5,15 @@ import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
 import constants from '../../const'
 import { FormattedMessage } from 'react-intl';
+import { Icon,Modal,Button,Table,Input,Form,Tag } from 'antd';
 
 
-let Table = require('antd/lib/table')
-let Button = require('antd/lib/button')
-let Modal = require('antd/lib/modal')
-let Form = require('antd/lib/form')
-let Icon = require('antd/lib/icon')
-let Tag = require('antd/lib/tag')
+// let Table = require('antd/lib/table')
+// let Button = require('antd/lib/button')
+// let Modal = require('antd/lib/modal')
+// let Form = require('antd/lib/form')
+// let Icon = require('antd/lib/icon')
+// let Tag = require('antd/lib/tag')
 const confirm = Modal.confirm
 
 
@@ -86,7 +87,6 @@ class ParserStatus extends React.Component{
       t = t.parentElement
     }
     let id = t.dataset.id
-    console.log("id-->",id)
     confirm({
       title: this.state.delete,
       content: this.state.delmsg + id +' ?',
@@ -227,7 +227,7 @@ class ParserStatus extends React.Component{
             anim = 'settingIcon'
           }
           return (<span>
-                    <i className = 'anticon icon-setting' id={anim}  style = {{fontSize:20}}></i>
+                    <i className = 'anticon anticon-setting' id={anim}  style = {{fontSize:20}}></i>
                     <span className = "ant-divider"></span>
                     <span> {parserInstance.length} </span>
                   </span>)
@@ -319,7 +319,6 @@ class ParserStatus extends React.Component{
       columns = { antdTableColumns }
       dataSource = { this.props.appStore.parserList }
       expandedRowRender = { record => {
-        console.log("record id",record.id)
         let parserInstance = [];
         let parserInstances = this.props.appStore.instanceList;
         parserInstance = parserInstances.filter(p => p.parserId == record.id)
@@ -355,7 +354,7 @@ class ParserStatus extends React.Component{
 const ParserInstanceConnect = refluxConnect({
   appStore: AppStore
 })(state => {
-  console.log('mapStateToProps', state)
+  // console.log('mapStateToProps', state)
 
   return {
     appStore: state.appStore

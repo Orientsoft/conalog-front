@@ -6,17 +6,19 @@ import _ from 'lodash'
 import { Row, Col, Cascader } from 'antd';
 import classNames from 'classnames'
 import { FormattedMessage } from 'react-intl';
+import { Icon,Modal,Button,Table,Input,Form,Tag,Select,Popover,Menu,Dropdown } from 'antd';
 
-let Table = require('antd/lib/table')
-let Input = require('antd/lib/input')
-let Button = require('antd/lib/button')
-let Modal = require('antd/lib/modal')
-let Form = require('antd/lib/form')
-let Select = require('antd/lib/select')
-let Popover= require('antd/lib/popover')
-// let Icon = require('antd/lib/icon')
-let Menu = require('antd/lib/menu')
-let Dropdown = require('antd/lib/dropdown')
+
+// let Table = require('antd/lib/table')
+// let Input = require('antd/lib/input')
+// let Button = require('antd/lib/button')
+// let Modal = require('antd/lib/modal')
+// let Form = require('antd/lib/form')
+// let Select = require('antd/lib/select')
+// let Popover= require('antd/lib/popover')
+// // let Icon = require('antd/lib/icon')
+// let Menu = require('antd/lib/menu')
+// let Dropdown = require('antd/lib/dropdown')
 let existSameName;
 let validates;
 let parser = '';
@@ -36,7 +38,6 @@ class Parser extends React.Component {
     this.state = {
       delete:"",
       delmsg:"",
-      certList:[]
     }
   }
 
@@ -45,7 +46,6 @@ class Parser extends React.Component {
       this.setState(state);
     }.bind(this));
 
-    AppActions.listCert().then( () => { console.log("componentDidMount",this.state.certList)})
     AppActions.listParser();
     AppActions.listParserScripts();
     AppActions.getAllCollector();
@@ -223,7 +223,6 @@ class Parser extends React.Component {
     let outputType = a._owner._context.intl.messages.outputType
     let operation = a._owner._context.intl.messages.operation
     let parameter = a._owner._context.intl.messages.para
-    let host = a._owner._context.intl.messages.host
     let inputChannel = a._owner._context.intl.messages.inputChannel
     let channel = a._owner._context.intl.messages.channel
     let outputChannel = a._owner._context.intl.messages.outputChannel
@@ -306,7 +305,7 @@ class Parser extends React.Component {
         title: remark,
         render: (text, record) => (
           <Popover content = {record.remark} title = {remark} overlayStyle={{maxWidth:'300px',wordWrap:'break-word'}}>
-            <i className="parserIconEye  anticon icon-eye"  ></i>
+            <i className="parserIconEye  anticon anticon-eye"  ></i>
           </Popover>
         )
       },
@@ -355,17 +354,6 @@ class Parser extends React.Component {
       {parserOptions}
     </Menu>
 
-    // host option
-    let createHostOptions = () => {
-      return this.props.appStore.certList.map( (item,index) => {
-        return <Menu.Item key={item.user+"@"+item.host+":"+item.port}>{item.user+"@"+item.host+":"+item.port}</Menu.Item>
-      })
-    }
-    let hostOptions = createHostOptions()
-    let hostMenu = <Menu onSelect={this.selectcert.bind(this)} style = {{overflow: 'scroll',height:'300px'}}>
-      {hostOptions}
-    </Menu>
-
     // inputChannel option
     let allCollectorList = this.props.appStore.allCollectorList
     let activeCollector = []
@@ -403,7 +391,7 @@ class Parser extends React.Component {
 
     let createIntervalOptions = () => {
       return interval.map( (collector,index) => {
-        return <Menu.Item key={"ac_"+collector.name}>{collector.name}</Menu.Item>
+        return <Menu.Item className="hello" key={"ac_"+collector.name }>{collector.name}</Menu.Item>
       })
     }
     let intervalOptions = createIntervalOptions()
@@ -448,17 +436,17 @@ class Parser extends React.Component {
     let longScriptOptions = createLongScriptOptions()
 
     const InputChannelmenu = (
-      <Menu onSelect={this.selectInputChannel.bind(this)} style={{height:"200px",overflowY:"scroll"}}>
+      <Menu onSelect={this.selectInputChannel.bind(this)}>
         <SubMenu title="Active">
-          <SubMenu title="Interval">{intervalOptions}</SubMenu>
-          <SubMenu title="Time" >{timeOptions}</SubMenu>
-          <SubMenu title="OneShot">{oneshotOptions}</SubMenu>
+          <SubMenu title="Interval" className="inputchannel">{intervalOptions}</SubMenu>
+          <SubMenu title="Time" className="inputchannel">{timeOptions}</SubMenu>
+          <SubMenu title="OneShot" className="inputchannel">{oneshotOptions}</SubMenu>
         </SubMenu>
         <SubMenu title="Passive">
-          <SubMenu title="LongScript">{longScriptOptions}</SubMenu>
-          <SubMenu title="FileTail">{fileTailOptions}</SubMenu>
-        </SubMenu>
-        <SubMenu title="Agent">{agentOptions}</SubMenu>
+          <SubMenu title="LongScript" className="inputchannel">{longScriptOptions}</SubMenu>
+          <SubMenu title="FileTail" className="inputchannel">{fileTailOptions}</SubMenu>
+        </SubMenu >
+        <SubMenu className="inputchannel" title="Agent">{agentOptions}</SubMenu>
       </Menu>
     );
 
@@ -471,27 +459,12 @@ class Parser extends React.Component {
         <Input {...getFieldProps('name', {})} type = "text" autoComplete = "off" placeholder="name is required"/>
       </FormItem>
 
-      <FormItem {...formItemLayout} label = {host}  required >
-        <Row>
-          <Col span="2">
-            <Dropdown overlay={hostMenu} trigger={['click']}>
-              <Button>
-                <i className="anticon icon-down" />
-              </Button>
-            </Dropdown>
-          </Col>
-          <Col span="20" offset = "2">
-            <Input {...getFieldProps('host', {})}   type = "text" autoComplete = "off"  placeholder="host is required" />
-          </Col>
-        </Row>
-      </FormItem>
-
       <FormItem {...formItemLayout} label = {path} required >
         <Row>
           <Col span="2">
             <Dropdown overlay={pathMenu} trigger={['click']}>
               <Button>
-                <i className="anticon icon-down"/>
+                <i className="anticon anticon-down"/>
               </Button>
             </Dropdown>
           </Col>
@@ -530,7 +503,7 @@ class Parser extends React.Component {
           <Col span="2">
             <Dropdown overlay={InputChannelmenu} trigger={['click']}>
               <Button>
-                <i className="anticon icon-down" />
+                <i className="anticon anticon-down" />
               </Button>
             </Dropdown>
           </Col>
@@ -562,27 +535,12 @@ class Parser extends React.Component {
         <span {...getFieldProps('name', {})}>{this.props.appStore.parser.name}</span>
       </FormItem>
 
-      <FormItem {...formItemLayout} label = {host}   >
-        <Row>
-          <Col span="2">
-            <Dropdown overlay={hostMenu} trigger={['click']}>
-              <Button>
-                <i className="anticon icon-down" />
-              </Button>
-            </Dropdown>
-          </Col>
-          <Col span="20" offset = "2">
-            <Input {...getFieldProps('host', {})}   type = "text" autoComplete = "off"   />
-          </Col>
-        </Row>
-      </FormItem>
-
       <FormItem {...formItemLayout} label = {path}>
         <Row>
           <Col span="2">
             <Dropdown overlay={pathMenu} trigger={['click']}>
               <Button>
-                <i className="anticon icon-down" />
+                <i className="anticon anticon-down" />
               </Button>
             </Dropdown>
           </Col>
@@ -620,7 +578,7 @@ class Parser extends React.Component {
           <Col span="2">
             <Dropdown overlay={InputChannelmenu} trigger={['click']} >
               <Button>
-                <i className="anticon icon-down"/>
+                <i className="anticon anticon-down"/>
               </Button>
             </Dropdown>
           </Col>
@@ -700,7 +658,7 @@ class Parser extends React.Component {
 
         <div className = "row clbody">
           <div className = "ant-col-sm24 p-t-10">
-            <Button type = "primary" icon = "anticon icon-pluscircleo" onClick = {this.onItemAdd}/>
+            <Button type = "primary" icon = "anticon anticon-plus" onClick = {this.onItemAdd}/>
           </div>
         </div>
 
@@ -747,10 +705,6 @@ Parser = createForm({
       validates.name.status = !!fields['name'].value
     }
 
-    if(fields.hasOwnProperty('host')){
-      validates.host.status = !!fields['host'].value
-    }
-
     if(fields.hasOwnProperty('path')){
       validates.path.status = !!fields['path'].value
     }
@@ -789,7 +743,6 @@ Parser = createForm({
       outputChannel: {name: 'outputChannel', value: props.appStore.parser.outputChannel},
       parameter: {name: 'parameter', value: props.appStore.parser.parameter},
       remark: {name: 'remark', value: props.appStore.parser.remark},
-      host: {name: 'host', value: props.appStore.parser.host},
     }
   }
 })(Parser)

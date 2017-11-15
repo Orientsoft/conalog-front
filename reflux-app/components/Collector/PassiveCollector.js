@@ -1,5 +1,7 @@
 import React from 'react'
 import { FormattedMessage } from 'react-intl';
+
+
 let message = require('antd/lib/message')
 let Checkbox = require('antd/lib/checkbox')
 let Modal = require('antd/lib/modal')
@@ -444,8 +446,8 @@ class PassiveCollector extends React.Component {
 
     let createHostOptions = () => {
         // console.log('createHostOptions', this.state)
-        return this.state.certList.map(cert => {
-          return <option key={cert._id.toString()} value={cert.host}>{cert.host + ':' + cert.port}</option>
+        return this.state.certList.map(item => {
+          return <option key={item._id.toString()} value={item._id.toString()}>{item.user+"@"+item.host+":"+item.port}</option>
         })
     }
     let hostOptions = createHostOptions()
@@ -530,29 +532,24 @@ class PassiveCollector extends React.Component {
         </Tooltip>
       </FormItem>
 
-      <Row>
-        <Col span = "11" offset = "2" >
-          <FormItem {...formItemLayoutSelect} label = {type}  required>
-            <Select data-field="type"
-                    ref="typeInput"
-                    value={this.state.passiveCollectorAdd.type}
-                    onChange={this.addPassiveCollectorType.bind(this)}>
-              <Option value="LongScript">LongScript</Option>
-              <Option value="FileTail">FileTail</Option>
-            </Select>
-          </FormItem>
-        </Col>
-        <Col span = "11">
-          <FormItem {...formItemLayoutSelect} label = {host} required>
-            <Select data-field="host"
-                    ref="hostInput"
-                    value={this.state.passiveCollectorAdd.host}
-                    onChange={this.addPassiveCollectorHost.bind(this)}>
-              {hostOptions}
-            </Select>
-          </FormItem>
-        </Col>
-      </Row>
+      <FormItem {...formItemLayout} label = {type}  required >
+        <Select data-field="type"
+                ref="typeInput"
+                value={this.state.passiveCollectorAdd.type}
+                onChange={this.addPassiveCollectorType.bind(this)}>
+          <Option value="LongScript">LongScript</Option>
+          <Option value="FileTail">FileTail</Option>
+        </Select>
+      </FormItem>
+
+      <FormItem {...formItemLayout} label = {host} required>
+        <Select data-field="host"
+                ref="hostInput"
+                value={this.state.passiveCollectorAdd.host}
+                onChange={this.addPassiveCollectorHost.bind(this)}>
+          {hostOptions}
+        </Select>
+      </FormItem>
 
       <FormItem {...formItemLayout} label = {command} required>
         <Input  type = "text" autoComplete = "off"
@@ -626,40 +623,29 @@ class PassiveCollector extends React.Component {
     let antdFormEdit = <Form horizonal className = "editPassiveCollector">
 
       <FormItem {...formItemLayout} label = {name} >
-        {/*<Input  type = "text" autoComplete = "off"*/}
-        {/*data-field="name"*/}
-        {/*ref="nameInput"*/}
-        {/*value={this.state.activeCollector.name}*/}
-        {/*onChange={this.updateActiveCollector.bind(this)}*/}
-        {/*/>*/}
         <span>
           {this.state.passiveCollector.name}
         </span>
       </FormItem>
 
-      <Row>
-        <Col span = "11" offset = "2" >
-          <FormItem {...formItemLayoutSelect} label = {type} className = "selectEncoding">
-            <Select data-field="type"
-                    ref="typeInput"
-                    value={this.state.passiveCollector.type}
-                    onChange={this.updatePassiveCollectorType.bind(this)}>
-              <Option value="LongScript">LongScript</Option>
-              <Option value="FileTail">FileTail</Option>
-            </Select>
-          </FormItem>
-        </Col>
-        <Col span = "11">
-          <FormItem {...formItemLayoutSelect} label = {host} className = "selectEncoding">
-            <Select data-field="host"
-                    ref="hostInput"
-                    value={this.state.passiveCollector.host}
-                    onChange={this.updatePassiveCollectorHost.bind(this)}>
-              {hostOptions}
-            </Select>
-          </FormItem>
-        </Col>
-      </Row>
+      <FormItem {...formItemLayout} label = {type} className = "selectEncoding">
+        <Select data-field="type"
+                ref="typeInput"
+                value={this.state.passiveCollector.type}
+                onChange={this.updatePassiveCollectorType.bind(this)}>
+          <Option value="LongScript">LongScript</Option>
+          <Option value="FileTail">FileTail</Option>
+        </Select>
+      </FormItem>
+
+      <FormItem {...formItemLayout} label = {host} className = "selectEncoding">
+        <Select data-field="host"
+                ref="hostInput"
+                value={this.state.passiveCollector.host}
+                onChange={this.updatePassiveCollectorHost.bind(this)}>
+          {hostOptions}
+        </Select>
+      </FormItem>
 
       <FormItem {...formItemLayout} label = {command}>
         <Input  type = "text" autoComplete = "off"
@@ -734,7 +720,7 @@ class PassiveCollector extends React.Component {
       <div>
         <div className = "row clbody addActiveCollector">
           <div className = "ant-col-sm24 p-t-10 ">
-            <Button type = "primary" icon="anticon icon-pluscircleo" onClick = {this.onItemAdd.bind(this)}/>
+            <Button type = "primary" icon="anticon anticon-plus" onClick = {this.onItemAdd.bind(this)}/>
           </div>
         </div>
 
@@ -743,6 +729,7 @@ class PassiveCollector extends React.Component {
           visible = {this.state.passiveCollectorAddModal}
           onOk = {this.savePassiveCollector.bind(this)}
           onCancel = {this.clearPassiveCollector.bind(this)}
+          className = "antdFormAdd"
         >
           {antdFormAdd}
         </Modal>
@@ -759,7 +746,7 @@ class PassiveCollector extends React.Component {
             <InputGroup className={searchClass}>
               <Input  data-name="name" onChange={this.handleFilterChange.bind(this)} onPressEnter={this.handleSearch.bind(this)}/>
               <div className="ant-input-group-wrap">
-                <Button icon="anticon icon-search1" data-name="name" className={buttonClass} onClick={this.handleSearch.bind(this)} />
+                <Button icon="anticon anticon-search" data-name="name" className={buttonClass} onClick={this.handleSearch.bind(this)} />
               </div>
             </InputGroup>
           </div>
@@ -771,6 +758,7 @@ class PassiveCollector extends React.Component {
             visible = {this.state.passiveCollectorEditModal}
             onOk = {this.onEditOk.bind(this)}
             onCancel = {this.onEditCancel.bind(this)}
+            className = "antdFormEdit"
           >
             {antdFormEdit}
           </Modal>

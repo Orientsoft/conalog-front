@@ -4,12 +4,14 @@ import AppActions from '../../actions/AppActions'
 import AppStore from '../../stores/AppStore'
 import constants from '../../const'
 import _ from 'lodash'
+
+
 let message = require('antd/lib/message')
 let TimePicker = require('antd/lib/time-picker')
 let Switch = require('antd/lib/switch')
 let Tag = require('antd/lib/tag')
 let Modal = require('antd/lib/modal')
-
+let Icon = require('antd/lib/icon')
 
 class ActiveStatus extends React.Component {
   constructor(props) {
@@ -18,7 +20,8 @@ class ActiveStatus extends React.Component {
       activeStatusList: [],
       activeStatusListAll:[],
       messageModal:false,
-      messageContent:''
+      messageContent:'',
+      activeStatus:[]
     }
   }
 

@@ -369,12 +369,19 @@ let AppStore = Reflux.createStore({
             return collector
           })
           state.activeCollectorList = acList
-          // state.activeCollectorList = collectors
+          AppActions.listCert.triggerAsync()
+            .then( ()=>{
+              for(var i=0;i<state.activeCollectorList.length;i++){
+                var host = state.activeCollectorList[i].host
+                for(var j=0;j<state.certList.length;j++){
+                  if(host == state.certList[j]._id){
+                    state.activeCollectorList[i].host = state.certList[j].host
+                  }
+                }
+              }
+            })
 
 
-          // console.log('showlist2',acList)
-
-          // cb & cb(state)
           state.activeCollectorListAll = state.activeCollectorList
           this.trigger(state)
         },
@@ -549,6 +556,18 @@ let AppStore = Reflux.createStore({
         dataType: 'json',
         success: (collectors) => {
           state.passiveCollectorList = collectors
+          AppActions.listCert.triggerAsync()
+            .then( ()=>{
+              for(var i=0;i<state.passiveCollectorList.length;i++){
+                var host = state.passiveCollectorList[i].host
+                for(var j=0;j<state.certList.length;j++){
+                  if(host == state.certList[j]._id){
+                    state.passiveCollectorList[i].host = state.certList[j].host
+                  }
+                }
+              }
+            })
+
           state.passiveCollectorListAll = state.passiveCollectorList
           this.trigger(state)
         }
@@ -835,23 +854,35 @@ let AppStore = Reflux.createStore({
 
             return status
           })
-          // state.activeStatusList = asList
-          state.activeStatusListAll = _.cloneDeep(asList)
-          state.activeStatusList = asList.map((item) => {
-            if (item.status.runningFlag ) {
-              if(item.status.lastActivity.stdout){
-                item.status.lastActivity.stdout = item.status.lastActivity.stdout.substr(0, 32) + '...'
-              }
-              if(item.status.lastActivity.stderr){
-                item.status.lastActivity.stderr = item.status.lastActivity.stderr.substr(0, 32) + '...'
-              }
-            }
-            return item
-          })
 
-          // state.activeStatusList = statusList
+          state.activeStatusListAll = _.cloneDeep(asList)
+
+          AppActions.listCert.triggerAsync()
+            .then( ()=>{
+              for(var i=0;i<asList.length;i++){
+                var host = asList[i].host
+                for(var j=0;j<state.certList.length;j++){
+                  if(host == state.certList[j]._id){
+                    asList[i].host = state.certList[j].host
+                  }
+                }
+              }
+
+              state.activeStatusList = asList.map((item) => {
+                if (item.status.runningFlag ) {
+                  if(item.status.lastActivity.stdout){
+                    item.status.lastActivity.stdout = item.status.lastActivity.stdout.substr(0, 32) + '...'
+                  }
+                  if(item.status.lastActivity.stderr){
+                    item.status.lastActivity.stderr = item.status.lastActivity.stderr.substr(0, 32) + '...'
+                  }
+                }
+                return item
+              })
+            })
 
           this.trigger(state)
+          AppActions.getActiveStatusList.completed()
         })
       })
       .fail(err => {
@@ -870,12 +901,25 @@ let AppStore = Reflux.createStore({
           // state.passiveStatusList = statusList
           state.passiveStatusListAll = _.cloneDeep(statusList)
 
-          state.passiveStatusList = statusList.map((item) => {
-            if (item.status.runningFlag && item.status.lastActivity.data) {
-              item.status.lastActivity.data = item.status.lastActivity.data.substr(0, 32) + '...'
-            }
-            return item
-          })
+          AppActions.listCert.triggerAsync()
+            .then( ()=>{
+              for(var i=0;i<statusList.length;i++){
+                var host = statusList[i].host
+                for(var j=0;j<state.certList.length;j++){
+                  if(host == state.certList[j]._id){
+                    statusList[i].host = state.certList[j].host
+                  }
+                }
+              }
+
+              state.passiveStatusList = statusList.map((item) => {
+                if (item.status.runningFlag && item.status.lastActivity.data) {
+                  item.status.lastActivity.data = item.status.lastActivity.data.substr(0, 32) + '...'
+                }
+                return item
+              })
+            })
+
           this.trigger(state)
           AppActions.getPassiveStatusList.completed()
         })
@@ -1259,6 +1303,7 @@ let AppStore = Reflux.createStore({
           state.instanceListAll = _.cloneDeep(data);
 
           state.instanceList = data.map((item) => {
+            console.log("item",item)
             if (item.lastActivity.message) {
               item.lastActivity.message = item.lastActivity.message.substr(0, 32) + '...'
             }
