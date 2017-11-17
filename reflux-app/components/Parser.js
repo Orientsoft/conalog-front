@@ -69,10 +69,6 @@ class Parser extends React.Component {
         msg: 'path can\'t be empty',
         status: false
       },
-      host:{
-        msg: 'host can\'t be empty',
-        status: false
-      },
       inputChannel:{
         msg: 'inputChannel can\'t be empty',
         status: false
@@ -183,18 +179,6 @@ class Parser extends React.Component {
       validates.path.status = !!parser
       AppActions.updateCurrentParser({
         path: parser
-      })
-      e.selectedKeys.length = 0
-    }
-  }
-
-  selectcert(e){
-    cert = e.key
-    console.log("value:",cert)
-    if(cert){
-      validates.host.status = !!cert
-      AppActions.updateCurrentParser({
-        host: cert
       })
       e.selectedKeys.length = 0
     }
