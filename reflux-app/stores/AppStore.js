@@ -379,11 +379,10 @@ let AppStore = Reflux.createStore({
                   }
                 }
               }
+              state.activeCollectorListAll = state.activeCollectorList
+              console.log('state.activeCollectorList',state.activeCollectorList)
+              this.trigger(state)
             })
-
-
-          state.activeCollectorListAll = state.activeCollectorList
-          this.trigger(state)
         },
         dataType: 'json'
       },
@@ -566,10 +565,10 @@ let AppStore = Reflux.createStore({
                   }
                 }
               }
+              state.passiveCollectorListAll = state.passiveCollectorList
+              this.trigger(state)
             })
 
-          state.passiveCollectorListAll = state.passiveCollectorList
-          this.trigger(state)
         }
       },
     ) // $.ajax
@@ -1271,9 +1270,7 @@ let AppStore = Reflux.createStore({
         success: (collectors) => {
           let collectorList  = []
           collectors.map((item) => {
-            if(item.channel == 'Redis PubSub'){
               collectorList.push(item)
-            }
           })
           console.log('collectorList:',collectorList)
           state.allCollectorList = collectorList

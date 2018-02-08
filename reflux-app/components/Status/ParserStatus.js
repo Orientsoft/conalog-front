@@ -298,7 +298,7 @@ class ParserStatus extends React.Component{
             return (
               <span>
                 <Tag color="green"><a href="#">stdout</a></Tag>
-                <span>{record.lastActivity.message}</span>
+                <span></span>
               </span>
             )
           }
@@ -319,12 +319,14 @@ class ParserStatus extends React.Component{
       columns = { antdTableColumns }
       dataSource = { this.props.appStore.parserList }
       expandedRowRender = { record => {
-        let parserInstance = [];
-        let parserInstances = this.props.appStore.instanceList;
-        parserInstance = parserInstances.filter(p => p.parserId == record.id)
+
+        {/*let parserInstance = [];*/}
+        {/*let parserInstances = this.props.appStore.instanceList;*/}
+        {/*parserInstance = parserInstances.filter(p => p.parserId == record.id)*/}
+        let parserInstance = this.props.appStore.instanceList.filter(p => p.parserId == record.id)
         return (<Table rowKey = { line => line.id }
           columns = {antdInstanceTableColumns}
-          dataSource = {parserInstance } />)
+          dataSource = { parserInstance } />)
         }
       }
     />
