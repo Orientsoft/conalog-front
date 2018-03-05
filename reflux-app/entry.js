@@ -37,6 +37,7 @@ import App from './App'
       this.setState(state)
     }.bind(this))
 
+    console.log('Conalog-Front r1')
   }
   render(){
     if(this.state.language == "chinese"){
