@@ -4,7 +4,7 @@ var config = {
   logLevel: 'info',
   conalogHost: 'WhoKilledLedCockRobin',
   conalogPort: 95279528,
-  conalogFrontPort: 9527,
+  conalogFrontPort: 7527,
   mongoUrl: 'mongodb://127.0.0.1:27017/conalog',
   redisUrl: 'redis://127.0.0.1:6379',
   activeCollectorPrefix: 'ac_',
