@@ -9,16 +9,6 @@ import { FormattedMessage } from 'react-intl';
 import { Icon,Modal,Button,Table,Input,Form,Tag,Select,Popover,Menu,Dropdown } from 'antd';
 
 
-// let Table = require('antd/lib/table')
-// let Input = require('antd/lib/input')
-// let Button = require('antd/lib/button')
-// let Modal = require('antd/lib/modal')
-// let Form = require('antd/lib/form')
-// let Select = require('antd/lib/select')
-// let Popover= require('antd/lib/popover')
-// // let Icon = require('antd/lib/icon')
-// let Menu = require('antd/lib/menu')
-// let Dropdown = require('antd/lib/dropdown')
 let existSameName;
 let validates;
 let parser = '';
@@ -174,9 +164,17 @@ class Parser extends React.Component {
 
   selectParser(e){
     parser = e.key
-    console.log("value:",parser)
     if(parser){
       validates.path.status = !!parser
+      AppActions.updateCurrentParser({
+        path: parser
+      })
+      e.selectedKeys.length = 0
+    }
+  }
+  selectEditParser(e){
+    parser = e.key
+    if(parser){
       AppActions.updateCurrentParser({
         path: parser
       })
@@ -186,9 +184,18 @@ class Parser extends React.Component {
 
   selectInputChannel(e){
     channel = e.key
-    console.log(channel)
     if(channel){
       validates.inputChannel.status = !!channel
+      AppActions.updateCurrentParser({
+        inputChannel: channel
+      })
+      e.selectedKeys.length = 0
+    }
+  }
+
+  selectEditInputChannel(e){
+    channel = e.key
+    if(channel){
       AppActions.updateCurrentParser({
         inputChannel: channel
       })
@@ -337,6 +344,9 @@ class Parser extends React.Component {
     let pathMenu = <Menu onSelect={this.selectParser.bind(this)} style = {{overflow: 'scroll',height:'300px'}}>
       {parserOptions}
     </Menu>
+    let pathMenuForEdit = <Menu onSelect={this.selectEditParser.bind(this)} style = {{overflow: 'scroll',height:'300px'}}>
+      {parserOptions}
+    </Menu>
 
     // inputChannel option
     let allCollectorList = this.props.appStore.allCollectorList
@@ -421,6 +431,20 @@ class Parser extends React.Component {
 
     const InputChannelmenu = (
       <Menu onSelect={this.selectInputChannel.bind(this)}>
+        <SubMenu title="Active">
+          <SubMenu title="Interval" className="inputchannel">{intervalOptions}</SubMenu>
+          <SubMenu title="Time" className="inputchannel">{timeOptions}</SubMenu>
+          <SubMenu title="OneShot" className="inputchannel">{oneshotOptions}</SubMenu>
+        </SubMenu>
+        <SubMenu title="Passive">
+          <SubMenu title="LongScript" className="inputchannel">{longScriptOptions}</SubMenu>
+          <SubMenu title="FileTail" className="inputchannel">{fileTailOptions}</SubMenu>
+        </SubMenu >
+        <SubMenu className="inputchannel" title="Agent">{agentOptions}</SubMenu>
+      </Menu>
+    );
+    const InputChannelmenuForEdit = (
+      <Menu onSelect={this.selectEditInputChannel.bind(this)}>
         <SubMenu title="Active">
           <SubMenu title="Interval" className="inputchannel">{intervalOptions}</SubMenu>
           <SubMenu title="Time" className="inputchannel">{timeOptions}</SubMenu>
@@ -522,7 +546,7 @@ class Parser extends React.Component {
       <FormItem {...formItemLayout} label = {path}>
         <Row>
           <Col span="2">
-            <Dropdown overlay={pathMenu} trigger={['click']}>
+            <Dropdown overlay={pathMenuForEdit} trigger={['click']}>
               <Button>
                 <i className="anticon anticon-down" />
               </Button>
@@ -560,7 +584,7 @@ class Parser extends React.Component {
       <FormItem {...formItemLayout} label = {inputChannel}>
         <Row>
           <Col span="2">
-            <Dropdown overlay={InputChannelmenu} trigger={['click']} >
+            <Dropdown overlay={InputChannelmenuForEdit} trigger={['click']} >
               <Button>
                 <i className="anticon anticon-down"/>
               </Button>
