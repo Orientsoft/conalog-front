@@ -215,9 +215,9 @@ class Cert extends React.Component {
             <a onClick={this.onItemEdit.bind(this)} data-id={record._id} data-host={record.host} href="#"><FormattedMessage id="edit"/></a>
             <span className="ant-divider"></span>
             <a onClick={this.onItemDelete.bind(this)} data-id={record._id} data-host={record.host} href="#"><FormattedMessage id="del"/></a>
-	          <span className="ant-divider"></span>
+	         {/*<span className="ant-divider"></span>*/}
 	         {/*<a><Icon data-_id={record._id}  type="eye"  onMouseOver={this.onShowPass.bind(this)} onMouseLeave={this.onHidePass.bind(this)} ></Icon></a>*/}
-            <a><i data-_id={record._id}  className="anticon anticon-eye"  onMouseOver={this.onShowPass.bind(this)} onMouseLeave={this.onHidePass.bind(this)} ></i></a>
+           {/*<a><i data-_id={record._id}  className="anticon anticon-eye"  onMouseOver={this.onShowPass.bind(this)} onMouseLeave={this.onHidePass.bind(this)} ></i></a>*/}
           </span>
         )
       }
