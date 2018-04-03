@@ -67,7 +67,7 @@ class Cert extends React.Component {
       })
     })
     var result = Object.keys(validates).filter(field => validates[field].status === false)
-    console.log(result)
+    //console.log(result)
     if(result.length == 3){
       alert('The user of  '+host+' is existed!'  )
     }else{

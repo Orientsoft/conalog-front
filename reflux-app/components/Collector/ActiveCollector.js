@@ -58,7 +58,7 @@ class ActiveCollector extends React.Component {
     AppActions.listCert.triggerAsync()
       .then(() => {
       const cert = this.state.certList[0]
-      console.log('this.state.activeCollectorAdd',this.state.activeCollectorAdd)
+    //  console.log('this.state.activeCollectorAdd',this.state.activeCollectorAdd)
       this.setState({
         activeCollectorAdd: Object.assign(this.state.activeCollectorAdd, {
 
@@ -318,7 +318,7 @@ class ActiveCollector extends React.Component {
 
   updateActiveCollectorType (e){
      AppActions.setActiveCollector('type',e)
-     console.log('changetype',this.state.activeCollector.type)
+     //console.log('changetype',this.state.activeCollector.type)
    }
   updateActiveCollectorEncoding (e){
      AppActions.setActiveCollector('encoding',e)
@@ -406,7 +406,7 @@ class ActiveCollector extends React.Component {
          checklist = [];
          checklist.unshift(id)
     }
-    console.log('checklist',checklist)
+   // console.log('checklist',checklist)
     AppActions.setActiveCollectorChecklist(checklist)
     AppActions.editActiveCollector.triggerAsync()
       .then(() => {
