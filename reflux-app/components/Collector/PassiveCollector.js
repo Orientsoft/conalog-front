@@ -142,7 +142,7 @@ class PassiveCollector extends React.Component {
   }
 
   addPassiveCollector(e) {
-    console.log(e.target.dataset.field,e.target.value)
+   // console.log(e.target.dataset.field,e.target.value)
 
     this.setState({
       passiveCollectorAdd: Object.assign(this.state.passiveCollectorAdd, {
