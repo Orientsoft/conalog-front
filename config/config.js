@@ -3,9 +3,9 @@ var program = require('commander')
 var config = {
   logLevel: 'info',
   conalogHost: 'WhoKilledLedCockRobin',
-  conalogPort: 95279528,
-  conalogFrontPort: 9527,
-  mongoUrl: 'mongodb://127.0.0.1:27017/conalog',
+  conalogPort: 95279528, // don't config this, use env instead
+  conalogFrontPort: 10011,
+  mongoUrl: 'mongodb://127.0.0.1:27017/conalog1',
   redisUrl: 'redis://127.0.0.1:6379',
   activeCollectorPrefix: 'ac_',
   passiveCollectorPrefix: 'pc_',
