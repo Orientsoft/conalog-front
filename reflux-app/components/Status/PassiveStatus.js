@@ -90,14 +90,19 @@ class PassiveStatus extends React.Component {
       if (line.status.runningFlag) {
         execCount = line.status.lastActivity.execCounter
         lastActivityTs = new Date(parseInt(line.status.lastActivity.ts)).toLocaleString()
-
         switch (line.status.lastActivity.status) {
           case 'Success':
-            lastActivityMsg = <td> <Tag color="green"> stdout </Tag><Tag  onClick={this.showAllStatus.bind(this, index)} color="green"> + </Tag> { line.status.lastActivity.data.toString() } </td>
+            if(line.status.lastActivity.data){
+              lastActivityMsg = <td> <Tag color="green"> stdout </Tag><Tag  onClick={this.showAllStatus.bind(this, index)} color="green"> + </Tag> { line.status.lastActivity.data.toString() } </td>
+            }else if (line.status.lastActivity.stderr){
+              lastActivityMsg = <td> <Tag color="red"> stderr </Tag> { line.status.lastActivity.stderr.toString() } </td>
+            }
             break
 
           case 'Error':
-            lastActivityMsg = <td> <Tag color="red"> stderr </Tag><Tag onClick={this.showAllStatus.bind(this, index)}  color="red"> + </Tag> { line.status.lastActivity.data.toString() } </td>
+            if(line.status.lastActivity.data){
+              lastActivityMsg = <td> <Tag color="red"> stderr </Tag><Tag onClick={this.showAllStatus.bind(this, index)}  color="red"> + </Tag> { line.status.lastActivity.data.toString() } </td>
+            }
             break
 
           default:
